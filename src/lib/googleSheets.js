@@ -3,20 +3,29 @@ const { google } = require('googleapis');
 const SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly'];
 
 function getGoogleAuth() {
-  let privateKey = process.env.GOOGLE_PRIVATE_KEY;
+  let credentials;
   
-  if (!privateKey) {
-    throw new Error('GOOGLE_PRIVATE_KEY environment variable is missing');
-  }
-  
-  privateKey = privateKey.replace(/\\n/g, '\n');
-  
-  if (!privateKey.includes('-----BEGIN PRIVATE KEY-----')) {
-    throw new Error('Invalid private key format');
-  }
-
-  const auth = new google.auth.GoogleAuth({
-    credentials: {
+  if (process.env.GOOGLE_CREDENTIALS_BASE64) {
+    try {
+      const credentialsJson = Buffer.from(process.env.GOOGLE_CREDENTIALS_BASE64, 'base64').toString('utf8');
+      credentials = JSON.parse(credentialsJson);
+    } catch (error) {
+      throw new Error('Failed to parse GOOGLE_CREDENTIALS_BASE64');
+    }
+  } else {
+    let privateKey = process.env.GOOGLE_PRIVATE_KEY;
+    
+    if (!privateKey) {
+      throw new Error('GOOGLE_PRIVATE_KEY or GOOGLE_CREDENTIALS_BASE64 environment variable is missing');
+    }
+    
+    privateKey = privateKey.replace(/\\n/g, '\n');
+    
+    if (!privateKey.includes('-----BEGIN PRIVATE KEY-----')) {
+      throw new Error('Invalid private key format - missing BEGIN marker');
+    }
+    
+    credentials = {
       type: 'service_account',
       project_id: process.env.GOOGLE_PROJECT_ID,
       private_key_id: process.env.GOOGLE_PRIVATE_KEY_ID,
@@ -28,7 +37,11 @@ function getGoogleAuth() {
       auth_provider_x509_cert_url: 'https://www.googleapis.com/oauth2/v1/certs',
       client_x509_cert_url: process.env.GOOGLE_CLIENT_X509_CERT_URL,
       universe_domain: 'googleapis.com'
-    },
+    };
+  }
+
+  const auth = new google.auth.GoogleAuth({
+    credentials,
     scopes: SCOPES,
   });
   return auth;

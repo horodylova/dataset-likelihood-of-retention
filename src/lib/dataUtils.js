@@ -75,10 +75,10 @@ export function calculateYearsLived(moveInDate, moveOutDate = null) {
 
 export function calculateRetentionByYear(processedData) {
   const retentionByYear = {};
-  const currentYear = new Date().getFullYear();
+  const maxYears = 10;
   
-  for (let year = currentYear - 9; year <= currentYear; year++) {
-    retentionByYear[year] = {
+  for (let year = 1; year <= maxYears; year++) {
+    retentionByYear[`Year ${year}`] = {
       eligible: 0,
       retained: 0,
       rate: 0
@@ -88,17 +88,14 @@ export function calculateRetentionByYear(processedData) {
   processedData.forEach(resident => {
     if (!resident.moveInDate) return;
     
-    const moveInYear = resident.moveInDate.getFullYear();
     const yearsLived = calculateYearsLived(resident.moveInDate, resident.moveOutDate);
     
-    for (let checkYear = currentYear - 9; checkYear <= currentYear; checkYear++) {
-      const yearsFromMoveIn = checkYear - moveInYear;
-      
-      if (yearsFromMoveIn >= 0 && yearsFromMoveIn < yearsLived) {
-        retentionByYear[checkYear].eligible++;
+    for (let year = 1; year <= maxYears; year++) {
+      if (yearsLived >= year) {
+        retentionByYear[`Year ${year}`].eligible++;
         
-        if (yearsFromMoveIn + 1 <= yearsLived) {
-          retentionByYear[checkYear].retained++;
+        if (yearsLived >= year + 1) {
+          retentionByYear[`Year ${year}`].retained++;
         }
       }
     }
@@ -106,7 +103,7 @@ export function calculateRetentionByYear(processedData) {
   
   Object.keys(retentionByYear).forEach(year => {
     const data = retentionByYear[year];
-    data.rate = data.eligible > 0 ? (data.retained / data.eligible) * 100 : 0;
+    data.rate = data.eligible > 0 ? Math.round((data.retained / data.eligible) * 100 * 100) / 100 : 0;
   });
   
   return retentionByYear;
@@ -115,10 +112,9 @@ export function calculateRetentionByYear(processedData) {
 export function getChartData(retentionData) {
   return Object.entries(retentionData)
     .map(([year, data]) => ({
-      year: parseInt(year),
-      rate: Math.round(data.rate * 100) / 100,
+      year: year,
+      rate: data.rate,
       eligible: data.eligible,
       retained: data.retained
-    }))
-    .sort((a, b) => a.year - b.year);
+    }));
 }

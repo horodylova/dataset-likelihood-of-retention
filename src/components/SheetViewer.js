@@ -2,14 +2,16 @@
 
 import { useState } from 'react';
 import { useRetention } from '@/contexts/RetentionContext';
+import RawDataTable from './RawDataTable';
 
 export default function SheetViewer() {
   const [spreadsheetId, setSpreadsheetId] = useState('');
   const [range, setRange] = useState('Sheet1');
   const [error, setError] = useState(null);
+  const [showRawData, setShowRawData] = useState(false);
   
   const { state, dispatch } = useRetention();
-  const { loading, processedData, retentionData, chartData, dataLoaded, filters } = state;
+  const { loading, processedData, retentionData, chartData, dataLoaded, filters, rawData } = state;
 
   const loadData = async () => {
     if (!spreadsheetId || dataLoaded) return;
@@ -118,11 +120,28 @@ export default function SheetViewer() {
             </table>
           </div>
           
-          <div>
+          <div style={{ marginBottom: '20px' }}>
             <h3>Processed Data ({processedData.length} residents):</h3>
             <p>Current residents: {processedData.filter(r => r.isCurrentResident).length}</p>
             <p>Former residents: {processedData.filter(r => !r.isCurrentResident).length}</p>
+            
+            <button 
+              onClick={() => setShowRawData(!showRawData)}
+              style={{ 
+                padding: '10px 20px', 
+                marginTop: '10px',
+                backgroundColor: showRawData ? '#dc3545' : '#007bff',
+                color: 'white',
+                border: 'none',
+                borderRadius: '4px',
+                cursor: 'pointer'
+              }}
+            >
+              {showRawData ? 'HIDE DATA' : 'SHOW DATA'}
+            </button>
           </div>
+          
+          <RawDataTable data={rawData} isVisible={showRawData} />
         </div>
       )}
     </div>

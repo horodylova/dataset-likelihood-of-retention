@@ -1,8 +1,12 @@
+import { RetentionProvider } from '@/contexts/RetentionContext';
+
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body>
-        {children}
+        <RetentionProvider>
+          {children}
+        </RetentionProvider>
       </body>
     </html>
   )

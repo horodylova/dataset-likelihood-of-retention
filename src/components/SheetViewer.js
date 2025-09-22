@@ -6,7 +6,7 @@ import RawDataTable from './RawDataTable';
 
 export default function SheetViewer() {
   const [spreadsheetId, setSpreadsheetId] = useState('');
-  const [range, setRange] = useState('Sheet1');
+  const [range, setRange] = useState('EXPORT API');
   const [error, setError] = useState(null);
   const [showRawData, setShowRawData] = useState(false);
   

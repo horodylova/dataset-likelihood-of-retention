@@ -41,11 +41,60 @@
 .k-grid .k-table-thead .k-table-th {
   background-color: var(--kendo-color-base);
   border-color: var(--kendo-color-base-emphasis);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.k-grid .k-table-thead .k-table-th:hover {
+  background-color: var(--kendo-color-secondary-lighter);
+  color: var(--kendo-color-on-secondary);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(56, 76, 158, 0.2);
+}
+
+.k-grid .k-table-thead .k-table-th.selected-column {
+  background-color: var(--kendo-color-secondary) !important;
+  color: var(--kendo-color-on-secondary) !important;
+  box-shadow: 0 2px 8px rgba(56, 76, 158, 0.3);
+}
+
+.k-grid .k-table-tbody .k-table-td.selected-column {
+  background-color: rgba(56, 76, 158, 0.1) !important;
+  border-left: 3px solid var(--kendo-color-secondary);
+  border-right: 3px solid var(--kendo-color-secondary);
 }
 
 .k-chart-tooltip {
   background-color: var(--kendo-color-secondary);
   color: var(--kendo-color-on-secondary);
+}
+
+* {
+  box-sizing: border-box;
+  cursor: default;
+}
+
+a, button, .k-button, .k-grid .k-table-thead .k-table-th {
+  cursor: pointer !important;
+}
+
+a:hover, button:hover, .k-button:hover {
+  cursor: pointer !important;
+  transform: translateY(-1px);
+  transition: all 0.2s ease;
+}
+
+input, textarea, select {
+  cursor: text !important;
+}
+
+.k-grid .k-table-tbody .k-table-td {
+  transition: all 0.3s ease;
+}
+
+html, body {
+  height: 100%;
+  overflow: hidden;  
 }
 
 body {

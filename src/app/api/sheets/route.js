@@ -1,27 +1,19 @@
-import { getSheetData } from '@/lib/googleSheets';
-import { NextResponse } from 'next/server';
+import { getSheetData } from '../../../lib/googleSheets';
 
-export async function GET(request) {
+export async function GET() {
   try {
-    const { searchParams } = new URL(request.url);
-    const spreadsheetId = searchParams.get('id');
-    const range = searchParams.get('range') || 'Sheet1';
-    
-    if (!spreadsheetId) {
-      return NextResponse.json(
-        { error: 'Spreadsheet ID is required' },
-        { status: 400 }
-      );
+    const sheetId = process.env.SHEET_ID;
+    const sheetName = process.env.SHEET_NAME;
+    const range = `${sheetName}!A:Z`;
+
+    if (!sheetId || !sheetName) {
+      return Response.json({ error: 'Missing SHEET_ID or SHEET_NAME environment variables' }, { status: 500 });
     }
-    
-    const data = await getSheetData(spreadsheetId, range);
-    
-    return NextResponse.json({ data });
+
+    const data = await getSheetData(sheetId, range);
+    return Response.json(data);
   } catch (error) {
-    console.error('API Error:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch sheet data' },
-      { status: 500 }
-    );
+    console.error('Error fetching sheet data:', error);
+    return Response.json({ error: 'Failed to fetch sheet data' }, { status: 500 });
   }
 }

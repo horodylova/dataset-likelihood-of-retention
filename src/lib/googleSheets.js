@@ -3,12 +3,24 @@ const { google } = require('googleapis');
 const SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly'];
 
 function getGoogleAuth() {
+  let privateKey = process.env.GOOGLE_PRIVATE_KEY;
+  
+  if (!privateKey) {
+    throw new Error('GOOGLE_PRIVATE_KEY environment variable is missing');
+  }
+  
+  privateKey = privateKey.replace(/\\n/g, '\n');
+  
+  if (!privateKey.includes('-----BEGIN PRIVATE KEY-----')) {
+    throw new Error('Invalid private key format');
+  }
+
   const auth = new google.auth.GoogleAuth({
     credentials: {
       type: 'service_account',
       project_id: process.env.GOOGLE_PROJECT_ID,
       private_key_id: process.env.GOOGLE_PRIVATE_KEY_ID,
-      private_key: process.env.GOOGLE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
+      private_key: privateKey,
       client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
       client_id: process.env.GOOGLE_CLIENT_ID,
       auth_uri: 'https://accounts.google.com/o/oauth2/auth',
@@ -34,7 +46,7 @@ async function getSheetData(sheetId, range) {
     
     return response.data.values || [];
   } catch (error) {
-    console.error('Error fetching sheet data:', error);
+    console.error('Error fetching sheet data:', error.message);
     throw error;
   }
 }

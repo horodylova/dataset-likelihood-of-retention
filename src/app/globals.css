@@ -1,0 +1,77 @@
+:root {
+  --kendo-color-primary: #FF5E00;
+  --kendo-color-primary-lighter: #ff7a26;
+  --kendo-color-primary-darker: #e55400;
+  
+  --kendo-color-secondary: #384C9E;
+  --kendo-color-secondary-lighter: #4a5fb8;
+  --kendo-color-secondary-darker: #2a3a84;
+  
+  --kendo-color-base: #EBEAEA;
+  --kendo-color-base-subtle: #f5f5f5;
+  --kendo-color-base-emphasis: #d0d0d0;
+  
+  --kendo-color-on-primary: #ffffff;
+  --kendo-color-on-secondary: #ffffff;
+  --kendo-color-on-base: #333333;
+}
+
+.k-button-solid-primary {
+  background-color: var(--kendo-color-primary);
+  border-color: var(--kendo-color-primary);
+  color: var(--kendo-color-on-primary);
+}
+
+.k-button-solid-primary:hover {
+  background-color: var(--kendo-color-primary-darker);
+  border-color: var(--kendo-color-primary-darker);
+}
+
+.k-button-solid-secondary {
+  background-color: var(--kendo-color-secondary);
+  border-color: var(--kendo-color-secondary);
+  color: var(--kendo-color-on-secondary);
+}
+
+.k-grid-header {
+  background-color: var(--kendo-color-base);
+  color: var(--kendo-color-on-base);
+}
+
+.k-grid .k-table-thead .k-table-th {
+  background-color: var(--kendo-color-base);
+  border-color: var(--kendo-color-base-emphasis);
+}
+
+.k-chart-tooltip {
+  background-color: var(--kendo-color-secondary);
+  color: var(--kendo-color-on-secondary);
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #ffffff;
+  color: #333333;
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+h1, h2, h3 {
+  color: var(--kendo-color-secondary);
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 10px;
+  }
+  
+  .k-grid {
+    font-size: 14px;
+  }
+}

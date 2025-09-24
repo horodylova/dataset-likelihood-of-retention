@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRetention } from '@/contexts/RetentionContext';
 import RawDataTable from './RawDataTable';
+import ResidentsRetentionTable from './ResidentsRetentionTable';
 
 export default function SheetViewer() {
   const [spreadsheetId, setSpreadsheetId] = useState('1k8Az5lkHrT54NZk_L6W4TLVp4GInU_Tmh-rZQhHe3JI');
@@ -57,138 +58,137 @@ export default function SheetViewer() {
 
   return (
     <div style={{ padding: '20px' }}>
-      <h2>Google Sheets Data Viewer</h2>
       
-      <div style={{ marginBottom: '20px' }}>
-        <div style={{ marginBottom: '10px' }}>
-          <label>
-            Spreadsheet ID:
-            <input
-              type="text"
-              value={spreadsheetId}
-              onChange={(e) => setSpreadsheetId(e.target.value)}
-              style={{ marginLeft: '10px', padding: '5px', width: '400px' }}
-            />
-          </label>
+      
+      <div style={{ 
+        backgroundColor: '#f8f9fa',
+        padding: '20px',
+        borderRadius: '8px',
+        marginBottom: '30px',
+        border: '1px solid #dee2e6'
+      }}>
+        <h3 style={{ 
+          margin: '0 0 15px 0',
+          color: '#495057',
+          fontSize: '18px'
+        }}>
+          Data Source Configuration
+        </h3>
+        
+        <div style={{ 
+          display: 'grid', 
+          gridTemplateColumns: window.innerWidth > 768 ? '2fr 1fr auto' : '1fr', 
+          gap: '15px', 
+          alignItems: 'end',
+          maxWidth: '800px'
+        }}> 
+          <div> 
+            <label style={{ 
+              display: 'block', 
+              marginBottom: '5px', 
+              fontWeight: '500', 
+              color: '#495057' 
+            }}> 
+              Google Spreadsheet ID: 
+            </label> 
+            <input 
+              type="text" 
+              value={spreadsheetId} 
+              onChange={(e) => setSpreadsheetId(e.target.value)} 
+              style={{ 
+                width: '100%', 
+                padding: '8px 12px', 
+                border: '1px solid #ced4da', 
+                borderRadius: '4px', 
+                fontSize: '14px' 
+              }} 
+            /> 
+          </div> 
+          
+          <div> 
+            <label style={{ 
+              display: 'block', 
+              marginBottom: '5px', 
+              fontWeight: '500', 
+              color: '#495057' 
+            }}> 
+              Data Range: 
+            </label> 
+            <input 
+              type="text" 
+              value={range} 
+              onChange={(e) => setRange(e.target.value)} 
+              style={{ 
+                width: '100%', 
+                padding: '8px 12px', 
+                border: '1px solid #ced4da', 
+                borderRadius: '4px', 
+                fontSize: '14px' 
+              }} 
+            /> 
+          </div> 
+          
+          <button 
+            onClick={loadData} 
+            disabled={loading} 
+            style={{ 
+              padding: '10px 20px', 
+              backgroundColor: loading ? '#6c757d' : '#1e40af', 
+              color: 'white', 
+              border: 'none', 
+              borderRadius: '4px', 
+              cursor: loading ? 'not-allowed' : 'pointer', 
+              fontSize: '14px', 
+              fontWeight: '500', 
+              minWidth: '120px' 
+            }} 
+          > 
+            {loading ? 'Loading...' : 'Load Data'} 
+          </button> 
         </div>
-        
-        <div style={{ marginBottom: '10px' }}>
-          <label>
-            Range:
-            <input
-              type="text"
-              value={range}
-              onChange={(e) => setRange(e.target.value)}
-              style={{ marginLeft: '10px', padding: '5px', width: '200px' }}
-            />
-          </label>
-        </div>
-        
-        <button
-          onClick={loadData}
-          disabled={loading}
-          style={{
-            padding: '8px 16px',
-            backgroundColor: loading ? '#ccc' : '#007bff',
-            color: 'white',
-            border: 'none',
-            borderRadius: '4px',
-            cursor: loading ? 'not-allowed' : 'pointer',
-            marginRight: '10px'
-          }}
-        >
-          {loading ? 'Loading...' : 'Load Data'}
-        </button>
-        
-        {dataLoaded && (
-          <button
-            onClick={resetData}
-            style={{
-              padding: '8px 16px',
-              backgroundColor: '#dc3545',
-              color: 'white',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: 'pointer'
-            }}
-          >
-            Reset
-          </button>
-        )}
       </div>
-      
+
       {error && (
         <div style={{ 
-          color: 'red', 
+          color: '#721c24', 
           marginBottom: '20px',
-          padding: '10px',
-          backgroundColor: '#ffe6e6',
-          border: '1px solid #ff9999',
-          borderRadius: '4px'
+          padding: '12px 16px',
+          backgroundColor: '#f8d7da',
+          border: '1px solid #f5c6cb',
+          borderRadius: '4px',
+          fontSize: '14px'
         }}>
-          Error: {error}
+          <strong>Error:</strong> {error}
         </div>
       )}
       
       {dataLoaded && (
         <>
-          <div style={{ marginBottom: '20px' }}>
-            <label style={{ marginRight: '20px' }}>
-              <input
-                type="checkbox"
-                checked={filters.showCurrentResidents}
-                onChange={(e) => updateFilters({ showCurrentResidents: e.target.checked })}
-              />
-              Current Residents
-            </label>
-            <label>
-              <input
-                type="checkbox"
-                checked={filters.showFormerResidents}
-                onChange={(e) => updateFilters({ showFormerResidents: e.target.checked })}
-              />
-              Former Residents
-            </label>
+          <div style={{ 
+            marginBottom: '30px'
+          }}>
+            <ResidentsRetentionTable 
+              retentionData={retentionData || {}}
+              filters={filters}
+              updateFilters={updateFilters}
+            />
           </div>
           
-          <div style={{ marginBottom: '20px' }}>
-            <h3>Retention by Year:</h3>
-            {Object.keys(retentionData).length > 0 ? (
-              <table style={{ borderCollapse: 'collapse', width: '100%', maxWidth: '600px' }}>
-                <thead>
-                  <tr>
-                    <th style={{ border: '1px solid #ccc', padding: '8px', backgroundColor: '#f5f5f5' }}>Year</th>
-                    <th style={{ border: '1px solid #ccc', padding: '8px', backgroundColor: '#f5f5f5' }}>Eligible</th>
-                    <th style={{ border: '1px solid #ccc', padding: '8px', backgroundColor: '#f5f5f5' }}>Retained</th>
-                    <th style={{ border: '1px solid #ccc', padding: '8px', backgroundColor: '#f5f5f5' }}>Rate %</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {Object.entries(retentionData).map(([year, data]) => (
-                    <tr key={year}>
-                      <td style={{ border: '1px solid #ccc', padding: '8px' }}>{year}</td>
-                      <td style={{ border: '1px solid #ccc', padding: '8px' }}>{data.eligible}</td>
-                      <td style={{ border: '1px solid #ccc', padding: '8px' }}>{data.retained}</td>
-                      <td style={{ border: '1px solid #ccc', padding: '8px' }}>{data.rate.toFixed(1)}%</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            ) : (
-              <p>No retention data available</p>
-            )}
-          </div>
+          <div style={{ 
           
-          <div style={{ marginBottom: '20px' }}>
+            paddingTop: '20px'
+          }}>
             <button
               onClick={() => setShowRawData(!showRawData)}
               style={{
-                padding: '8px 16px',
+                padding: '10px 20px',
                 backgroundColor: '#28a745',
                 color: 'white',
                 border: 'none',
                 borderRadius: '4px',
-                cursor: 'pointer'
+                cursor: 'pointer',
+                fontSize: '14px',
+                fontWeight: '500'
               }}
             >
               {showRawData ? 'Hide Raw Data' : 'Show Raw Data'}
@@ -196,10 +196,12 @@ export default function SheetViewer() {
           </div>
           
           {showRawData && (
-            <RawDataTable 
-              data={rawData || []} 
-              isVisible={showRawData}
-            />
+            <div style={{ marginTop: '20px' }}>
+              <RawDataTable 
+                data={rawData || []} 
+                isVisible={showRawData}
+              />
+            </div>
           )}
         </>
       )}

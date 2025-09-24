@@ -118,3 +118,46 @@ export function getChartData(retentionData) {
       retained: data.retained
     }));
 }
+
+export function calculateRetentionByFilter(processedData, filterColumn, filterValue) {
+  const retentionByYear = {};
+  const maxYears = 10;
+  
+  for (let year = 1; year <= maxYears; year++) {
+    retentionByYear[`Year ${year}`] = {
+      eligible: 0,
+      retained: 0,
+      rate: 0
+    };
+  }
+  
+  const filteredData = processedData.filter(resident => {
+    if (!resident[filterColumn]) return false;
+    const columnValue = resident[filterColumn].toString().toLowerCase();
+    const searchValue = filterValue.toString().toLowerCase();
+    return columnValue.includes(searchValue);
+  });
+  
+  filteredData.forEach(resident => {
+    if (!resident.moveInDate) return;
+    
+    const yearsLived = calculateYearsLived(resident.moveInDate, resident.moveOutDate);
+    
+    for (let year = 1; year <= maxYears; year++) {
+      if (yearsLived >= year) {
+        retentionByYear[`Year ${year}`].eligible++;
+        
+        if (yearsLived >= year + 1) {
+          retentionByYear[`Year ${year}`].retained++;
+        }
+      }
+    }
+  });
+  
+  Object.keys(retentionByYear).forEach(year => {
+    const data = retentionByYear[year];
+    data.rate = data.eligible > 0 ? Math.round((data.retained / data.eligible) * 100 * 100) / 100 : 0;
+  });
+  
+  return retentionByYear;
+}

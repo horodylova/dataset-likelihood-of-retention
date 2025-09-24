@@ -10,14 +10,24 @@ export default function SheetViewer() {
   const [range, setRange] = useState('EXPORT API');
   const [error, setError] = useState(null);
   const [showRawData, setShowRawData] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(false);
   
   const { state, dispatch } = useRetention();
   const { loading, processedData, retentionData, chartData, dataLoaded, filters, rawData } = state;
 
   useEffect(() => {
     document.body.classList.add('data-page');
+    
+    const handleResize = () => {
+      setIsDesktop(window.innerWidth > 768);
+    };
+    
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    
     return () => {
       document.body.classList.remove('data-page');
+      window.removeEventListener('resize', handleResize);
     };
   }, []);
 
@@ -77,7 +87,7 @@ export default function SheetViewer() {
         
         <div style={{ 
           display: 'grid', 
-          gridTemplateColumns: window.innerWidth > 768 ? '2fr 1fr auto' : '1fr', 
+          gridTemplateColumns: isDesktop ? '2fr 1fr auto' : '1fr', 
           gap: '15px', 
           alignItems: 'end',
           maxWidth: '800px'
@@ -175,7 +185,7 @@ export default function SheetViewer() {
           </div>
           
           <div style={{ 
-          
+            borderTop: '1px solid #dee2e6',
             paddingTop: '20px'
           }}>
             <button

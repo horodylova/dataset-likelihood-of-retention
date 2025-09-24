@@ -97,6 +97,10 @@ html, body {
   overflow: hidden;  
 }
 
+body.data-page {
+  overflow: auto;
+}
+
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background-color: #ffffff;

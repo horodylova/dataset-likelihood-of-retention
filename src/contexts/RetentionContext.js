@@ -29,33 +29,52 @@ function retentionReducer(state, action) {
       };
       
     case 'SET_DATA':
-      const processed = processRawData(action.payload);
-      const retention = calculateRetentionByYear(processed);
-      const chart = getChartData(retention);
-      
-      return {
-        ...state,
-        rawData: action.payload,
-        processedData: processed,
-        filteredData: processed,
-        retentionData: retention,
-        chartData: chart,
-        dataLoaded: true,
-        loading: false
-      };
+      try {
+        const processed = processRawData(action.payload);
+        const retention = calculateRetentionByYear(processed);
+        const chart = getChartData(retention);
+        
+        return {
+          ...state,
+          rawData: action.payload,
+          processedData: processed,
+          filteredData: processed,
+          retentionData: retention,
+          chartData: chart,
+          dataLoaded: true,
+          loading: false
+        };
+      } catch (error) {
+        console.error('Error processing data:', error);
+        return {
+          ...state,
+          rawData: action.payload,
+          processedData: [],
+          filteredData: [],
+          retentionData: {},
+          chartData: [],
+          dataLoaded: true,
+          loading: false
+        };
+      }
       
     case 'APPLY_FILTERS':
-      const filtered = applyFilters(state.processedData, action.payload);
-      const filteredRetention = calculateRetentionByYear(filtered);
-      const filteredChart = getChartData(filteredRetention);
-      
-      return {
-        ...state,
-        filters: action.payload,
-        filteredData: filtered,
-        retentionData: filteredRetention,
-        chartData: filteredChart
-      };
+      try {
+        const filtered = applyFilters(state.processedData, action.payload);
+        const filteredRetention = calculateRetentionByYear(filtered);
+        const filteredChart = getChartData(filteredRetention);
+        
+        return {
+          ...state,
+          filteredData: filtered,
+          retentionData: filteredRetention,
+          chartData: filteredChart,
+          filters: action.payload
+        };
+      } catch (error) {
+        console.error('Error applying filters:', error);
+        return state;
+      }
       
     default:
       return state;
@@ -63,26 +82,18 @@ function retentionReducer(state, action) {
 }
 
 function applyFilters(data, filters) {
+  if (!data || data.length === 0) return [];
+  
   return data.filter(item => {
-    if (!filters.showCurrentResidents && item.isCurrentResident) {
-      return false;
-    }
-    if (!filters.showFormerResidents && !item.isCurrentResident) {
-      return false;
-    }
-    if (filters.yearRange.start && item.moveInDate.getFullYear() < filters.yearRange.start) {
-      return false;
-    }
-    if (filters.yearRange.end && item.moveInDate.getFullYear() > filters.yearRange.end) {
-      return false;
-    }
+    if (!filters.showCurrentResidents && item.isCurrentResident) return false;
+    if (!filters.showFormerResidents && !item.isCurrentResident) return false;
     return true;
   });
 }
 
 export function RetentionProvider({ children }) {
   const [state, dispatch] = useReducer(retentionReducer, initialState);
-
+  
   return (
     <RetentionContext.Provider value={{ state, dispatch }}>
       {children}
@@ -93,7 +104,7 @@ export function RetentionProvider({ children }) {
 export function useRetention() {
   const context = useContext(RetentionContext);
   if (!context) {
-    throw new Error('useRetention must be used within RetentionProvider');
+    throw new Error('useRetention must be used within a RetentionProvider');
   }
   return context;
 }

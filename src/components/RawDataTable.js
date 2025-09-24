@@ -5,17 +5,18 @@ export default function RawDataTable({ data, isVisible }) {
     return null;
   }
 
-  const headers = data.length > 0 ? Object.keys(data[0]) : [];
+  const headers = data[0] || [];
+  const rows = data.slice(1);
 
   return (
     <div style={{ marginTop: '30px' }}>
-      <h3>Raw Data ({data.length} records):</h3>
+      <h3>Raw Data ({rows.length} records):</h3>
       <div style={{ overflowX: 'auto', maxHeight: '400px', border: '1px solid #ccc' }}>
         <table style={{ borderCollapse: 'collapse', width: '100%', minWidth: '600px' }}>
           <thead style={{ position: 'sticky', top: 0, backgroundColor: '#f5f5f5' }}>
             <tr>
-              {headers.map(header => (
-                <th key={header} style={{ 
+              {headers.map((header, index) => (
+                <th key={index} style={{ 
                   border: '1px solid #ccc', 
                   padding: '8px', 
                   textAlign: 'left',
@@ -27,15 +28,15 @@ export default function RawDataTable({ data, isVisible }) {
             </tr>
           </thead>
           <tbody>
-            {data.map((row, index) => (
-              <tr key={index} style={{ backgroundColor: index % 2 === 0 ? '#fff' : '#f9f9f9' }}>
-                {headers.map(header => (
-                  <td key={header} style={{ 
+            {rows.map((row, rowIndex) => (
+              <tr key={rowIndex} style={{ backgroundColor: rowIndex % 2 === 0 ? '#fff' : '#f9f9f9' }}>
+                {headers.map((header, colIndex) => (
+                  <td key={colIndex} style={{ 
                     border: '1px solid #ccc', 
                     padding: '8px',
                     whiteSpace: 'nowrap'
                   }}>
-                    {row[header] || ''}
+                    {row[colIndex] || ''}
                   </td>
                 ))}
               </tr>

@@ -2,67 +2,12 @@
 
 import { Splitter, SplitterPane } from '@progress/kendo-react-layout';
 import { PanelBar, PanelBarItem } from '@progress/kendo-react-layout';
-import { useState, useEffect } from 'react';
 import DisabilitiesSection from '../components/DisabilitiesSection';
 import VariablesSection from '../components/VariablesSection';
 import OutputsSection from '../components/OutputsSection';
+import Link from 'next/link';
 
 export default function Home() {
-  const [filters, setFilters] = useState({
-    disabilities: {
-      visual: false,
-      hearing: false,
-      alzheimer: false,
-      hiv: false,
-      physical: false,
-      mental: false,
-      mobility: false,
-      alcohol: false,
-      substance: false
-    },
-    variables: {
-      incomeSource: [],
-      sex: '',
-      veteran: false,
-      fosterCare: false,
-      disabilityCount: ''
-    }
-  });
-
-  const [sheetData, setSheetData] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetchSheetData();
-  }, []);
-
-  const fetchSheetData = async () => {
-    try {
-      setLoading(true);
-      const response = await fetch('/api/sheets');
-      const data = await response.json();
-      
-      if (data.values && data.values.length > 0) {
-        const headers = data.values[0];
-        const rows = data.values.slice(1).map(row => {
-          const obj = {};
-          headers.forEach((header, index) => {
-            obj[header] = row[index] || '';
-          });
-          return obj;
-        });
-        setSheetData(rows);
-      }
-    } catch (error) {
-      console.error('Error fetching sheet data:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const retentionData = [];
-  const chartData = [];
-
   return (
     <div style={{
       height: '100vh',
@@ -72,12 +17,31 @@ export default function Home() {
       overflow: 'hidden',
       boxSizing: 'border-box'
     }}>
-      <h1 style={{ 
+      <div style={{ 
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
         margin: '0 0 20px 0',
         flexShrink: 0
       }}>
-        Tenant Retention Analysis
-      </h1>
+        <h1 style={{ margin: 0 }}>
+          Tenant Retention Analysis
+        </h1>
+        <Link 
+          href="/analytics" 
+          style={{
+            padding: '10px 20px',
+            backgroundColor: '#007acc',
+            color: 'white',
+            textDecoration: 'none',
+            borderRadius: '6px',
+            fontSize: '14px',
+            fontWeight: '500'
+          }}
+        >
+          View Analytics
+        </Link>
+      </div>
       
       <Splitter 
         style={{
@@ -86,9 +50,9 @@ export default function Home() {
         }}
         panes={[
           {
-            size: '320px',      // фиксированный размер в пикселях вместо процентов
-            min: '0px',         // можно свернуть до 0
-            max: '500px',       // максимальный размер
+            size: '320px',
+            min: '0px',
+            max: '500px',
             collapsible: true,
             resizable: true
           }
@@ -119,11 +83,7 @@ export default function Home() {
         </SplitterPane>
         
         <SplitterPane>
-          <OutputsSection
-            loading={loading}
-            retentionData={retentionData}
-            chartData={chartData}
-          />
+          <OutputsSection />
         </SplitterPane>
       </Splitter>
     </div>

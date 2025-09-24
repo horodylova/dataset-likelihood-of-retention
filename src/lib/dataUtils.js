@@ -40,11 +40,11 @@ export function processRawData(rawData) {
   if (!rawData || rawData.length === 0) return [];
   
   const headers = rawData[0];
-  const moveInIndex = headers.findIndex(h => h && h.toLowerCase().includes('move-in'));
-  const moveOutIndex = headers.findIndex(h => h && h.toLowerCase().includes('move-out'));
+  const moveInIndex = headers.findIndex(h => h === 'Move-In Date');
+  const moveOutIndex = headers.findIndex(h => h === 'Move-Out Date');
   
   if (moveInIndex === -1) {
-    throw new Error('Move-in date column not found. Available columns: ' + headers.join(', '));
+    return [];
   }
   
   return rawData.slice(1).map((row, index) => {
@@ -74,47 +74,39 @@ export function calculateYearsLived(moveInDate, moveOutDate = null) {
 }
 
 export function calculateRetentionByYear(processedData) {
-  const retentionByYear = {};
-  const maxYears = 10;
+  if (!processedData || processedData.length === 0) return {};
   
-  for (let year = 1; year <= maxYears; year++) {
+  const retentionByYear = {};
+  
+  for (let year = 1; year <= 10; year++) {
+    const eligible = processedData.filter(resident => {
+      const yearsLived = calculateYearsLived(resident.moveInDate, resident.moveOutDate);
+      return yearsLived >= year;
+    });
+    
+    const retained = eligible.filter(resident => {
+      if (resident.isCurrentResident) {
+        const yearsLived = calculateYearsLived(resident.moveInDate);
+        return yearsLived >= year;
+      } else {
+        const yearsLived = calculateYearsLived(resident.moveInDate, resident.moveOutDate);
+        return yearsLived >= year;
+      }
+    });
+    
     retentionByYear[`Year ${year}`] = {
-      eligible: 0,
-      retained: 0,
-      rate: 0
+      eligible: eligible.length,
+      retained: retained.length,
+      rate: eligible.length > 0 ? (retained.length / eligible.length) * 100 : 0
     };
   }
-  
-  processedData.forEach(resident => {
-    if (!resident.moveInDate) return;
-    
-    const yearsLived = calculateYearsLived(resident.moveInDate, resident.moveOutDate);
-    
-    for (let year = 1; year <= maxYears; year++) {
-      if (yearsLived >= year) {
-        retentionByYear[`Year ${year}`].eligible++;
-        
-        if (yearsLived >= year + 1) {
-          retentionByYear[`Year ${year}`].retained++;
-        }
-      }
-    }
-  });
-  
-  Object.keys(retentionByYear).forEach(year => {
-    const data = retentionByYear[year];
-    data.rate = data.eligible > 0 ? Math.round((data.retained / data.eligible) * 100 * 100) / 100 : 0;
-  });
   
   return retentionByYear;
 }
 
 export function getChartData(retentionData) {
-  return Object.entries(retentionData)
-    .map(([year, data]) => ({
-      year: year,
-      rate: data.rate,
-      eligible: data.eligible,
-      retained: data.retained
-    }));
+  return Object.entries(retentionData).map(([year, data]) => ({
+    year,
+    rate: data.rate
+  }));
 }

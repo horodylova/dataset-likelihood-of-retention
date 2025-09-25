@@ -55,20 +55,7 @@ export default function OutputsSection({ loading, retentionData, chartData }) {
             }}
             scrollable={true}
           >
-            <GridColumn 
-              field="population" 
-              title="Population" 
-              headerClassName={selectedColumn === 'population' ? 'selected-column' : ''}
-              className={selectedColumn === 'population' ? 'selected-column' : ''}
-              onHeaderClick={() => handleColumnClick('population')}
-            />
-            <GridColumn 
-              field="count" 
-              title="Count" 
-              headerClassName={selectedColumn === 'count' ? 'selected-column' : ''}
-              className={selectedColumn === 'count' ? 'selected-column' : ''}
-              onHeaderClick={() => handleColumnClick('count')}
-            />
+           
             <GridColumn 
               field="year1" 
               title="Year 1" 

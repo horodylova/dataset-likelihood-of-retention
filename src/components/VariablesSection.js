@@ -1,6 +1,6 @@
 'use client'
 
-import { Checkbox, RadioButton } from '@progress/kendo-react-inputs';
+import { Checkbox } from '@progress/kendo-react-inputs';
 import FilterCard from './FilterCard';
 
 export default function VariablesSection() {
@@ -29,7 +29,7 @@ export default function VariablesSection() {
         </div>
       </FilterCard>
       
-      <FilterCard title="Sex">
+      <FilterCard title="Gender">
         <div style={{ display: 'flex', gap: '15px' }}>
           <Checkbox label="Female" />
           <Checkbox label="Male" />
@@ -38,22 +38,22 @@ export default function VariablesSection() {
       
       <FilterCard title="Veteran">
         <div style={{ display: 'flex', gap: '15px' }}>
-          <RadioButton name="veteran" label="Yes" />
-          <RadioButton name="veteran" label="No" defaultChecked={true} />
+          <Checkbox label="Yes" />
+          <Checkbox label="No" />
         </div>
       </FilterCard>
       
       <FilterCard title="Foster Care">
         <div style={{ display: 'flex', gap: '15px' }}>
-          <RadioButton name="fosterCare" label="Yes" />
-          <RadioButton name="fosterCare" label="No" defaultChecked={true} />
+          <Checkbox label="Yes" />
+          <Checkbox label="No" />
         </div>
       </FilterCard>
       
       <FilterCard title="Disability Count">
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(100px, 1fr))',
+          gridTemplateColumns: 'repeat(auto-fit, minWidth(100px, 1fr))',
           gap: '10px',
           alignItems: 'center'
         }}>

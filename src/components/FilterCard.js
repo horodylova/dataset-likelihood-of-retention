@@ -1,5 +1,7 @@
 'use client'
 
+import { Checkbox } from '@progress/kendo-react-inputs';
+
 export default function FilterCard({ title, children, style = {} }) {
   return (
     <div 
@@ -21,15 +23,21 @@ export default function FilterCard({ title, children, style = {} }) {
       }}
     >
       {title && (
-        <label style={{ 
-          fontWeight: 'bold', 
-          color: '#384C9E', 
-          fontSize: '14px', 
-          marginBottom: '8px', 
-          display: 'block' 
+        <div style={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          marginBottom: '8px' 
         }}>
-          {title}
-        </label>
+          <Checkbox />
+          <label style={{ 
+            fontWeight: 'bold', 
+            color: '#384C9E', 
+            fontSize: '14px', 
+            marginLeft: '8px'
+          }}>
+            {title}
+          </label>
+        </div>
       )}
       {children}
     </div>

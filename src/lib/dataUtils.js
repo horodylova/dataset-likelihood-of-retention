@@ -10,26 +10,34 @@ export function parseDate(dateValue) {
   if (typeof dateValue === 'string') {
     const cleanDate = dateValue.trim();
     
-    const formats = [
-      /^\d{4}-\d{2}-\d{2}$/,
-      /^\d{2}\/\d{2}\/\d{4}$/,
-      /^\d{1,2}\/\d{1,2}\/\d{4}$/,
-      /^\d{2}-\d{2}-\d{4}$/,
-      /^\d{1,2}-\d{1,2}-\d{4}$/
-    ];
+    if (cleanDate === '' || cleanDate.toLowerCase() === 'n/a') {
+      return null;
+    }
     
-    for (const format of formats) {
-      if (format.test(cleanDate)) {
-        const parsed = new Date(cleanDate);
-        if (!isNaN(parsed.getTime())) {
-          return parsed;
-        }
+    const mmddyyyyPattern = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/;
+    const match = cleanDate.match(mmddyyyyPattern);
+    
+    if (match) {
+      const month = parseInt(match[1], 10) - 1;
+      const day = parseInt(match[2], 10);
+      const year = parseInt(match[3], 10);
+      
+      const date = new Date(year, month, day);
+      if (!isNaN(date.getTime())) {
+        return date;
       }
     }
     
     const parsed = new Date(cleanDate);
     if (!isNaN(parsed.getTime())) {
       return parsed;
+    }
+  }
+  
+  if (typeof dateValue === 'number') {
+    const date = new Date(dateValue);
+    if (!isNaN(date.getTime())) {
+      return date;
     }
   }
   
@@ -47,7 +55,7 @@ export function processRawData(rawData) {
     throw new Error('Move-in date column not found. Available columns: ' + headers.join(', '));
   }
   
-  return rawData.slice(1).map((row, index) => {
+  const processed = rawData.slice(1).map((row, index) => {
     const moveInRaw = row[moveInIndex];
     const moveOutRaw = moveOutIndex !== -1 ? row[moveOutIndex] : null;
     
@@ -63,7 +71,12 @@ export function processRawData(rawData) {
       moveOutRaw,
       isCurrentResident: !moveOutDate
     };
-  }).filter(item => item.moveInDate);
+  });
+  
+  const withValidMoveIn = processed.filter(item => item.moveInDate);
+  console.log(`Total: ${rawData.length - 1}, Valid: ${withValidMoveIn.length}, Lost: ${processed.length - withValidMoveIn.length}`);
+  
+  return withValidMoveIn;
 }
 
 export function calculateYearsLived(moveInDate, moveOutDate = null) {
@@ -86,8 +99,6 @@ export function calculateRetentionByYear(processedData) {
   }
   
   processedData.forEach(resident => {
-    if (!resident.moveInDate) return;
-    
     const yearsLived = calculateYearsLived(resident.moveInDate, resident.moveOutDate);
     
     for (let year = 1; year <= maxYears; year++) {

@@ -2,7 +2,6 @@
 
 import { createContext, useContext, useReducer } from 'react';
 import { processRawData, calculateRetentionByYear, getChartData } from '@/lib/dataUtils';
-import { calculateRetentionByGender } from '@/lib/genderUtils';
 
 const RetentionContext = createContext();
 
@@ -11,16 +10,12 @@ const initialState = {
   processedData: [],
   filteredData: [],
   retentionData: {},
-  genderRetentionData: {},
   chartData: [],
   loading: false,
   dataLoaded: false,
   filters: {
-    yearRange: { start: null, end: null },
     showCurrentResidents: true,
-    showFormerResidents: true,
-    showMale: false,
-    showFemale: false
+    showFormerResidents: true
   }
 };
 
@@ -31,13 +26,12 @@ function retentionReducer(state, action) {
         ...state,
         loading: action.payload
       };
-      
+           
     case 'SET_DATA':
       try {
         const processed = processRawData(action.payload);
         const retention = calculateRetentionByYear(processed);
         const chart = getChartData(retention);
-        const genderRetention = calculateRetentionByGender(processed);
         
         return {
           ...state,
@@ -45,7 +39,6 @@ function retentionReducer(state, action) {
           processedData: processed,
           filteredData: processed,
           retentionData: retention,
-          genderRetentionData: genderRetention,
           chartData: chart,
           dataLoaded: true,
           loading: false
@@ -58,25 +51,22 @@ function retentionReducer(state, action) {
           processedData: [],
           filteredData: [],
           retentionData: {},
-          genderRetentionData: {},
           chartData: [],
           dataLoaded: true,
           loading: false
         };
       }
-      
+           
     case 'APPLY_FILTERS':
       try {
         const filtered = applyFilters(state.processedData, action.payload);
         const filteredRetention = calculateRetentionByYear(filtered);
         const filteredChart = getChartData(filteredRetention);
-        const filteredGenderRetention = calculateRetentionByGender(filtered);
         
         return {
           ...state,
           filteredData: filtered,
           retentionData: filteredRetention,
-          genderRetentionData: filteredGenderRetention,
           chartData: filteredChart,
           filters: action.payload
         };
@@ -84,7 +74,7 @@ function retentionReducer(state, action) {
         console.error('Error applying filters:', error);
         return state;
       }
-      
+           
     default:
       return state;
   }

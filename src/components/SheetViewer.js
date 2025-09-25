@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRetention } from '@/contexts/RetentionContext';
 import RawDataTable from './RawDataTable';
 import ResidentsRetentionTable from './ResidentsRetentionTable';
+import GenderRetentionTable from './GenderRetentionTable';
 
 export default function SheetViewer() {
   const [spreadsheetId, setSpreadsheetId] = useState('1k8Az5lkHrT54NZk_L6W4TLVp4GInU_Tmh-rZQhHe3JI');
@@ -175,13 +176,25 @@ export default function SheetViewer() {
       {dataLoaded && (
         <>
           <div style={{ 
-            marginBottom: '30px'
+            display: 'flex', 
+            gap: '30px', 
+            marginBottom: '30px',
+            flexWrap: 'wrap'
           }}>
-            <ResidentsRetentionTable 
-              retentionData={retentionData || {}}
-              filters={filters}
-              updateFilters={updateFilters}
-            />
+            <div style={{ flex: '1', minWidth: '400px' }}>
+              <ResidentsRetentionTable 
+                retentionData={retentionData || {}}
+                filters={filters}
+                updateFilters={updateFilters}
+              />
+            </div>
+
+            <div style={{ flex: '1', minWidth: '400px' }}>
+              <GenderRetentionTable 
+                processedData={processedData} 
+                filters={filters}
+              />
+            </div>
           </div>
           
           <div style={{ 

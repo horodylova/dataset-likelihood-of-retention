@@ -1,16 +1,17 @@
 'use client';
 
-export default function RawDataTable({ data, isVisible }) {
+export default function RawDataTable({ data, isVisible, validCount }) {
   if (!isVisible || !data || data.length === 0) {
     return null;
   }
 
   const headers = data[0] || [];
   const rows = data.slice(1);
+  const totalRecords = rows.length;
 
   return (
     <div style={{ marginTop: '30px' }}>
-      <h3>Raw Data ({rows.length} records):</h3>
+      <h3>Raw Data: {totalRecords} records, {validCount} valid</h3>
       <div style={{ overflowX: 'auto', maxHeight: '400px', border: '1px solid #ccc' }}>
         <table style={{ borderCollapse: 'collapse', width: '100%', minWidth: '600px' }}>
           <thead style={{ position: 'sticky', top: 0, backgroundColor: '#f5f5f5' }}>

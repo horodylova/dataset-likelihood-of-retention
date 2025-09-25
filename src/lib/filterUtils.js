@@ -15,24 +15,38 @@ export function calculateRetentionByFilter(processedData, rawData, filterColumn,
     return createEmptyRetentionData();
   }
 
+  const dataWithValidFilter = processedData.filter(resident => {
+    const cellValue = resident.rawData[filterColumnIndex];
+    return cellValue && cellValue !== '';
+  });
+
   if (!filterValues) {
-    filterValues = getUniqueFilterValues(processedData, filterColumnIndex);
+    if (filterColumn.toLowerCase() === 'gender') {
+      filterValues = ['Male', 'Female'];
+    } else {
+      filterValues = getUniqueFilterValues(dataWithValidFilter, filterColumnIndex);
+    }
   }
 
   const retentionData = {};
-  const matchedResidentIds = new Set();
-  
+
   filterValues.forEach(value => {
     retentionData[value] = createEmptyRetentionData();
   });
 
   retentionData.combined = createEmptyRetentionData();
 
+  const validGenderData = dataWithValidFilter.filter(resident => {
+    const cellValue = resident.rawData[filterColumnIndex];
+    if (filterColumn.toLowerCase() === 'gender') {
+      return cellValue === 'Male' || cellValue === 'Female';
+    }
+    return true;
+  });
+
   filterValues.forEach(filterValue => {
-    const filteredData = processedData.filter(resident => {
+    const filteredData = validGenderData.filter(resident => {
       const cellValue = resident.rawData[filterColumnIndex];
-      if (!cellValue || cellValue === '') return false;
-      
       const normalizedCellValue = cellValue.toString().toLowerCase().trim();
       const normalizedFilterValue = filterValue.toString().toLowerCase().trim();
       
@@ -40,17 +54,9 @@ export function calculateRetentionByFilter(processedData, rawData, filterColumn,
     });
 
     calculateRetentionForData(filteredData, retentionData[filterValue]);
-    
-    filteredData.forEach(resident => {
-      matchedResidentIds.add(resident.id);
-    });
   });
 
-  const allMatchedData = processedData.filter(resident => 
-    matchedResidentIds.has(resident.id)
-  );
-
-  calculateRetentionForData(allMatchedData, retentionData.combined);
+  calculateRetentionForData(validGenderData, retentionData.combined);
 
   return retentionData;
 }

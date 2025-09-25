@@ -223,6 +223,7 @@ export default function SheetViewer() {
               <RawDataTable 
                 data={rawData || []} 
                 isVisible={showRawData}
+                validCount={processedData ? processedData.length : 0}
               />
             </div>
           )}

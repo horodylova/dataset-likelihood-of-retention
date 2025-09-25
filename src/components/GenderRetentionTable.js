@@ -25,11 +25,11 @@ export default function GenderRetentionTable({ processedData, filters }) {
     }
     
     const genderRetentionData = calculateRetentionByGender(processedData, rawData);
-    
+     
     if (showMale && !showFemale) {
-      return genderRetentionData.male || {};
+      return genderRetentionData.Male || {};
     } else if (showFemale && !showMale) {
-      return genderRetentionData.female || {};
+      return genderRetentionData.Female || {};
     } else if (showMale && showFemale) {
       return genderRetentionData.combined || {};
     }
@@ -88,30 +88,26 @@ export default function GenderRetentionTable({ processedData, filters }) {
         </button>
       </div>
       
-      {Object.keys(genderData).length > 0 ? (
-        <table style={{ borderCollapse: 'collapse', width: '100%', maxWidth: '600px' }}>
-          <thead>
-            <tr>
-              <th style={{ border: '1px solid #ccc', padding: '8px', backgroundColor: '#f5f5f5' }}>Year</th>
-              <th style={{ border: '1px solid #ccc', padding: '8px', backgroundColor: '#f5f5f5' }}>Eligible</th>
-              <th style={{ border: '1px solid #ccc', padding: '8px', backgroundColor: '#f5f5f5' }}>Retained</th>
-              <th style={{ border: '1px solid #ccc', padding: '8px', backgroundColor: '#f5f5f5' }}>Rate %</th>
+      <table style={{ borderCollapse: 'collapse', width: '100%', maxWidth: '600px' }}>
+        <thead>
+          <tr>
+            <th style={{ border: '1px solid #ccc', padding: '8px', backgroundColor: '#f5f5f5' }}>Year</th>
+            <th style={{ border: '1px solid #ccc', padding: '8px', backgroundColor: '#f5f5f5' }}>Eligible</th>
+            <th style={{ border: '1px solid #ccc', padding: '8px', backgroundColor: '#f5f5f5' }}>Retained</th>
+            <th style={{ border: '1px solid #ccc', padding: '8px', backgroundColor: '#f5f5f5' }}>Rate %</th>
+          </tr>
+        </thead>
+        <tbody>
+          {Object.entries(genderData).map(([year, data]) => (
+            <tr key={year}>
+              <td style={{ border: '1px solid #ccc', padding: '8px' }}>{year}</td>
+              <td style={{ border: '1px solid #ccc', padding: '8px' }}>{data.eligible}</td>
+              <td style={{ border: '1px solid #ccc', padding: '8px' }}>{data.retained}</td>
+              <td style={{ border: '1px solid #ccc', padding: '8px' }}>{data.rate.toFixed(1)}%</td>
             </tr>
-          </thead>
-          <tbody>
-            {Object.entries(genderData).map(([year, data]) => (
-              <tr key={year}>
-                <td style={{ border: '1px solid #ccc', padding: '8px' }}>{year}</td>
-                <td style={{ border: '1px solid #ccc', padding: '8px' }}>{data.eligible}</td>
-                <td style={{ border: '1px solid #ccc', padding: '8px' }}>{data.retained}</td>
-                <td style={{ border: '1px solid #ccc', padding: '8px' }}>{data.rate.toFixed(1)}%</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      ) : (
-        <p>No gender data available</p>
-      )}
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 }

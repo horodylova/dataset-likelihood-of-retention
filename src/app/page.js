@@ -2,7 +2,7 @@
 
 import { Splitter, SplitterPane } from '@progress/kendo-react-layout';
 import { PanelBar, PanelBarItem } from '@progress/kendo-react-layout';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRetention } from '@/contexts/RetentionContext';
 import DisabilitiesSection from '../components/DisabilitiesSection';
 import VariablesSection from '../components/VariablesSection';
@@ -45,7 +45,7 @@ export default function Home() {
     loadData();
   }, [dispatch, dataLoaded]);
 
-  const addGenderFilter = (genderType, genderData) => {
+  const addGenderFilter = useCallback((genderType, genderData) => {
     console.log('addGenderFilter called:', genderType, genderData);
     
     const filterName = genderType === 'combined' ? 'Gender: Total' : 
@@ -80,7 +80,7 @@ export default function Home() {
         return newData;
       }
     });
-  };
+  }, []);
 
   console.log('Current outputData:', outputData);
 

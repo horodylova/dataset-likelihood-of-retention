@@ -1,7 +1,7 @@
 'use client'
 
 import { Checkbox } from '@progress/kendo-react-inputs';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRetention } from '@/contexts/RetentionContext';
 import { calculateRetentionByGender } from '@/lib/filterUtils';
 import FilterCard from './FilterCard';
@@ -16,31 +16,35 @@ export default function VariablesSection({ onGenderFilterChange }) {
   const { state } = useRetention();
   const { processedData, rawData } = state;
 
- 
-  useEffect(() => {
-     
-    if (!processedData || !rawData || !onGenderFilterChange) return;
-
-    const genderData = calculateRetentionByGender(processedData, rawData);
-     
-    if (genderFilters.genderTotal) {
-       onGenderFilterChange('combined', genderData.combined);
-    }
-    if (genderFilters.male) {
-       onGenderFilterChange('Male', genderData.Male);
-    }
-    if (genderFilters.female) {
-     
-      onGenderFilterChange('Female', genderData.Female);
-    }
-  }, [genderFilters, processedData, rawData, onGenderFilterChange]);
-
-  const handleGenderFilterChange = (filterType, checked) => {
-     setGenderFilters(prev => ({
+  const handleGenderFilterChange = useCallback((filterType, checked) => {
+    console.log('handleGenderFilterChange:', filterType, checked);
+    setGenderFilters(prev => ({
       ...prev,
       [filterType]: checked
     }));
-  };
+  }, []);
+
+  useEffect(() => {
+    console.log('useEffect triggered:', { processedData: !!processedData, rawData: !!rawData, genderFilters });
+    
+    if (!processedData || !rawData || !onGenderFilterChange) return;
+
+    const genderData = calculateRetentionByGender(processedData, rawData);
+    console.log('Gender data calculated:', genderData);
+    
+    if (genderFilters.genderTotal) {
+      console.log('Calling onGenderFilterChange for combined');
+      onGenderFilterChange('combined', genderData.combined);
+    }
+    if (genderFilters.male) {
+      console.log('Calling onGenderFilterChange for Male');
+      onGenderFilterChange('Male', genderData.Male);
+    }
+    if (genderFilters.female) {
+      console.log('Calling onGenderFilterChange for Female');
+      onGenderFilterChange('Female', genderData.Female);
+    }
+  }, [genderFilters, processedData, rawData]);
 
   return (
     <div style={{
@@ -83,7 +87,7 @@ export default function VariablesSection({ onGenderFilterChange }) {
         }}>
           <Checkbox 
             checked={genderFilters.genderTotal}
-            onChange={(e) => handleGenderFilterChange('genderTotal', e.target.checked)}
+            onChange={(e) => handleGenderFilterChange('genderTotal', e.value)}
           />
           <label style={{ 
             fontWeight: 'bold', 
@@ -98,12 +102,12 @@ export default function VariablesSection({ onGenderFilterChange }) {
           <Checkbox 
             label="Female" 
             checked={genderFilters.female}
-            onChange={(e) => handleGenderFilterChange('female', e.target.checked)}
+            onChange={(e) => handleGenderFilterChange('female', e.value)}
           />
           <Checkbox 
             label="Male" 
             checked={genderFilters.male}
-            onChange={(e) => handleGenderFilterChange('male', e.target.checked)}
+            onChange={(e) => handleGenderFilterChange('male', e.value)}
           />
         </div>
       </div>

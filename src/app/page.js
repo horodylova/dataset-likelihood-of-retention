@@ -82,6 +82,43 @@ export default function Home() {
     });
   }, []);
 
+  const addVeteranFilter = useCallback((veteranType, veteranData) => {
+    console.log('addVeteranFilter called:', veteranType, veteranData);
+    
+    const filterName = veteranType === 'combined' ? 'Veteran: Total' : 
+                      veteranType === 'Yes' ? 'Veteran: Да' : 'Veteran: Нет';
+    
+    const newRow = {
+      filter: filterName,
+      year1: veteranData['Year 1']?.rate || 0,
+      year2: veteranData['Year 2']?.rate || 0,
+      year3: veteranData['Year 3']?.rate || 0,
+      year4: veteranData['Year 4']?.rate || 0,
+      year5: veteranData['Year 5']?.rate || 0,
+      year6: veteranData['Year 6']?.rate || 0,
+      year7: veteranData['Year 7']?.rate || 0,
+      year8: veteranData['Year 8']?.rate || 0,
+      year9: veteranData['Year 9']?.rate || 0,
+      year10: veteranData['Year 10']?.rate || 0
+    };
+
+    console.log('New veteran row:', newRow);
+
+    setOutputData(prevData => {
+      const existingIndex = prevData.findIndex(row => row.filter === filterName);
+      if (existingIndex >= 0) {
+        const updatedData = [...prevData];
+        updatedData[existingIndex] = newRow;
+        console.log('Updated existing veteran row:', updatedData);
+        return updatedData;
+      } else {
+        const newData = [...prevData, newRow];
+        console.log('Added new veteran row:', newData);
+        return newData;
+      }
+    });
+  }, []);
+
   console.log('Current outputData:', outputData);
 
   return (
@@ -135,7 +172,10 @@ export default function Home() {
             }}>
               <PanelBar>
                 <PanelBarItem title="Variables" expanded={true}>
-                  <VariablesSection onGenderFilterChange={addGenderFilter} />
+                  <VariablesSection 
+                    onGenderFilterChange={addGenderFilter}
+                    onVeteranFilterChange={addVeteranFilter}
+                  />
                 </PanelBarItem>
                 <PanelBarItem title="Disabilities">
                   <DisabilitiesSection />

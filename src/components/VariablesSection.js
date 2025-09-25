@@ -3,14 +3,20 @@
 import { Checkbox } from '@progress/kendo-react-inputs';
 import { useState, useEffect, useCallback } from 'react';
 import { useRetention } from '@/contexts/RetentionContext';
-import { calculateRetentionByGender } from '@/lib/filterUtils';
+import { calculateRetentionByGender, calculateRetentionByVeteran } from '@/lib/filterUtils';
 import FilterCard from './FilterCard';
 
-export default function VariablesSection({ onGenderFilterChange }) {
+export default function VariablesSection({ onGenderFilterChange, onVeteranFilterChange }) {
   const [genderFilters, setGenderFilters] = useState({
     genderTotal: false,
     male: false,
     female: false
+  });
+
+  const [veteranFilters, setVeteranFilters] = useState({
+    veteranTotal: false,
+    yes: false,
+    no: false
   });
   
   const { state } = useRetention();
@@ -24,8 +30,16 @@ export default function VariablesSection({ onGenderFilterChange }) {
     }));
   }, []);
 
+  const handleVeteranFilterChange = useCallback((filterType, checked) => {
+    console.log('handleVeteranFilterChange:', filterType, checked);
+    setVeteranFilters(prev => ({
+      ...prev,
+      [filterType]: checked
+    }));
+  }, []);
+
   useEffect(() => {
-    console.log('useEffect triggered:', { processedData: !!processedData, rawData: !!rawData, genderFilters });
+    console.log('useEffect triggered for gender:', { processedData: !!processedData, rawData: !!rawData, genderFilters });
     
     if (!processedData || !rawData || !onGenderFilterChange) return;
 
@@ -45,6 +59,28 @@ export default function VariablesSection({ onGenderFilterChange }) {
       onGenderFilterChange('Female', genderData.Female);
     }
   }, [genderFilters, processedData, rawData]);
+
+  useEffect(() => {
+    console.log('useEffect triggered for veteran:', { processedData: !!processedData, rawData: !!rawData, veteranFilters });
+    
+    if (!processedData || !rawData || !onVeteranFilterChange) return;
+
+    const veteranData = calculateRetentionByVeteran(processedData, rawData);
+    console.log('Veteran data calculated:', veteranData);
+    
+    if (veteranFilters.veteranTotal) {
+      console.log('Calling onVeteranFilterChange for combined');
+      onVeteranFilterChange('combined', veteranData.combined);
+    }
+    if (veteranFilters.yes) {
+      console.log('Calling onVeteranFilterChange for Yes');
+      onVeteranFilterChange('Yes', veteranData.Yes);
+    }
+    if (veteranFilters.no) {
+      console.log('Calling onVeteranFilterChange for No');
+      onVeteranFilterChange('No', veteranData.No);
+    }
+  }, [veteranFilters, processedData, rawData]);
 
   return (
     <div style={{
@@ -77,8 +113,7 @@ export default function VariablesSection({ onGenderFilterChange }) {
         backgroundColor: 'white',
         borderRadius: '4px',
         boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-        transition: 'transform 0.2s ease-in-out',
-        cursor: 'pointer'
+        transition: 'transform 0.2s ease-in-out'
       }}>
         <div style={{ 
           display: 'flex', 
@@ -112,12 +147,45 @@ export default function VariablesSection({ onGenderFilterChange }) {
         </div>
       </div>
       
-      <FilterCard title="Veteran">
-        <div style={{ display: 'flex', gap: '15px' }}>
-          <Checkbox label="Yes" />
-          <Checkbox label="No" />
+      <div style={{
+        marginBottom: '15px',
+        padding: '10px',
+        backgroundColor: 'white',
+        borderRadius: '4px',
+        boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+        transition: 'transform 0.2s ease-in-out'
+      }}>
+        <div style={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          marginBottom: '8px' 
+        }}>
+          <Checkbox 
+            checked={veteranFilters.veteranTotal}
+            onChange={(e) => handleVeteranFilterChange('veteranTotal', e.value)}
+          />
+          <label style={{ 
+            fontWeight: 'bold', 
+            color: '#384C9E', 
+            fontSize: '14px', 
+            marginLeft: '8px'
+          }}>
+            Veteran
+          </label>
         </div>
-      </FilterCard>
+        <div style={{ display: 'flex', gap: '15px', marginLeft: '20px' }}>
+          <Checkbox 
+            label="Да" 
+            checked={veteranFilters.yes}
+            onChange={(e) => handleVeteranFilterChange('yes', e.value)}
+          />
+          <Checkbox 
+            label="Нет" 
+            checked={veteranFilters.no}
+            onChange={(e) => handleVeteranFilterChange('no', e.value)}
+          />
+        </div>
+      </div>
       
       <FilterCard title="Foster Care">
         <div style={{ display: 'flex', gap: '15px' }}>

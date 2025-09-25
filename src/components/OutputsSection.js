@@ -5,10 +5,11 @@ import { Chart, ChartTitle, ChartCategoryAxis, ChartCategoryAxisItem, ChartValue
 import { useState } from 'react';
 import Legend from './Legend';
 
-export default function OutputsSection({ loading, retentionData, chartData }) {
+export default function OutputsSection({ loading, retentionData = [], chartData }) {
   const [selectedColumn, setSelectedColumn] = useState(null);
-  const emptyData = [];
   const categories = ['Year 1', 'Year 2', 'Year 3', 'Year 4', 'Year 5', 'Year 6', 'Year 7', 'Year 8', 'Year 9', 'Year 10'];
+
+  console.log('OutputsSection render - retentionData:', retentionData);
 
   const handleColumnClick = (columnField) => {
     setSelectedColumn(selectedColumn === columnField ? null : columnField);
@@ -43,6 +44,11 @@ export default function OutputsSection({ loading, retentionData, chartData }) {
         <h4 style={{ 
           margin: '0 0 10px 0'
         }}>Retention by Population</h4>
+        
+        <div style={{ marginBottom: '10px', fontSize: '12px', color: '#666' }}>
+          Data rows: {retentionData.length}
+        </div>
+        
         <div style={{
           height: '200px',
           overflow: 'hidden'
@@ -55,7 +61,14 @@ export default function OutputsSection({ loading, retentionData, chartData }) {
             }}
             scrollable={true}
           >
-           
+            <GridColumn 
+              field="filter" 
+              title="Filter" 
+              headerClassName={selectedColumn === 'filter' ? 'selected-column' : ''}
+              className={selectedColumn === 'filter' ? 'selected-column' : ''}
+              onHeaderClick={() => handleColumnClick('filter')}
+            />
+            
             <GridColumn 
               field="year1" 
               title="Year 1" 
@@ -142,110 +155,31 @@ export default function OutputsSection({ loading, retentionData, chartData }) {
       
       <Legend />
       
-      <div style={{
-        flex: '1',
-        minHeight: '0',
-        display: 'flex',
-        flexDirection: 'column'
+      <div style={{ 
+        flex: 1,
+        minHeight: '300px',
+        marginTop: '20px'
       }}>
         <h4 style={{ 
-          margin: '0 0 10px 0',
-          flexShrink: 0
-        }}>Retention by Year</h4>
-        <div style={{
-          flex: '1',
-          minHeight: '300px',
-          overflow: 'hidden',
-          border: '1px solid #e9ecef',
-          borderRadius: '8px',
-          backgroundColor: '#ffffff'
-        }}>
-          <Chart style={{ 
-            width: '100%',
-            height: '100%'
-          }}>
-            <ChartTitle text="" />
-            <ChartCategoryAxis>
-              <ChartCategoryAxisItem 
-                categories={categories}
-                labels={{
-                  font: '11px Arial, sans-serif',
-                  color: '#666666',
-                  rotation: -45
-                }}
-                line={{
-                  color: '#e9ecef',
-                  width: 1
-                }}
-                majorGridLines={{
-                  color: '#f8f9fa',
-                  width: 1
-                }}
-              />
-            </ChartCategoryAxis>
-            <ChartValueAxis>
-              <ChartValueAxisItem 
-                min={0} 
-                max={100}
-                labels={{
-                  font: '11px Arial, sans-serif',
-                  color: '#666666',
-                  format: '{0}%'
-                }}
-                line={{
-                  color: '#e9ecef',
-                  width: 1
-                }}
-                majorGridLines={{
-                  color: '#f8f9fa',
-                  width: 1
-                }}
-              />
-            </ChartValueAxis>
-            <ChartSeries>
-              <ChartSeriesItem 
-                type="line" 
-                data={emptyData} 
-                color="#28a745"
-                width={2}
-                markers={{
-                  visible: true,
-                  size: 4
-                }}
-              />
-              <ChartSeriesItem 
-                type="line" 
-                data={emptyData} 
-                color="#FF5E00"
-                width={2}
-                markers={{
-                  visible: true,
-                  size: 4
-                }}
-              />
-              <ChartSeriesItem 
-                type="line" 
-                data={emptyData} 
-                color="#384C9E"
-                width={2}
-                markers={{
-                  visible: true,
-                  size: 4
-                }}
-              />
-              <ChartSeriesItem 
-                type="line" 
-                data={emptyData} 
-                color="#dc3545"
-                width={2}
-                markers={{
-                  visible: true,
-                  size: 4
-                }}
-              />
-            </ChartSeries>
-          </Chart>
-        </div>
+          margin: '0 0 10px 0'
+        }}>Retention Rate Chart</h4>
+        <Chart style={{ height: '100%' }}>
+          <ChartTitle text="Retention Rates by Year" />
+          <ChartCategoryAxis>
+            <ChartCategoryAxisItem categories={categories} />
+          </ChartCategoryAxis>
+          <ChartValueAxis>
+            <ChartValueAxisItem />
+          </ChartValueAxis>
+          <ChartSeries>
+            <ChartSeriesItem 
+              type="line" 
+              data={chartData || []} 
+              field="rate"
+              categoryField="year"
+            />
+          </ChartSeries>
+        </Chart>
       </div>
     </div>
   );

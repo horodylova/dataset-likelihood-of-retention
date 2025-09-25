@@ -1,9 +1,47 @@
 'use client'
 
 import { Checkbox } from '@progress/kendo-react-inputs';
+import { useState, useEffect } from 'react';
+import { useRetention } from '@/contexts/RetentionContext';
+import { calculateRetentionByGender } from '@/lib/filterUtils';
 import FilterCard from './FilterCard';
 
-export default function VariablesSection() {
+export default function VariablesSection({ onGenderFilterChange }) {
+  const [genderFilters, setGenderFilters] = useState({
+    genderTotal: false,
+    male: false,
+    female: false
+  });
+  
+  const { state } = useRetention();
+  const { processedData, rawData } = state;
+
+ 
+  useEffect(() => {
+     
+    if (!processedData || !rawData || !onGenderFilterChange) return;
+
+    const genderData = calculateRetentionByGender(processedData, rawData);
+     
+    if (genderFilters.genderTotal) {
+       onGenderFilterChange('combined', genderData.combined);
+    }
+    if (genderFilters.male) {
+       onGenderFilterChange('Male', genderData.Male);
+    }
+    if (genderFilters.female) {
+     
+      onGenderFilterChange('Female', genderData.Female);
+    }
+  }, [genderFilters, processedData, rawData, onGenderFilterChange]);
+
+  const handleGenderFilterChange = (filterType, checked) => {
+     setGenderFilters(prev => ({
+      ...prev,
+      [filterType]: checked
+    }));
+  };
+
   return (
     <div style={{
       padding: '20px',
@@ -29,12 +67,46 @@ export default function VariablesSection() {
         </div>
       </FilterCard>
       
-      <FilterCard title="Gender">
-        <div style={{ display: 'flex', gap: '15px' }}>
-          <Checkbox label="Female" />
-          <Checkbox label="Male" />
+      <div style={{
+        marginBottom: '15px',
+        padding: '10px',
+        backgroundColor: 'white',
+        borderRadius: '4px',
+        boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+        transition: 'transform 0.2s ease-in-out',
+        cursor: 'pointer'
+      }}>
+        <div style={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          marginBottom: '8px' 
+        }}>
+          <Checkbox 
+            checked={genderFilters.genderTotal}
+            onChange={(e) => handleGenderFilterChange('genderTotal', e.target.checked)}
+          />
+          <label style={{ 
+            fontWeight: 'bold', 
+            color: '#384C9E', 
+            fontSize: '14px', 
+            marginLeft: '8px'
+          }}>
+            Gender
+          </label>
         </div>
-      </FilterCard>
+        <div style={{ display: 'flex', gap: '15px', marginLeft: '20px' }}>
+          <Checkbox 
+            label="Female" 
+            checked={genderFilters.female}
+            onChange={(e) => handleGenderFilterChange('female', e.target.checked)}
+          />
+          <Checkbox 
+            label="Male" 
+            checked={genderFilters.male}
+            onChange={(e) => handleGenderFilterChange('male', e.target.checked)}
+          />
+        </div>
+      </div>
       
       <FilterCard title="Veteran">
         <div style={{ display: 'flex', gap: '15px' }}>

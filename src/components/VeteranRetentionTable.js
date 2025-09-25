@@ -1,16 +1,16 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { calculateRetentionByGender } from '@/lib/filterUtils';
+import { useState } from 'react';
+import { calculateRetentionByVeteran } from '@/lib/filterUtils';
 import { useRetention } from '@/contexts/RetentionContext';
 
-export default function GenderRetentionTable({ processedData, filters }) {
-  const [showMale, setShowMale] = useState(true);
-  const [showFemale, setShowFemale] = useState(true);
+export default function VeteranRetentionTable({ processedData, filters }) {
+  const [showYes, setShowYes] = useState(true);
+  const [showNo, setShowNo] = useState(true);
   const { state } = useRetention();
   const { rawData } = state;
 
-  const calculateGenderData = () => {
+  const calculateVeteranData = () => {
     if (!processedData || processedData.length === 0 || !rawData || rawData.length === 0) {
       const emptyData = {};
       for (let year = 1; year <= 10; year++) {
@@ -24,14 +24,14 @@ export default function GenderRetentionTable({ processedData, filters }) {
       return emptyData;
     }
     
-    const genderRetentionData = calculateRetentionByGender(processedData, rawData);
+    const veteranRetentionData = calculateRetentionByVeteran(processedData, rawData);
      
-    if (showMale && !showFemale) {
-      return genderRetentionData.Male || {};
-    } else if (showFemale && !showMale) {
-      return genderRetentionData.Female || {};
-    } else if (showMale && showFemale) {
-      return genderRetentionData.combined || {};
+    if (showYes && !showNo) {
+      return veteranRetentionData.Yes || {};
+    } else if (showNo && !showYes) {
+      return veteranRetentionData.No || {};
+    } else if (showYes && showNo) {
+      return veteranRetentionData.combined || {};
     }
     
     const emptyData = {};
@@ -46,32 +46,32 @@ export default function GenderRetentionTable({ processedData, filters }) {
     return emptyData;
   };
 
-  const genderData = calculateGenderData();
+  const veteranData = calculateVeteranData();
 
   const handleReset = () => {
-    setShowMale(true);
-    setShowFemale(true);
+    setShowYes(true);
+    setShowNo(true);
   };
 
   return (
     <div style={{ flex: 1 }}>
       <div style={{ marginBottom: '15px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-        <span style={{ fontWeight: 'bold', marginRight: '15px' }}>Gender:</span>
+        <span style={{ fontWeight: 'bold', marginRight: '15px' }}>Veteran:</span>
         <label style={{ marginRight: '20px' }}>
           <input
             type="checkbox"
-            checked={showMale}
-            onChange={(e) => setShowMale(e.target.checked)}
+            checked={showYes}
+            onChange={(e) => setShowYes(e.target.checked)}
           />
-          Male
+          Yes
         </label>
         <label style={{ marginRight: '20px' }}>
           <input
             type="checkbox"
-            checked={showFemale}
-            onChange={(e) => setShowFemale(e.target.checked)}
+            checked={showNo}
+            onChange={(e) => setShowNo(e.target.checked)}
           />
-          Female
+          No
         </label>
         <button
           onClick={handleReset}
@@ -99,7 +99,7 @@ export default function GenderRetentionTable({ processedData, filters }) {
           </tr>
         </thead>
         <tbody>
-          {Object.entries(genderData).map(([year, data]) => (
+          {Object.entries(veteranData).map(([year, data]) => (
             <tr key={year}>
               <td style={{ border: '1px solid #ccc', padding: '8px' }}>{year}</td>
               <td style={{ border: '1px solid #ccc', padding: '8px' }}>{data.eligible}</td>

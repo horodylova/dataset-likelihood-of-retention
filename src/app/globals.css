@@ -128,3 +128,27 @@ h1, h2, h3 {
     font-size: 14px;
   }
 }
+
+.retention-tables-container {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 30px;
+  flex-wrap: wrap;
+}
+
+.retention-table-item {
+  flex: 1;
+  min-width: 300px;
+}
+
+@media (max-width: 1200px) {
+  .retention-table-item {
+    min-width: 45%;
+  }
+}
+
+@media (max-width: 768px) {
+  .retention-table-item {
+    min-width: 100%;
+  }
+}

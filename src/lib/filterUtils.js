@@ -66,7 +66,40 @@ export function calculateRetentionByGender(processedData, rawData) {
 }
 
 export function calculateRetentionByVeteran(processedData, rawData) {
-  return calculateRetentionByFilter(processedData, rawData, 'Veteran');
+  if (!processedData || processedData.length === 0 || !rawData || rawData.length === 0) {
+    return createEmptyRetentionData();
+  }
+
+  const headers = rawData[0];
+  const veteranColumnIndex = headers.findIndex(h => 
+    h && h.toLowerCase().trim() === 'veteran'
+  );
+
+  if (veteranColumnIndex === -1) {
+    return createEmptyRetentionData();
+  }
+
+  const retentionData = {
+    Yes: createEmptyRetentionData(),
+    No: createEmptyRetentionData(),
+    combined: createEmptyRetentionData()
+  };
+
+  const yesData = processedData.filter(resident => {
+    const cellValue = resident.rawData[veteranColumnIndex];
+    return cellValue && cellValue.toString().toLowerCase().trim() === 'yes';
+  });
+
+  const noData = processedData.filter(resident => {
+    const cellValue = resident.rawData[veteranColumnIndex];
+    return !cellValue || cellValue.toString().toLowerCase().trim() !== 'yes';
+  });
+
+  calculateRetentionForData(yesData, retentionData.Yes);
+  calculateRetentionForData(noData, retentionData.No);
+  calculateRetentionForData(processedData, retentionData.combined);
+
+  return retentionData;
 }
 
 export function calculateRetentionByVisualImpairment(processedData, rawData) {

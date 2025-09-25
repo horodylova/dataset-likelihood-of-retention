@@ -5,6 +5,7 @@ import { useRetention } from '@/contexts/RetentionContext';
 import RawDataTable from './RawDataTable';
 import ResidentsRetentionTable from './ResidentsRetentionTable';
 import GenderRetentionTable from './GenderRetentionTable';
+import VeteranRetentionTable from './VeteranRetentionTable';
 
 export default function SheetViewer() {
   const [spreadsheetId, setSpreadsheetId] = useState('1k8Az5lkHrT54NZk_L6W4TLVp4GInU_Tmh-rZQhHe3JI');
@@ -175,22 +176,24 @@ export default function SheetViewer() {
       
       {dataLoaded && (
         <>
-          <div style={{ 
-            display: 'flex', 
-            gap: '30px', 
-            marginBottom: '30px',
-            flexWrap: 'wrap'
-          }}>
-            <div style={{ flex: '1', minWidth: '400px' }}>
+          <div className="retention-tables-container">
+            <div className="retention-table-item">
               <ResidentsRetentionTable 
                 retentionData={retentionData || {}}
                 filters={filters}
                 updateFilters={updateFilters}
               />
             </div>
-
-            <div style={{ flex: '1', minWidth: '400px' }}>
+          
+            <div className="retention-table-item">
               <GenderRetentionTable 
+                processedData={processedData} 
+                filters={filters}
+              />
+            </div>
+          
+            <div className="retention-table-item">
+              <VeteranRetentionTable 
                 processedData={processedData} 
                 filters={filters}
               />
@@ -198,7 +201,7 @@ export default function SheetViewer() {
           </div>
           
           <div style={{ 
-            borderTop: '1px solid #dee2e6',
+            
             paddingTop: '20px'
           }}>
             <button

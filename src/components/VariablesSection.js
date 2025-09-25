@@ -175,12 +175,12 @@ export default function VariablesSection({ onGenderFilterChange, onVeteranFilter
         </div>
         <div style={{ display: 'flex', gap: '15px', marginLeft: '20px' }}>
           <Checkbox 
-            label="Да" 
+            label="Yes" 
             checked={veteranFilters.yes}
             onChange={(e) => handleVeteranFilterChange('yes', e.value)}
           />
           <Checkbox 
-            label="Нет" 
+            label="No" 
             checked={veteranFilters.no}
             onChange={(e) => handleVeteranFilterChange('no', e.value)}
           />

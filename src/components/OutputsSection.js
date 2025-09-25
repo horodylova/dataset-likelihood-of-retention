@@ -1,28 +1,64 @@
 'use client'
 
 import { Grid, GridColumn } from '@progress/kendo-react-grid';
-import { Chart, ChartTitle, ChartCategoryAxis, ChartCategoryAxisItem, ChartValueAxis, ChartValueAxisItem, ChartSeries, ChartSeriesItem } from '@progress/kendo-react-charts';
-import { useState, useMemo } from 'react';
-import Legend from './Legend';
+import { Chart, ChartTitle, ChartCategoryAxis, ChartCategoryAxisItem, ChartValueAxis, ChartValueAxisItem, ChartSeries, ChartSeriesItem, ChartTooltip, ChartLegend } from '@progress/kendo-react-charts';
+import { useState, useMemo, useEffect } from 'react';
 
 export default function OutputsSection({ loading, retentionData = [], chartData }) {
   const [selectedColumn, setSelectedColumn] = useState(null);
+  const [selectedLegendItems, setSelectedLegendItems] = useState(new Set());
+  
   const categories = ['Year 1', 'Year 2', 'Year 3', 'Year 4', 'Year 5', 'Year 6', 'Year 7', 'Year 8', 'Year 9', 'Year 10'];
+
+  const colors = [
+    '#28a745', '#FF5E00', '#384C9E', '#dc3545', '#6f42c1', 
+    '#fd7e14', '#20c997', '#e83e8c', '#6610f2', '#007bff',
+    '#ffc107', '#17a2b8', '#343a40', '#6c757d', '#e91e63'
+  ];
 
   console.log('OutputsSection render - retentionData:', retentionData);
 
-  const legendItems = useMemo(() => {
-    const colors = [
-      '#28a745', '#FF5E00', '#384C9E', '#dc3545', '#6f42c1', 
-      '#fd7e14', '#20c997', '#e83e8c', '#6610f2', '#007bff',
-      '#28a745', '#ffc107', '#17a2b8', '#343a40', '#6c757d'
-    ];
-    
-    return retentionData.map((item, index) => ({
-      name: item.filter,
-      color: colors[index % colors.length]
-    }));
+  useEffect(() => {
+    if (retentionData.length > 0) {
+      const newSelected = new Set();
+      retentionData.forEach(item => {
+        newSelected.add(item.filter);
+      });
+      setSelectedLegendItems(newSelected);
+    }
   }, [retentionData]);
+
+  const prepareChartSeries = () => {
+    if (selectedLegendItems.size === 0) return [];
+
+    const series = [];
+    
+    retentionData.forEach((item, index) => {
+      if (selectedLegendItems.has(item.filter)) {
+        const data = categories.map((year, yearIndex) => ({
+          year: year,
+          rate: item[`year${yearIndex + 1}`] || 0
+        }));
+
+        series.push({
+          name: item.filter,
+          data: data,
+          color: colors[index % colors.length]
+        });
+      }
+    });
+
+    return series;
+  };
+
+  const chartSeries = prepareChartSeries();
+
+  const tooltipRender = (e) => {
+    if (!e || !e.point || !e.point.dataItem) return '';
+    const seriesName = e.point.series.name || 'Unknown';
+    const value = e.point.dataItem.rate || 0;
+    return `${seriesName}: ${value.toFixed(1)}%`;
+  };
 
   const handleColumnClick = (columnField) => {
     setSelectedColumn(selectedColumn === columnField ? null : columnField);
@@ -162,8 +198,6 @@ export default function OutputsSection({ loading, retentionData = [], chartData 
         </div>
       </div>
       
-      <Legend legendItems={legendItems} />
-      
       <div style={{ 
         flex: 1,
         minHeight: '300px',
@@ -172,21 +206,39 @@ export default function OutputsSection({ loading, retentionData = [], chartData 
         <h4 style={{ 
           margin: '0 0 10px 0'
         }}>Retention Rate Chart</h4>
-        <Chart style={{ height: '100%' }}>
+        <Chart 
+          style={{ height: '100%' }}
+        >
+          <ChartLegend 
+            position="top" 
+            orientation="horizontal"
+            align="center"
+          />
           <ChartCategoryAxis>
             <ChartCategoryAxisItem categories={categories} />
           </ChartCategoryAxis>
           <ChartValueAxis>
-            <ChartValueAxisItem />
+            <ChartValueAxisItem 
+              title={{ text: 'Retention Rate (%)' }}
+              min={0}
+              max={100}
+            />
           </ChartValueAxis>
           <ChartSeries>
-            <ChartSeriesItem 
-              type="line" 
-              data={chartData || []} 
-              field="rate"
-              categoryField="year"
-            />
+            {chartSeries.map((series, index) => (
+              <ChartSeriesItem
+                key={series.name}
+                type="line"
+                data={series.data}
+                field="rate"
+                categoryField="year"
+                name={series.name}
+                color={series.color}
+                markers={{ visible: true }}
+              />
+            ))}
           </ChartSeries>
+          <ChartTooltip render={tooltipRender} />
         </Chart>
       </div>
     </div>

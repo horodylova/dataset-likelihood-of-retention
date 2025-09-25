@@ -49,8 +49,8 @@ export default function GenderRetentionTable({ processedData, filters }) {
   const genderData = calculateGenderData();
 
   const handleReset = () => {
-    setShowMale(true);
-    setShowFemale(true);
+    setShowMale(false);
+    setShowFemale(false);
   };
 
   return (

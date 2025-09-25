@@ -54,10 +54,6 @@ export default function OutputsSection({ loading, retentionData = [], chartData 
         flexShrink: 0,
         marginBottom: '30px'
       }}>
-        <h4 style={{ 
-          margin: '0 0 10px 0'
-        }}>Retention by Population</h4>
-        
         <div style={{ marginBottom: '10px', fontSize: '12px', color: '#666' }}>
           Data rows: {retentionData.length}
         </div>
@@ -177,7 +173,6 @@ export default function OutputsSection({ loading, retentionData = [], chartData 
           margin: '0 0 10px 0'
         }}>Retention Rate Chart</h4>
         <Chart style={{ height: '100%' }}>
-          <ChartTitle text="Retention Rates by Year" />
           <ChartCategoryAxis>
             <ChartCategoryAxisItem categories={categories} />
           </ChartCategoryAxis>

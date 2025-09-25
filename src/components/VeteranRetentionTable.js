@@ -49,8 +49,8 @@ export default function VeteranRetentionTable({ processedData, filters }) {
   const veteranData = calculateVeteranData();
 
   const handleReset = () => {
-    setShowYes(true);
-    setShowNo(true);
+    setShowYes(false);
+    setShowNo(false);
   };
 
   return (

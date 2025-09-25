@@ -2,7 +2,7 @@
 
 import { Grid, GridColumn } from '@progress/kendo-react-grid';
 import { Chart, ChartTitle, ChartCategoryAxis, ChartCategoryAxisItem, ChartValueAxis, ChartValueAxisItem, ChartSeries, ChartSeriesItem } from '@progress/kendo-react-charts';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import Legend from './Legend';
 
 export default function OutputsSection({ loading, retentionData = [], chartData }) {
@@ -10,6 +10,19 @@ export default function OutputsSection({ loading, retentionData = [], chartData 
   const categories = ['Year 1', 'Year 2', 'Year 3', 'Year 4', 'Year 5', 'Year 6', 'Year 7', 'Year 8', 'Year 9', 'Year 10'];
 
   console.log('OutputsSection render - retentionData:', retentionData);
+
+  const legendItems = useMemo(() => {
+    const colors = [
+      '#28a745', '#FF5E00', '#384C9E', '#dc3545', '#6f42c1', 
+      '#fd7e14', '#20c997', '#e83e8c', '#6610f2', '#007bff',
+      '#28a745', '#ffc107', '#17a2b8', '#343a40', '#6c757d'
+    ];
+    
+    return retentionData.map((item, index) => ({
+      name: item.filter,
+      color: colors[index % colors.length]
+    }));
+  }, [retentionData]);
 
   const handleColumnClick = (columnField) => {
     setSelectedColumn(selectedColumn === columnField ? null : columnField);
@@ -153,7 +166,7 @@ export default function OutputsSection({ loading, retentionData = [], chartData 
         </div>
       </div>
       
-      <Legend />
+      <Legend legendItems={legendItems} />
       
       <div style={{ 
         flex: 1,

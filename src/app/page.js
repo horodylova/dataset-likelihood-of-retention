@@ -86,7 +86,7 @@ export default function Home() {
     console.log('addVeteranFilter called:', veteranType, veteranData);
     
     const filterName = veteranType === 'combined' ? 'Veteran: Total' : 
-                      veteranType === 'Yes' ? 'Veteran: Да' : 'Veteran: Нет';
+                      veteranType === 'Yes' ? 'Veteran: Yes' : 'Veteran: No';
     
     const newRow = {
       filter: filterName,

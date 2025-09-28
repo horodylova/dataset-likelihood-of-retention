@@ -15,6 +15,11 @@ import CategoryList from './CategoryList';
 import HIVRetentionTable from './HIVRetentionTable';
 import PhysicalMedicalRetentionTable from './PhysicalMedicalRetentionTable';
 import MentalHealthRetentionTable from './MentalHealthRetentionTable'
+import PhysicalMobilityRetentionTable from './PhysicalMobilityRetentionTable';
+import AlcoholAbuseRetentionTable from './AlcoholAbuseRetentionTable';
+import SubstanceAbuseRetentionTable from './SubstanceAbuseRetentionTable';
+import FeloniesRetentionTable from './FeloniesRetentionTable';
+import DTRetentionTable from './DTRetentionTable';
 
 export default function SheetViewer() {
   const [error, setError] = useState(null);
@@ -93,6 +98,16 @@ export default function SheetViewer() {
         return <PhysicalMedicalRetentionTable {...commonProps} />;
       case 'Mental Health':
         return <MentalHealthRetentionTable {...commonProps} />;
+      case 'Physical / Mobility':
+        return <PhysicalMobilityRetentionTable {...commonProps} />;
+      case 'Alcohol Abuse':
+        return <AlcoholAbuseRetentionTable {...commonProps} />;
+      case 'Substance Abuse':
+        return <SubstanceAbuseRetentionTable {...commonProps} />;
+      case 'Felonies':
+        return <FeloniesRetentionTable {...commonProps} />;
+      case 'DT':
+        return <DTRetentionTable {...commonProps} />;
       default:
         return null;
     }

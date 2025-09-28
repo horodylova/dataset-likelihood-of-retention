@@ -143,6 +143,178 @@ export function calculateRetentionByHearing(processedData, rawData) {
   return retentionData;
 }
 
+export function calculateRetentionBySubstanceAbuse(processedData, rawData) {
+  if (!processedData || processedData.length === 0 || !rawData || rawData.length === 0) {
+    return createEmptyRetentionData();
+  }
+
+  const headers = rawData[0];
+  const columnIndex = headers.findIndex(h => 
+    h && h.toLowerCase().trim() === 'substance abuse'
+  );
+
+  if (columnIndex === -1) {
+    return createEmptyRetentionData();
+  }
+
+  const retentionData = {
+    Yes: createEmptyRetentionData(),
+    No: createEmptyRetentionData(),
+    combined: createEmptyRetentionData()
+  };
+
+  const yesData = processedData.filter(resident => {
+    const cellValue = resident.rawData[columnIndex];
+    return cellValue && cellValue.toString().toLowerCase().trim() === 'yes';
+  });
+
+  const noData = processedData.filter(resident => {
+    const cellValue = resident.rawData[columnIndex];
+    return !cellValue || cellValue.toString().toLowerCase().trim() !== 'yes';
+  });
+
+  calculateRetentionForData(yesData, retentionData.Yes);
+  calculateRetentionForData(noData, retentionData.No);
+  calculateRetentionForData(processedData, retentionData.combined);
+
+  return retentionData;
+}
+
+export function calculateRetentionByFelonies(processedData, rawData) {
+  if (!processedData || processedData.length === 0 || !rawData || rawData.length === 0) {
+    return createEmptyRetentionData();
+  }
+
+  const headers = rawData[0];
+  const columnIndex = headers.findIndex(h => 
+    h && h.toLowerCase().trim() === 'felonies'
+  );
+
+  if (columnIndex === -1) {
+    return createEmptyRetentionData();
+  }
+
+  const retentionData = {
+    Yes: createEmptyRetentionData(),
+    No: createEmptyRetentionData(),
+    combined: createEmptyRetentionData()
+  };
+
+  const yesData = processedData.filter(resident => {
+    const cellValue = resident.rawData[columnIndex];
+    return cellValue && cellValue.toString().toLowerCase().trim() === 'yes';
+  });
+
+  const noData = processedData.filter(resident => {
+    const cellValue = resident.rawData[columnIndex];
+    return cellValue && cellValue.toString().toLowerCase().trim() === 'no';
+  });
+
+  const yesNoOnlyData = processedData.filter(resident => {
+    const cellValue = resident.rawData[columnIndex];
+    const v = cellValue ? cellValue.toString().toLowerCase().trim() : '';
+    return v === 'yes' || v === 'no';
+  });
+
+  calculateRetentionForData(yesData, retentionData.Yes);
+  calculateRetentionForData(noData, retentionData.No);
+  calculateRetentionForData(yesNoOnlyData, retentionData.combined);
+
+  return retentionData;
+}
+
+export function calculateRetentionByDT(processedData, rawData) {
+  if (!processedData || processedData.length === 0 || !rawData || rawData.length === 0) {
+    return createEmptyRetentionData();
+  }
+
+  const headers = rawData[0];
+  const columnIndex = headers.findIndex(h => 
+    h && h.toLowerCase().trim() === 'dt'
+  );
+
+  if (columnIndex === -1) {
+    return createEmptyRetentionData();
+  }
+
+  const retentionData = {
+    Yes: createEmptyRetentionData(),
+    No: createEmptyRetentionData(),
+    combined: createEmptyRetentionData()
+  };
+
+  const yesData = processedData.filter(resident => {
+    const cellValue = resident.rawData[columnIndex];
+    return cellValue && cellValue.toString().toLowerCase().trim() === 'yes';
+  });
+
+  const noData = processedData.filter(resident => {
+    const cellValue = resident.rawData[columnIndex];
+    const v = cellValue ? cellValue.toString().toLowerCase().trim() : '';
+    return v === 'no' || v === '';
+  });
+
+  const yesNoOnlyData = [...yesData, ...noData];
+
+  calculateRetentionForData(yesData, retentionData.Yes);
+  calculateRetentionForData(noData, retentionData.No);
+  calculateRetentionForData(yesNoOnlyData, retentionData.combined);
+
+  return retentionData;
+}
+
+export function calculateRetentionByFC(processedData, rawData) {
+  if (!processedData || processedData.length === 0 || !rawData || rawData.length === 0) {
+    return createEmptyRetentionData();
+  }
+  const headers = rawData[0];
+  const columnIndex = headers.findIndex(h => h && h.toLowerCase().trim() === 'fc');
+  if (columnIndex === -1) {
+    return createEmptyRetentionData();
+  }
+  const retentionData = {
+    Yes: createEmptyRetentionData(),
+    No: createEmptyRetentionData(),
+    combined: createEmptyRetentionData()
+  };
+  const yesData = processedData.filter(resident => {
+    const cellValue = resident.rawData[columnIndex];
+    return cellValue && cellValue.toString().toLowerCase().trim() === 'yes';
+  });
+  const noData = processedData.filter(resident => {
+    const cellValue = resident.rawData[columnIndex];
+    return !cellValue || cellValue.toString().toLowerCase().trim() !== 'yes';
+  });
+  calculateRetentionForData(yesData, retentionData.Yes);
+  calculateRetentionForData(noData, retentionData.No);
+  calculateRetentionForData(processedData, retentionData.combined);
+  return retentionData;
+}
+
+export function calculateRetentionByAlzheimer(processedData, rawData) {
+  return calculateYesNoColumn(processedData, rawData, "alzheimer's / dementia");
+}
+
+export function calculateRetentionByHIV(processedData, rawData) {
+  return calculateYesNoColumn(processedData, rawData, 'hiv / aids');
+}
+
+export function calculateRetentionByPhysicalMedical(processedData, rawData) {
+  return calculateYesNoColumn(processedData, rawData, 'physical / medical');
+}
+
+export function calculateRetentionByMentalHealth(processedData, rawData) {
+  return calculateYesNoColumn(processedData, rawData, 'mental health');
+}
+
+export function calculateRetentionByPhysicalMobility(processedData, rawData) {
+  return calculateYesNoColumn(processedData, rawData, 'physical / mobility');
+}
+
+export function calculateRetentionByAlcoholAbuse(processedData, rawData) {
+  return calculateYesNoColumn(processedData, rawData, 'alcohol abuse');
+}
+
 function createEmptyRetentionData() {
   const data = {};
   for (let year = 1; year <= 10; year++) {
@@ -190,4 +362,32 @@ function calculateRetentionForData(data, retentionObject) {
     yearData.rate = yearData.eligible > 0 ? 
       Math.round((yearData.retained / yearData.eligible) * 100 * 100) / 100 : 0;
   });
+}
+
+function calculateYesNoColumn(processedData, rawData, columnNameLower) {
+  if (!processedData || processedData.length === 0 || !rawData || rawData.length === 0) {
+    return createEmptyRetentionData();
+  }
+  const headers = rawData[0];
+  const columnIndex = headers.findIndex(h => h && h.toLowerCase().trim() === columnNameLower);
+  if (columnIndex === -1) {
+    return createEmptyRetentionData();
+  }
+  const retentionData = {
+    Yes: createEmptyRetentionData(),
+    No: createEmptyRetentionData(),
+    combined: createEmptyRetentionData()
+  };
+  const yesData = processedData.filter(resident => {
+    const cellValue = resident.rawData[columnIndex];
+    return cellValue && cellValue.toString().toLowerCase().trim() === 'yes';
+  });
+  const noData = processedData.filter(resident => {
+    const cellValue = resident.rawData[columnIndex];
+    return !cellValue || cellValue.toString().toLowerCase().trim() !== 'yes';
+  });
+  calculateRetentionForData(yesData, retentionData.Yes);
+  calculateRetentionForData(noData, retentionData.No);
+  calculateRetentionForData(processedData, retentionData.combined);
+  return retentionData;
 }

@@ -2,7 +2,7 @@
 
 import { Checkbox } from '@progress/kendo-react-inputs';
 
-export default function FilterCard({ title, children, style = {} }) {
+export default function FilterCard({ title, children, style = {}, headerChecked = false, headerOnChange }) {
   return (
     <div 
       style={{
@@ -28,7 +28,7 @@ export default function FilterCard({ title, children, style = {} }) {
           alignItems: 'center', 
           marginBottom: '8px' 
         }}>
-          <Checkbox />
+          <Checkbox checked={headerChecked} onChange={headerOnChange} />
           <label style={{ 
             fontWeight: 'bold', 
             color: '#384C9E', 

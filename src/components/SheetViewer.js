@@ -20,6 +20,7 @@ import AlcoholAbuseRetentionTable from './AlcoholAbuseRetentionTable';
 import SubstanceAbuseRetentionTable from './SubstanceAbuseRetentionTable';
 import FeloniesRetentionTable from './FeloniesRetentionTable';
 import DTRetentionTable from './DTRetentionTable';
+import DisabilityCountRetentionTable from './DisabilityCountRetentionTable';
 
 export default function SheetViewer() {
   const [error, setError] = useState(null);
@@ -108,6 +109,8 @@ export default function SheetViewer() {
         return <FeloniesRetentionTable {...commonProps} />;
       case 'DT':
         return <DTRetentionTable {...commonProps} />;
+      case 'Disability Count':
+        return <DisabilityCountRetentionTable {...commonProps} />;
       default:
         return null;
     }

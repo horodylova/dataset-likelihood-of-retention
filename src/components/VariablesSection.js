@@ -3,10 +3,10 @@
 import { Checkbox } from '@progress/kendo-react-inputs';
 import { useState, useEffect, useCallback } from 'react';
 import { useRetention } from '@/contexts/RetentionContext';
-import { calculateRetentionByGender, calculateRetentionByVeteran, calculateRetentionBySubstanceAbuse, calculateRetentionByFelonies, calculateRetentionByDT, calculateRetentionByFC } from '@/lib/filterUtils';
+import { calculateRetentionByGender, calculateRetentionByVeteran, calculateRetentionBySubstanceAbuse, calculateRetentionByFelonies, calculateRetentionByDT, calculateRetentionByFC, calculateRetentionByDisabilityCount } from '@/lib/filterUtils';
 import FilterCard from './FilterCard';
 
-export default function VariablesSection({ onGenderFilterChange, onVeteranFilterChange, onSubstanceAbuseFilterChange, onFeloniesFilterChange, onDTFilterChange, onFosterCareFilterChange }) {
+export default function VariablesSection({ onGenderFilterChange, onVeteranFilterChange, onSubstanceAbuseFilterChange, onFeloniesFilterChange, onDTFilterChange, onFosterCareFilterChange, onDisabilityCountFilterChange }) {
   const [genderFilters, setGenderFilters] = useState({
     genderTotal: false,
     male: false,
@@ -41,6 +41,14 @@ export default function VariablesSection({ onGenderFilterChange, onVeteranFilter
     no: false
   });
   const [fcTotal, setFCTotal] = useState(false);
+  const [disabilityCountFilters, setDisabilityCountFilters] = useState({
+    zero: false,
+    one: false,
+    two: false,
+    three: false,
+    fourPlus: false
+  });
+  const [disabilityCountTotal, setDisabilityCountTotal] = useState(false);
   
   const { state } = useRetention();
   const { processedData, rawData } = state;
@@ -82,6 +90,12 @@ export default function VariablesSection({ onGenderFilterChange, onVeteranFilter
 
   const handleFCFilterChange = useCallback((filterType, checked) => {
     setFCFilters(prev => ({
+      ...prev,
+      [filterType]: checked
+    }));
+  }, []);
+  const handleDisabilityCountChange = useCallback((filterType, checked) => {
+    setDisabilityCountFilters(prev => ({
       ...prev,
       [filterType]: checked
     }));
@@ -169,9 +183,7 @@ export default function VariablesSection({ onGenderFilterChange, onVeteranFilter
 
   useEffect(() => {
     if (!processedData || !rawData || !onFosterCareFilterChange) return;
-
     const fcData = calculateRetentionByFC(processedData, rawData);
-
     if (fcTotal) {
       onFosterCareFilterChange('combined', fcData.combined);
     }
@@ -183,6 +195,29 @@ export default function VariablesSection({ onGenderFilterChange, onVeteranFilter
     }
   }, [fcTotal, fcFilters, processedData, rawData]);
 
+  useEffect(() => {
+    if (!processedData || !rawData || !onDisabilityCountFilterChange) return;
+    const countData = calculateRetentionByDisabilityCount(processedData, rawData);
+    if (disabilityCountTotal) {
+      onDisabilityCountFilterChange('combined', countData.combined);
+    }
+    if (disabilityCountFilters.zero) {
+      onDisabilityCountFilterChange('Zero', countData['0']);
+    }
+    if (disabilityCountFilters.one) {
+      onDisabilityCountFilterChange('One', countData['1']);
+    }
+    if (disabilityCountFilters.two) {
+      onDisabilityCountFilterChange('Two', countData['2']);
+    }
+    if (disabilityCountFilters.three) {
+      onDisabilityCountFilterChange('Three', countData['3']);
+    }
+    if (disabilityCountFilters.fourPlus) {
+      onDisabilityCountFilterChange('Four +', countData['4']);
+    }
+  }, [disabilityCountTotal, disabilityCountFilters, processedData, rawData]);
+  
   return (
     <div style={{
       padding: '20px',
@@ -422,11 +457,11 @@ export default function VariablesSection({ onGenderFilterChange, onVeteranFilter
           gap: '10px',
           alignItems: 'center'
         }}>
-          <Checkbox label="Zero" />
-          <Checkbox label="One" />
-          <Checkbox label="Two" />
-          <Checkbox label="Three" />
-          <Checkbox label="Four +" />
+          <Checkbox label="Zero" checked={disabilityCountFilters.zero} onChange={(e) => handleDisabilityCountChange('zero', e.value)} />
+          <Checkbox label="One" checked={disabilityCountFilters.one} onChange={(e) => handleDisabilityCountChange('one', e.value)} />
+          <Checkbox label="Two" checked={disabilityCountFilters.two} onChange={(e) => handleDisabilityCountChange('two', e.value)} />
+          <Checkbox label="Three" checked={disabilityCountFilters.three} onChange={(e) => handleDisabilityCountChange('three', e.value)} />
+          <Checkbox label="Four +" checked={disabilityCountFilters.fourPlus} onChange={(e) => handleDisabilityCountChange('fourPlus', e.value)} />
         </div>
       </FilterCard>
     </div>

@@ -235,8 +235,53 @@ export default function Home() {
   }, []);
   const addAlcoholAbuseFilter = useCallback((type, data) => {
     const filterName = `Alcohol Abuse: ${type}`;
-    const newRow = { filter: filterName, year1: data['Year 1']?.rate || 0, year2: data['Year 2']?.rate || 0, year3: data['Year 3']?.rate || 0, year4: data['Year 4']?.rate || 0, year5: data['Year 5']?.rate || 0, year6: data['Year 6']?.rate || 0, year7: data['Year 7']?.rate || 0, year8: data['Year 8']?.rate || 0, year9: data['Year 9']?.rate || 0, year10: data['Year 10']?.rate || 0 };
-    setOutputData(prev => { const i = prev.findIndex(r => r.filter === filterName); if (i >= 0) { const u = [...prev]; u[i] = newRow; return u; } return [...prev, newRow]; });
+    const newRow = {
+      filter: filterName,
+      year1: data['Year 1']?.rate || 0,
+      year2: data['Year 2']?.rate || 0,
+      year3: data['Year 3']?.rate || 0,
+      year4: data['Year 4']?.rate || 0,
+      year5: data['Year 5']?.rate || 0,
+      year6: data['Year 6']?.rate || 0,
+      year7: data['Year 7']?.rate || 0,
+      year8: data['Year 8']?.rate || 0,
+      year9: data['Year 9']?.rate || 0,
+      year10: data['Year 10']?.rate || 0
+    };
+    setOutputData(prev => {
+      const i = prev.findIndex(r => r.filter === filterName);
+      if (i >= 0) {
+        const u = [...prev];
+        u[i] = newRow;
+        return u;
+      }
+      return [...prev, newRow];
+    });
+  }, []);
+  const addDisabilityCountFilter = useCallback((countType, countData) => {
+    const filterName = `Disability Count: ${countType}`;
+    const newRow = {
+      filter: filterName,
+      year1: countData['Year 1']?.rate || 0,
+      year2: countData['Year 2']?.rate || 0,
+      year3: countData['Year 3']?.rate || 0,
+      year4: countData['Year 4']?.rate || 0,
+      year5: countData['Year 5']?.rate || 0,
+      year6: countData['Year 6']?.rate || 0,
+      year7: countData['Year 7']?.rate || 0,
+      year8: countData['Year 8']?.rate || 0,
+      year9: countData['Year 9']?.rate || 0,
+      year10: countData['Year 10']?.rate || 0
+    };
+    setOutputData(prev => {
+      const i = prev.findIndex(r => r.filter === filterName);
+      if (i >= 0) {
+        const u = [...prev];
+        u[i] = newRow;
+        return u;
+      }
+      return [...prev, newRow];
+    });
   }, []);
 
   console.log('Current outputData:', outputData);
@@ -304,6 +349,7 @@ export default function Home() {
                     onFeloniesFilterChange={addFeloniesFilter}
                     onDTFilterChange={addDTFilter}
                     onFosterCareFilterChange={addFCFilter}
+                    onDisabilityCountFilterChange={addDisabilityCountFilter}
                   />
                 </PanelBarItem>
                 <PanelBarItem title="Disabilities">

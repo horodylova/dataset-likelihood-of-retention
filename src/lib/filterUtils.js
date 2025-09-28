@@ -1,17 +1,22 @@
 import { calculateYearsLived } from '@/lib/dataUtils';
 
+function createEmptyRetentionData() {
+  const data = {};
+  for (let year = 1; year <= 10; year++) {
+    data[`Year ${year}`] = { eligible: 0, retained: 0, rate: 0 };
+  }
+  return data;
+}
+
 export function calculateRetentionByFilter(processedData, rawData, filterColumn, filterValues = null) {
   if (!processedData || processedData.length === 0 || !rawData || rawData.length === 0) {
     return createEmptyRetentionData();
   }
 
   const headers = rawData[0];
-  const filterColumnIndex = headers.findIndex(h => 
-    h && h.toLowerCase().trim() === filterColumn.toLowerCase().trim()
-  );
+  const filterColumnIndex = headers.findIndex(h => h && h.toLowerCase().trim() === filterColumn.toLowerCase().trim());
 
   if (filterColumnIndex === -1) {
-    console.warn(`Column "${filterColumn}" not found in headers:`, headers);
     return createEmptyRetentionData();
   }
 
@@ -49,10 +54,8 @@ export function calculateRetentionByFilter(processedData, rawData, filterColumn,
       const cellValue = resident.rawData[filterColumnIndex];
       const normalizedCellValue = cellValue.toString().toLowerCase().trim();
       const normalizedFilterValue = filterValue.toString().toLowerCase().trim();
-      
       return normalizedCellValue === normalizedFilterValue;
     });
-
     calculateRetentionForData(filteredData, retentionData[filterValue]);
   });
 
@@ -71,9 +74,7 @@ export function calculateRetentionByVeteran(processedData, rawData) {
   }
 
   const headers = rawData[0];
-  const veteranColumnIndex = headers.findIndex(h => 
-    h && h.toLowerCase().trim() === 'veteran'
-  );
+  const veteranColumnIndex = headers.findIndex(h => h && h.toLowerCase().trim() === 'veteran');
 
   if (veteranColumnIndex === -1) {
     return createEmptyRetentionData();
@@ -112,9 +113,7 @@ export function calculateRetentionByHearing(processedData, rawData) {
   }
 
   const headers = rawData[0];
-  const hearingColumnIndex = headers.findIndex(h => 
-    h && h.toLowerCase().trim() === 'hearing'
-  );
+  const hearingColumnIndex = headers.findIndex(h => h && h.toLowerCase().trim() === 'hearing');
 
   if (hearingColumnIndex === -1) {
     return createEmptyRetentionData();
@@ -149,9 +148,7 @@ export function calculateRetentionBySubstanceAbuse(processedData, rawData) {
   }
 
   const headers = rawData[0];
-  const columnIndex = headers.findIndex(h => 
-    h && h.toLowerCase().trim() === 'substance abuse'
-  );
+  const columnIndex = headers.findIndex(h => h && h.toLowerCase().trim() === 'substance abuse');
 
   if (columnIndex === -1) {
     return createEmptyRetentionData();
@@ -186,9 +183,7 @@ export function calculateRetentionByFelonies(processedData, rawData) {
   }
 
   const headers = rawData[0];
-  const columnIndex = headers.findIndex(h => 
-    h && h.toLowerCase().trim() === 'felonies'
-  );
+  const columnIndex = headers.findIndex(h => h && h.toLowerCase().trim() === 'felonies');
 
   if (columnIndex === -1) {
     return createEmptyRetentionData();
@@ -229,9 +224,7 @@ export function calculateRetentionByDT(processedData, rawData) {
   }
 
   const headers = rawData[0];
-  const columnIndex = headers.findIndex(h => 
-    h && h.toLowerCase().trim() === 'dt'
-  );
+  const columnIndex = headers.findIndex(h => h && h.toLowerCase().trim() === 'dt');
 
   if (columnIndex === -1) {
     return createEmptyRetentionData();
@@ -267,27 +260,34 @@ export function calculateRetentionByFC(processedData, rawData) {
   if (!processedData || processedData.length === 0 || !rawData || rawData.length === 0) {
     return createEmptyRetentionData();
   }
+
   const headers = rawData[0];
   const columnIndex = headers.findIndex(h => h && h.toLowerCase().trim() === 'fc');
+
   if (columnIndex === -1) {
     return createEmptyRetentionData();
   }
+
   const retentionData = {
     Yes: createEmptyRetentionData(),
     No: createEmptyRetentionData(),
     combined: createEmptyRetentionData()
   };
+
   const yesData = processedData.filter(resident => {
     const cellValue = resident.rawData[columnIndex];
     return cellValue && cellValue.toString().toLowerCase().trim() === 'yes';
   });
+
   const noData = processedData.filter(resident => {
     const cellValue = resident.rawData[columnIndex];
     return !cellValue || cellValue.toString().toLowerCase().trim() !== 'yes';
   });
+
   calculateRetentionForData(yesData, retentionData.Yes);
   calculateRetentionForData(noData, retentionData.No);
   calculateRetentionForData(processedData, retentionData.combined);
+
   return retentionData;
 }
 
@@ -315,41 +315,92 @@ export function calculateRetentionByAlcoholAbuse(processedData, rawData) {
   return calculateYesNoColumn(processedData, rawData, 'alcohol abuse');
 }
 
-function createEmptyRetentionData() {
-  const data = {};
-  for (let year = 1; year <= 10; year++) {
-    data[`Year ${year}`] = {
-      eligible: 0,
-      retained: 0,
-      rate: 0
+export function calculateRetentionByDisabilityCount(processedData, rawData) {
+  if (!processedData || processedData.length === 0 || !rawData || rawData.length === 0) {
+    return {
+      '0': createEmptyRetentionData(),
+      '1': createEmptyRetentionData(),
+      '2': createEmptyRetentionData(),
+      '3': createEmptyRetentionData(),
+      '4': createEmptyRetentionData(),
+      combined: createEmptyRetentionData()
     };
   }
-  return data;
+
+  const headers = rawData[0].map(h => (h ? h.toString().toLowerCase().trim() : ''));
+
+  const columns = [
+    'visual',
+    'hearing',
+    "alzheimer's / dementia",
+    'hiv / aids',
+    'physical / medical',
+    'mental health',
+    'physical / mobility',
+    'alcohol abuse',
+    'substance abuse'
+  ];
+
+  const indices = columns.map(name => headers.findIndex(h => h === name)).filter(idx => idx !== -1);
+
+  const bucket0 = [];
+  const bucket1 = [];
+  const bucket2 = [];
+  const bucket3 = [];
+  const bucket4 = [];
+
+  processedData.forEach(resident => {
+    let count = 0;
+    indices.forEach(idx => {
+      const v = resident.rawData[idx];
+      const isYes = v && v.toString().toLowerCase().trim() === 'yes';
+      if (isYes) count++;
+    });
+    if (count >= 4) count = 4;
+    if (count === 0) bucket0.push(resident);
+    else if (count === 1) bucket1.push(resident);
+    else if (count === 2) bucket2.push(resident);
+    else if (count === 3) bucket3.push(resident);
+    else bucket4.push(resident);
+  });
+
+  const retentionData = {
+    '0': createEmptyRetentionData(),
+    '1': createEmptyRetentionData(),
+    '2': createEmptyRetentionData(),
+    '3': createEmptyRetentionData(),
+    '4': createEmptyRetentionData(),
+    combined: createEmptyRetentionData()
+  };
+
+  calculateRetentionForData(bucket0, retentionData['0']);
+  calculateRetentionForData(bucket1, retentionData['1']);
+  calculateRetentionForData(bucket2, retentionData['2']);
+  calculateRetentionForData(bucket3, retentionData['3']);
+  calculateRetentionForData(bucket4, retentionData['4']);
+  calculateRetentionForData(processedData, retentionData.combined);
+
+  return retentionData;
 }
 
 function getUniqueFilterValues(processedData, columnIndex) {
   const values = new Set();
-  
   processedData.forEach(resident => {
     const cellValue = resident.rawData[columnIndex];
     if (cellValue && cellValue !== '') {
       values.add(cellValue.toString().trim());
     }
   });
-  
   return Array.from(values);
 }
 
 function calculateRetentionForData(data, retentionObject) {
   data.forEach(resident => {
     if (!resident.moveInDate) return;
-    
     const yearsLived = calculateYearsLived(resident.moveInDate, resident.moveOutDate);
-    
     for (let year = 1; year <= 10; year++) {
       if (yearsLived >= year) {
         retentionObject[`Year ${year}`].eligible++;
-        
         if (yearsLived >= year + 1) {
           retentionObject[`Year ${year}`].retained++;
         }
@@ -359,8 +410,7 @@ function calculateRetentionForData(data, retentionObject) {
 
   Object.keys(retentionObject).forEach(year => {
     const yearData = retentionObject[year];
-    yearData.rate = yearData.eligible > 0 ? 
-      Math.round((yearData.retained / yearData.eligible) * 100 * 100) / 100 : 0;
+    yearData.rate = yearData.eligible > 0 ? Math.round((yearData.retained / yearData.eligible) * 100 * 100) / 100 : 0;
   });
 }
 

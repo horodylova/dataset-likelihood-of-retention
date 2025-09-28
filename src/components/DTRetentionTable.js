@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRetention } from '@/contexts/RetentionContext';
+import { calculateRetentionByDT } from '@/lib/filterUtils';
 
 export default function DTRetentionTable({ processedData, filters }) {
   const [showYes, setShowYes] = useState(true);
@@ -14,79 +15,18 @@ export default function DTRetentionTable({ processedData, filters }) {
       const emptyData = {};
       for (let year = 1; year <= 10; year++) {
         const yearKey = `Year ${year}`;
-        emptyData[yearKey] = {
-          eligible: 0,
-          retained: 0,
-          rate: 0
-        };
+        emptyData[yearKey] = { eligible: 0, retained: 0, rate: 0 };
       }
       return emptyData;
     }
-
-    const headers = rawData[0];
-    const columnIndex = headers.findIndex(h => 
-      h && h.toLowerCase().trim() === 'dt'
-    );
-
-    if (columnIndex === -1) {
-      const emptyData = {};
-      for (let year = 1; year <= 10; year++) {
-        const yearKey = `Year ${year}`;
-        emptyData[yearKey] = {
-          eligible: 0,
-          retained: 0,
-          rate: 0
-        };
-      }
-      return emptyData;
-    }
-
-    const retentionData = {
-      Yes: {},
-      No: {},
-      combined: {}
-    };
-
-    for (let year = 1; year <= 10; year++) {
-      const yearKey = `Year ${year}`;
-      retentionData.Yes[yearKey] = { eligible: 0, retained: 0, rate: 0 };
-      retentionData.No[yearKey] = { eligible: 0, retained: 0, rate: 0 };
-      retentionData.combined[yearKey] = { eligible: 0, retained: 0, rate: 0 };
-    }
-
-    const yesData = processedData.filter(resident => {
-      const cellValue = resident.rawData[columnIndex];
-      return cellValue && cellValue.toString().toLowerCase().trim() === 'yes';
-    });
-
-    const noData = processedData.filter(resident => {
-      const cellValue = resident.rawData[columnIndex];
-      const v = cellValue ? cellValue.toString().toLowerCase().trim() : '';
-      return v === 'no' || v === '';
-    });
-
-    const yesNoOnlyData = [...yesData, ...noData];
-
-    calculateRetentionForData(yesData, retentionData.Yes);
-    calculateRetentionForData(noData, retentionData.No);
-    calculateRetentionForData(yesNoOnlyData, retentionData.combined);
-     
-    if (showYes && !showNo) {
-      return retentionData.Yes || {};
-    } else if (showNo && !showYes) {
-      return retentionData.No || {};
-    } else if (showYes && showNo) {
-      return retentionData.combined || {};
-    }
-    
+    const retentionData = calculateRetentionByDT(processedData, rawData);
+    if (showYes && !showNo) return retentionData.Yes || {};
+    if (showNo && !showYes) return retentionData.No || {};
+    if (showYes && showNo) return retentionData.combined || {};
     const emptyData = {};
     for (let year = 1; year <= 10; year++) {
       const yearKey = `Year ${year}`;
-      emptyData[yearKey] = {
-        eligible: 0,
-        retained: 0,
-        rate: 0
-      };
+      emptyData[yearKey] = { eligible: 0, retained: 0, rate: 0 };
     }
     return emptyData;
   };

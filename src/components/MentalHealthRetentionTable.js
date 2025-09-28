@@ -3,13 +3,13 @@
 import { useState } from 'react';
 import { useRetention } from '@/contexts/RetentionContext';
 
-export default function AlzheimerRetentionTable({ processedData, filters }) {
+export default function MentalHealthRetentionTable({ processedData, filters }) {
   const [showYes, setShowYes] = useState(true);
   const [showNo, setShowNo] = useState(true);
   const { state } = useRetention();
   const { rawData } = state;
 
-  const calculateAlzheimerData = () => {
+  const calculateMentalHealthData = () => {
     if (!processedData || processedData.length === 0 || !rawData || rawData.length === 0) {
       const emptyData = {};
       for (let year = 1; year <= 10; year++) {
@@ -24,11 +24,11 @@ export default function AlzheimerRetentionTable({ processedData, filters }) {
     }
 
     const headers = rawData[0];
-    const alzheimerColumnIndex = headers.findIndex(h => 
-      h && h.toLowerCase().trim() === "alzheimer's / dementia"
+    const mhColumnIndex = headers.findIndex(h => 
+      h && h.toLowerCase().trim() === 'mental health'
     );
 
-    if (alzheimerColumnIndex === -1) {
+    if (mhColumnIndex === -1) {
       const emptyData = {};
       for (let year = 1; year <= 10; year++) {
         const yearKey = `Year ${year}`;
@@ -55,12 +55,12 @@ export default function AlzheimerRetentionTable({ processedData, filters }) {
     }
 
     const yesData = processedData.filter(resident => {
-      const cellValue = resident.rawData[alzheimerColumnIndex];
+      const cellValue = resident.rawData[mhColumnIndex];
       return cellValue && cellValue.toString().toLowerCase().trim() === 'yes';
     });
 
     const noData = processedData.filter(resident => {
-      const cellValue = resident.rawData[alzheimerColumnIndex];
+      const cellValue = resident.rawData[mhColumnIndex];
       return !cellValue || cellValue.toString().toLowerCase().trim() !== 'yes';
     });
 
@@ -125,7 +125,7 @@ export default function AlzheimerRetentionTable({ processedData, filters }) {
     return Math.floor(diffYears);
   };
 
-  const alzheimerData = calculateAlzheimerData();
+  const mhData = calculateMentalHealthData();
 
   const handleReset = () => {
     setShowYes(false);
@@ -135,7 +135,7 @@ export default function AlzheimerRetentionTable({ processedData, filters }) {
   return (
     <div style={{ flex: 1 }}>
       <div style={{ marginBottom: '15px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-        <span style={{ fontWeight: 'bold', marginRight: '15px' }}>Alzheimer&apos;s / Dementia:</span>
+        <span style={{ fontWeight: 'bold', marginRight: '15px' }}>Mental Health:</span>
         <label style={{ marginRight: '20px' }}>
           <input
             type="checkbox"
@@ -178,7 +178,7 @@ export default function AlzheimerRetentionTable({ processedData, filters }) {
           </tr>
         </thead>
         <tbody>
-          {Object.entries(alzheimerData).map(([year, data]) => (
+          {Object.entries(mhData).map(([year, data]) => (
             <tr key={year}>
               <td style={{ border: '1px solid #ccc', padding: '8px' }}>{year}</td>
               <td style={{ border: '1px solid #ccc', padding: '8px' }}>{data.eligible}</td>

@@ -12,6 +12,9 @@ import FCRetentionTable from './FCRetentionTable';
 import HearingRetentionTable from './HearingRetentionTable';
 import AlzheimerRetentionTable from './AlzheimerRetentionTable';
 import CategoryList from './CategoryList';
+import HIVRetentionTable from './HIVRetentionTable';
+import PhysicalMedicalRetentionTable from './PhysicalMedicalRetentionTable';
+import MentalHealthRetentionTable from './MentalHealthRetentionTable'
 
 export default function SheetViewer() {
   const [error, setError] = useState(null);
@@ -84,6 +87,12 @@ export default function SheetViewer() {
         return <HearingRetentionTable {...commonProps} />;
       case "Alzheimer's / Dementia":
         return <AlzheimerRetentionTable {...commonProps} />;
+      case 'HIV / AIDS':
+        return <HIVRetentionTable {...commonProps} />;
+      case 'Physical / Medical':
+        return <PhysicalMedicalRetentionTable {...commonProps} />;
+      case 'Mental Health':
+        return <MentalHealthRetentionTable {...commonProps} />;
       default:
         return null;
     }

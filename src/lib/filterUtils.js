@@ -104,7 +104,7 @@ export function calculateRetentionByVeteran(processedData, rawData) {
 }
 
 export function calculateRetentionByVisualImpairment(processedData, rawData) {
-  return calculateRetentionByFilter(processedData, rawData, 'Visual');
+  return calculateYesNoColumn(processedData, rawData, 'visual');
 }
 
 export function calculateRetentionByHearing(processedData, rawData) {

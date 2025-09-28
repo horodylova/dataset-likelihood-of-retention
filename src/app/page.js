@@ -48,8 +48,7 @@ export default function Home() {
   const addGenderFilter = useCallback((genderType, genderData) => {
     console.log('addGenderFilter called:', genderType, genderData);
     
-    const filterName = genderType === 'combined' ? 'Gender: Total' : 
-                      genderType === 'Male' ? 'Gender: Male' : 'Gender: Female';
+    const filterName = `Gender: ${genderType}`;
     
     const newRow = {
       filter: filterName,
@@ -65,18 +64,18 @@ export default function Home() {
       year10: genderData['Year 10']?.rate || 0
     };
 
-    console.log('New row:', newRow);
+    console.log('New gender row:', newRow);
 
     setOutputData(prevData => {
       const existingIndex = prevData.findIndex(row => row.filter === filterName);
       if (existingIndex >= 0) {
         const updatedData = [...prevData];
         updatedData[existingIndex] = newRow;
-        console.log('Updated existing row:', updatedData);
+        console.log('Updated existing gender row:', updatedData);
         return updatedData;
       } else {
         const newData = [...prevData, newRow];
-        console.log('Added new row:', newData);
+        console.log('Added new gender row:', newData);
         return newData;
       }
     });
@@ -85,8 +84,7 @@ export default function Home() {
   const addVeteranFilter = useCallback((veteranType, veteranData) => {
     console.log('addVeteranFilter called:', veteranType, veteranData);
     
-    const filterName = veteranType === 'combined' ? 'Veteran: Total' : 
-                      veteranType === 'Yes' ? 'Veteran: Yes' : 'Veteran: No';
+    const filterName = `Veteran: ${veteranType}`;
     
     const newRow = {
       filter: filterName,
@@ -122,9 +120,8 @@ export default function Home() {
   console.log('Current outputData:', outputData);
 
   return (
-    <div style={{
+    <div className="container" style={{
       height: '100vh',
-      padding: '20px',
       display: 'flex',
       flexDirection: 'column',
       overflow: 'hidden',
@@ -137,19 +134,25 @@ export default function Home() {
         margin: '0 0 20px 0',
         flexShrink: 0
       }}>
-        <h1 style={{ margin: 0 }}>
+        <h1 style={{ 
+          margin: 0,
+          fontSize: '24px',
+          fontWeight: '600',
+          color: 'var(--kendo-color-secondary)'
+        }}>
           Tenant Retention Analysis
         </h1>
         <Link 
           href="/analytics" 
           style={{
-            padding: '10px 20px',
-            backgroundColor: '#1e40af',
-            color: 'white',
+            padding: '8px 16px',
+            backgroundColor: 'var(--kendo-color-primary)',
+            color: 'var(--kendo-color-on-primary)',
             textDecoration: 'none',
             borderRadius: '4px',
-            fontSize: '14px',
-            fontWeight: '500'
+            fontSize: '13px',
+            fontWeight: '500',
+            transition: 'all 0.2s ease'
           }}
         >
           View Analytics

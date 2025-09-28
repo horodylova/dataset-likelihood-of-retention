@@ -106,6 +106,43 @@ export function calculateRetentionByVisualImpairment(processedData, rawData) {
   return calculateRetentionByFilter(processedData, rawData, 'Visual');
 }
 
+export function calculateRetentionByHearing(processedData, rawData) {
+  if (!processedData || processedData.length === 0 || !rawData || rawData.length === 0) {
+    return createEmptyRetentionData();
+  }
+
+  const headers = rawData[0];
+  const hearingColumnIndex = headers.findIndex(h => 
+    h && h.toLowerCase().trim() === 'hearing'
+  );
+
+  if (hearingColumnIndex === -1) {
+    return createEmptyRetentionData();
+  }
+
+  const retentionData = {
+    Yes: createEmptyRetentionData(),
+    No: createEmptyRetentionData(),
+    combined: createEmptyRetentionData()
+  };
+
+  const yesData = processedData.filter(resident => {
+    const cellValue = resident.rawData[hearingColumnIndex];
+    return cellValue && cellValue.toString().toLowerCase().trim() === 'yes';
+  });
+
+  const noData = processedData.filter(resident => {
+    const cellValue = resident.rawData[hearingColumnIndex];
+    return !cellValue || cellValue.toString().toLowerCase().trim() !== 'yes';
+  });
+
+  calculateRetentionForData(yesData, retentionData.Yes);
+  calculateRetentionForData(noData, retentionData.No);
+  calculateRetentionForData(processedData, retentionData.combined);
+
+  return retentionData;
+}
+
 function createEmptyRetentionData() {
   const data = {};
   for (let year = 1; year <= 10; year++) {

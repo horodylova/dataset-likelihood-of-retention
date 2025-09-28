@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Checkbox } from '@progress/kendo-react-inputs';
+import { Button } from '@progress/kendo-react-buttons';
 import { useRetention } from '@/contexts/RetentionContext';
 import { calculateRetentionByDisabilityCount } from '@/lib/filterUtils';
 
@@ -105,12 +106,26 @@ export default function DisabilityCountRetentionTable({ processedData, filters }
 
   return (
     <div style={{ padding: '10px', backgroundColor: 'white', borderRadius: '4px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-      <div style={{ display: 'flex', gap: '15px', marginBottom: '10px' }}>
+      <div style={{ display: 'flex', gap: '15px', marginBottom: '10px', alignItems: 'center' }}>
         <Checkbox label="0" checked={show0} onChange={(e) => setShow0(e.value)} />
         <Checkbox label="1" checked={show1} onChange={(e) => setShow1(e.value)} />
         <Checkbox label="2" checked={show2} onChange={(e) => setShow2(e.value)} />
         <Checkbox label="3" checked={show3} onChange={(e) => setShow3(e.value)} />
         <Checkbox label="4" checked={show4} onChange={(e) => setShow4(e.value)} />
+        <button
+          onClick={() => { setShow0(false); setShow1(false); setShow2(false); setShow3(false); setShow4(false); }}
+          style={{
+            padding: '6px 12px',
+            backgroundColor: '#6c757d',
+            color: 'white',
+            border: 'none',
+            borderRadius: '4px',
+            cursor: 'pointer',
+            fontSize: '12px'
+          }}
+        >
+          Reset
+        </button>
       </div>
       <table style={{ width: '100%', borderCollapse: 'collapse' }}>
         <thead>

@@ -1,10 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { Checkbox } from '@progress/kendo-react-inputs';
-import { Button } from '@progress/kendo-react-buttons';
-import { calculateRetentionByIncomeSource } from '@/lib/filterUtils';
 import { useRetention } from '@/contexts/RetentionContext';
+import { calculateRetentionByIncomeSource } from '@/lib/filterUtils';
 
 export default function IncomeSourceRetentionTable({ processedData, filters }) {
   const [showSSI, setShowSSI] = useState(true);
@@ -86,146 +84,100 @@ export default function IncomeSourceRetentionTable({ processedData, filters }) {
     setShowUnknown(false);
   };
 
-  const handleSelectAll = () => {
-    setShowSSI(true);
-    setShowSSDI(true);
-    setShowMultiple(true);
-    setShowOther(true);
-    setShowNone(true);
-    setShowUnknown(true);
-  };
-
   return (
-    <div style={{ padding: '20px' }}>
-      <div style={{ marginBottom: '20px' }}>
-        <span style={{ fontWeight: 'bold', marginRight: '15px' }}>Income Source:</span>
-        <Checkbox 
-          label="SSI" 
-          checked={showSSI}
-          onChange={(e) => setShowSSI(e.value)}
-          style={{ marginRight: '10px' }}
-        />
-        <Checkbox 
-          label="SSDI" 
-          checked={showSSDI}
-          onChange={(e) => setShowSSDI(e.value)}
-          style={{ marginRight: '10px' }}
-        />
-        <Checkbox 
-          label="Multiple" 
-          checked={showMultiple}
-          onChange={(e) => setShowMultiple(e.value)}
-          style={{ marginRight: '10px' }}
-        />
-        <Checkbox 
-          label="Other" 
-          checked={showOther}
-          onChange={(e) => setShowOther(e.value)}
-          style={{ marginRight: '10px' }}
-        />
-        <Checkbox 
-          label="None" 
-          checked={showNone}
-          onChange={(e) => setShowNone(e.value)}
-          style={{ marginRight: '10px' }}
-        />
-        <Checkbox 
-          label="Unknown" 
-          checked={showUnknown}
-          onChange={(e) => setShowUnknown(e.value)}
-          style={{ marginRight: '15px' }}
-        />
-        <Button onClick={handleSelectAll} style={{ marginRight: '10px' }}>
-          Select All
-        </Button>
-        <Button onClick={handleReset}>
+    <div style={{ flex: 1 }}>
+      <div style={{ marginBottom: '15px', display: 'flex', alignItems: 'center', gap: '5px', flexWrap: 'wrap' }}>
+        <span style={{ fontWeight: 'bold', marginRight: '10px', fontSize: '14px' }}>Income Source:</span>
+        <label style={{ marginRight: '12px', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '3px' }}>
+          <input
+            type="checkbox"
+            checked={showSSI}
+            onChange={(e) => setShowSSI(e.target.checked)}
+            style={{ margin: 0 }}
+          />
+          SSI
+        </label>
+        <label style={{ marginRight: '12px', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '3px' }}>
+          <input
+            type="checkbox"
+            checked={showSSDI}
+            onChange={(e) => setShowSSDI(e.target.checked)}
+            style={{ margin: 0 }}
+          />
+          SSDI
+        </label>
+        <label style={{ marginRight: '12px', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '3px' }}>
+          <input
+            type="checkbox"
+            checked={showMultiple}
+            onChange={(e) => setShowMultiple(e.target.checked)}
+            style={{ margin: 0 }}
+          />
+          Multiple
+        </label>
+        <label style={{ marginRight: '12px', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '3px' }}>
+          <input
+            type="checkbox"
+            checked={showOther}
+            onChange={(e) => setShowOther(e.target.checked)}
+            style={{ margin: 0 }}
+          />
+          Other
+        </label>
+        <label style={{ marginRight: '12px', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '3px' }}>
+          <input
+            type="checkbox"
+            checked={showNone}
+            onChange={(e) => setShowNone(e.target.checked)}
+            style={{ margin: 0 }}
+          />
+          None
+        </label>
+        <label style={{ marginRight: '12px', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '3px' }}>
+          <input
+            type="checkbox"
+            checked={showUnknown}
+            onChange={(e) => setShowUnknown(e.target.checked)}
+            style={{ margin: 0 }}
+          />
+          Unknown
+        </label>
+        <button
+          onClick={handleReset}
+          style={{
+            padding: '4px 8px',
+            backgroundColor: '#6c757d',
+            color: 'white',
+            border: 'none',
+            borderRadius: '3px',
+            cursor: 'pointer',
+            fontSize: '11px'
+          }}
+        >
           Reset
-        </Button>
+        </button>
       </div>
-
-      <div style={{ 
-        overflowX: 'auto',
-        border: '1px solid #ddd',
-        borderRadius: '4px'
-      }}>
-        <table style={{ 
-          width: '100%', 
-          borderCollapse: 'collapse',
-          minWidth: '800px'
-        }}>
-          <thead>
-            <tr style={{ backgroundColor: '#f5f5f5' }}>
-              <th style={{ 
-                padding: '12px', 
-                textAlign: 'left', 
-                borderBottom: '2px solid #ddd',
-                fontWeight: 'bold'
-              }}>
-                Year
-              </th>
-              <th style={{ 
-                padding: '12px', 
-                textAlign: 'center', 
-                borderBottom: '2px solid #ddd',
-                fontWeight: 'bold'
-              }}>
-                Eligible
-              </th>
-              <th style={{ 
-                padding: '12px', 
-                textAlign: 'center', 
-                borderBottom: '2px solid #ddd',
-                fontWeight: 'bold'
-              }}>
-                Retained
-              </th>
-              <th style={{ 
-                padding: '12px', 
-                textAlign: 'center', 
-                borderBottom: '2px solid #ddd',
-                fontWeight: 'bold'
-              }}>
-                Rate %
-              </th>
+      
+      <table style={{ borderCollapse: 'collapse', width: '100%', maxWidth: '600px' }}>
+        <thead>
+          <tr>
+            <th style={{ border: '1px solid #ccc', padding: '8px', backgroundColor: '#f5f5f5' }}>Year</th>
+            <th style={{ border: '1px solid #ccc', padding: '8px', backgroundColor: '#f5f5f5' }}>Eligible</th>
+            <th style={{ border: '1px solid #ccc', padding: '8px', backgroundColor: '#f5f5f5' }}>Retained</th>
+            <th style={{ border: '1px solid #ccc', padding: '8px', backgroundColor: '#f5f5f5' }}>Rate %</th>
+          </tr>
+        </thead>
+        <tbody>
+          {Object.entries(incomeData).map(([year, data]) => (
+            <tr key={year}>
+              <td style={{ border: '1px solid #ccc', padding: '8px' }}>{year}</td>
+              <td style={{ border: '1px solid #ccc', padding: '8px' }}>{data.eligible}</td>
+              <td style={{ border: '1px solid #ccc', padding: '8px' }}>{data.retained}</td>
+              <td style={{ border: '1px solid #ccc', padding: '8px' }}>{data.rate.toFixed(1)}%</td>
             </tr>
-          </thead>
-          <tbody>
-            {Object.entries(incomeData).map(([year, data]) => (
-              <tr key={year} style={{ 
-                borderBottom: '1px solid #eee',
-                '&:hover': { backgroundColor: '#f9f9f9' }
-              }}>
-                <td style={{ 
-                  padding: '10px 12px', 
-                  fontWeight: '500'
-                }}>
-                  {year}
-                </td>
-                <td style={{ 
-                  padding: '10px 12px', 
-                  textAlign: 'center'
-                }}>
-                  {data.eligible}
-                </td>
-                <td style={{ 
-                  padding: '10px 12px', 
-                  textAlign: 'center'
-                }}>
-                  {data.retained}
-                </td>
-                <td style={{ 
-                  padding: '10px 12px', 
-                  textAlign: 'center',
-                  fontWeight: '500',
-                  color: data.rate >= 70 ? '#28a745' : data.rate >= 50 ? '#ffc107' : '#dc3545'
-                }}>
-                  {data.rate}%
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 }

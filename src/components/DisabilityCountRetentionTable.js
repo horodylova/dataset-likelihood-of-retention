@@ -1,8 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { Checkbox } from '@progress/kendo-react-inputs';
-import { Button } from '@progress/kendo-react-buttons';
 import { useRetention } from '@/contexts/RetentionContext';
 import { calculateRetentionByDisabilityCount } from '@/lib/filterUtils';
 
@@ -65,69 +63,82 @@ export default function DisabilityCountRetentionTable({ processedData, filters }
     return combined;
   };
 
-  const initRetentionYears = () => {
-    const obj = {};
-    for (let year = 1; year <= 10; year++) {
-      obj[`Year ${year}`] = { eligible: 0, retained: 0, rate: 0 };
-    }
-    return obj;
-  };
-
-  const calculateRetentionForData = (data, retentionObject) => {
-    data.forEach(resident => {
-      if (!resident.moveInDate) return;
-      const yearsLived = calculateYearsLived(resident.moveInDate, resident.moveOutDate);
-      for (let year = 1; year <= 10; year++) {
-        if (yearsLived >= year) {
-          retentionObject[`Year ${year}`].eligible++;
-          if (yearsLived >= year + 1) {
-            retentionObject[`Year ${year}`].retained++;
-          }
-        }
-      }
-    });
-    Object.keys(retentionObject).forEach(year => {
-      const yearData = retentionObject[year];
-      yearData.rate = yearData.eligible > 0 ? Math.round((yearData.retained / yearData.eligible) * 100 * 100) / 100 : 0;
-    });
-  };
-
-  const calculateYearsLived = (moveInDate, moveOutDate) => {
-    if (!moveInDate) return 0;
-    const startDate = new Date(moveInDate);
-    const endDate = moveOutDate ? new Date(moveOutDate) : new Date();
-    const diffTime = Math.abs(endDate - startDate);
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    const diffYears = diffDays / 365.25;
-    return Math.floor(diffYears);
+  const handleReset = () => {
+    setShow0(false);
+    setShow1(false);
+    setShow2(false);
+    setShow3(false);
+    setShow4(false);
   };
 
   const data = calculateData();
 
   return (
-    <div style={{ padding: '10px', backgroundColor: 'white', borderRadius: '4px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-      <div style={{ display: 'flex', gap: '15px', marginBottom: '10px', alignItems: 'center' }}>
-        <Checkbox label="0" checked={show0} onChange={(e) => setShow0(e.value)} />
-        <Checkbox label="1" checked={show1} onChange={(e) => setShow1(e.value)} />
-        <Checkbox label="2" checked={show2} onChange={(e) => setShow2(e.value)} />
-        <Checkbox label="3" checked={show3} onChange={(e) => setShow3(e.value)} />
-        <Checkbox label="4" checked={show4} onChange={(e) => setShow4(e.value)} />
+    <div style={{ flex: 1 }}>
+      <div style={{ marginBottom: '15px', display: 'flex', alignItems: 'center', gap: '5px', flexWrap: 'wrap' }}>
+        <span style={{ fontWeight: 'bold', marginRight: '10px', fontSize: '14px' }}>Disability Count:</span>
+        <label style={{ marginRight: '12px', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '3px' }}>
+          <input
+            type="checkbox"
+            checked={show0}
+            onChange={(e) => setShow0(e.target.checked)}
+            style={{ margin: 0 }}
+          />
+          0
+        </label>
+        <label style={{ marginRight: '12px', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '3px' }}>
+          <input
+            type="checkbox"
+            checked={show1}
+            onChange={(e) => setShow1(e.target.checked)}
+            style={{ margin: 0 }}
+          />
+          1
+        </label>
+        <label style={{ marginRight: '12px', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '3px' }}>
+          <input
+            type="checkbox"
+            checked={show2}
+            onChange={(e) => setShow2(e.target.checked)}
+            style={{ margin: 0 }}
+          />
+          2
+        </label>
+        <label style={{ marginRight: '12px', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '3px' }}>
+          <input
+            type="checkbox"
+            checked={show3}
+            onChange={(e) => setShow3(e.target.checked)}
+            style={{ margin: 0 }}
+          />
+          3
+        </label>
+        <label style={{ marginRight: '12px', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '3px' }}>
+          <input
+            type="checkbox"
+            checked={show4}
+            onChange={(e) => setShow4(e.target.checked)}
+            style={{ margin: 0 }}
+          />
+          4
+        </label>
         <button
-          onClick={() => { setShow0(false); setShow1(false); setShow2(false); setShow3(false); setShow4(false); }}
+          onClick={handleReset}
           style={{
-            padding: '6px 12px',
+            padding: '4px 8px',
             backgroundColor: '#6c757d',
             color: 'white',
             border: 'none',
-            borderRadius: '4px',
+            borderRadius: '3px',
             cursor: 'pointer',
-            fontSize: '12px'
+            fontSize: '11px'
           }}
         >
           Reset
         </button>
       </div>
-      <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+      
+      <table style={{ borderCollapse: 'collapse', width: '100%', maxWidth: '600px' }}>
         <thead>
           <tr>
             <th style={{ border: '1px solid #ccc', padding: '8px', backgroundColor: '#f5f5f5' }}>Year</th>

@@ -10,9 +10,7 @@ export async function GET(request) {
       return Response.json({ error: 'Missing sheet ID parameter or SHEET_ID environment variable' }, { status: 400 });
     }
 
-    console.log('Fetching data from sheet:', sheetId, 'range:', range);
     const data = await getSheetData(sheetId, range);
-    console.log('Data received:', data ? data.length : 0, 'rows');
     
     return Response.json({ data: { values: data } });
   } catch (error) {

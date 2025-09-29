@@ -74,7 +74,6 @@ export function processRawData(rawData) {
   });
   
   const withValidMoveIn = processed.filter(item => item.moveInDate);
-  console.log(`Total: ${rawData.length - 1}, Valid: ${withValidMoveIn.length}, Lost: ${processed.length - withValidMoveIn.length}`);
   
   return withValidMoveIn;
 }

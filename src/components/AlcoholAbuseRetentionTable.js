@@ -31,30 +31,6 @@ export default function AlcoholAbuseRetentionTable({ processedData, filters }) {
     return emptyData;
   };
 
-  const calculateRetentionForData = (data, retentionObject) => {
-    data.forEach(resident => {
-      if (!resident.moveInDate) return;
-      
-      const yearsLived = calculateYearsLived(resident.moveInDate, resident.moveOutDate);
-      
-      for (let year = 1; year <= 10; year++) {
-        if (yearsLived >= year) {
-          retentionObject[`Year ${year}`].eligible++;
-          
-          if (yearsLived >= year + 1) {
-            retentionObject[`Year ${year}`].retained++;
-          }
-        }
-      }
-    });
-
-    Object.keys(retentionObject).forEach(year => {
-      const yearData = retentionObject[year];
-      yearData.rate = yearData.eligible > 0 ? 
-        Math.round((yearData.retained / yearData.eligible) * 100 * 100) / 100 : 0;
-    });
-  };
-
   const calculateYearsLived = (moveInDate, moveOutDate) => {
     if (!moveInDate) return 0;
     

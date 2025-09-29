@@ -16,15 +16,13 @@ export default function OutputsSection({ loading, retentionData = [], chartData 
     '#ffc107', '#17a2b8', '#343a40', '#6c757d', '#e91e63'
   ];
 
-  console.log('OutputsSection render - retentionData:', retentionData);
-
   useEffect(() => {
     if (retentionData.length > 0) {
       const newSelected = new Set();
       retentionData.forEach(item => {
         newSelected.add(item.filter);
       });
-      setSelectedLegendItems(newSelected);
+      setSelectedFilters(newSelected);
     }
   }, [retentionData]);
 

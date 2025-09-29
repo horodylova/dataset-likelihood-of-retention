@@ -21,6 +21,7 @@ import SubstanceAbuseRetentionTable from './SubstanceAbuseRetentionTable';
 import FeloniesRetentionTable from './FeloniesRetentionTable';
 import DTRetentionTable from './DTRetentionTable';
 import DisabilityCountRetentionTable from './DisabilityCountRetentionTable';
+import IncomeSourceRetentionTable from './IncomeSourceRetentionTable';
 
 export default function SheetViewer() {
   const [error, setError] = useState(null);
@@ -111,6 +112,8 @@ export default function SheetViewer() {
         return <DTRetentionTable {...commonProps} />;
       case 'Disability Count':
         return <DisabilityCountRetentionTable {...commonProps} />;
+      case 'Income':
+        return <IncomeSourceRetentionTable {...commonProps} />;
       default:
         return null;
     }

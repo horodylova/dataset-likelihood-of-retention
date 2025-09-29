@@ -284,6 +284,32 @@ export default function Home() {
     });
   }, []);
 
+  const addIncomeSourceFilter = useCallback((incomeType, incomeData) => {
+    const filterName = `Income Source: ${incomeType}`;
+    const newRow = {
+      filter: filterName,
+      year1: incomeData['Year 1']?.rate || 0,
+      year2: incomeData['Year 2']?.rate || 0,
+      year3: incomeData['Year 3']?.rate || 0,
+      year4: incomeData['Year 4']?.rate || 0,
+      year5: incomeData['Year 5']?.rate || 0,
+      year6: incomeData['Year 6']?.rate || 0,
+      year7: incomeData['Year 7']?.rate || 0,
+      year8: incomeData['Year 8']?.rate || 0,
+      year9: incomeData['Year 9']?.rate || 0,
+      year10: incomeData['Year 10']?.rate || 0
+    };
+    setOutputData(prev => {
+      const i = prev.findIndex(r => r.filter === filterName);
+      if (i >= 0) {
+        const u = [...prev];
+        u[i] = newRow;
+        return u;
+      }
+      return [...prev, newRow];
+    });
+  }, []);
+
   console.log('Current outputData:', outputData);
 
   return (
@@ -350,6 +376,7 @@ export default function Home() {
                     onDTFilterChange={addDTFilter}
                     onFosterCareFilterChange={addFCFilter}
                     onDisabilityCountFilterChange={addDisabilityCountFilter}
+                    onIncomeSourceFilterChange={addIncomeSourceFilter}
                   />
                 </PanelBarItem>
                 <PanelBarItem title="Disabilities">

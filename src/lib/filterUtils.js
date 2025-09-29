@@ -441,3 +441,62 @@ function calculateYesNoColumn(processedData, rawData, columnNameLower) {
   calculateRetentionForData(processedData, retentionData.combined);
   return retentionData;
 }
+
+export function calculateRetentionByIncomeSource(processedData, rawData) {
+  if (!processedData || processedData.length === 0 || !rawData || rawData.length === 0) {
+    return {
+      'SSI': createEmptyRetentionData(),
+      'SSDI': createEmptyRetentionData(),
+      'Multiple': createEmptyRetentionData(),
+      'Other': createEmptyRetentionData(),
+      'None': createEmptyRetentionData(),
+      'Unknown': createEmptyRetentionData(),
+      combined: createEmptyRetentionData()
+    };
+  }
+
+  const headers = rawData[0];
+  const incomeColumnIndex = headers.findIndex(h => h && (
+    h.toLowerCase().trim() === 'income source' || 
+    h.toLowerCase().trim() === 'income'
+  ));
+
+  if (incomeColumnIndex === -1) {
+    return {
+      'SSI': createEmptyRetentionData(),
+      'SSDI': createEmptyRetentionData(),
+      'Multiple': createEmptyRetentionData(),
+      'Other': createEmptyRetentionData(),
+      'None': createEmptyRetentionData(),
+      'Unknown': createEmptyRetentionData(),
+      combined: createEmptyRetentionData()
+    };
+  }
+
+  const retentionData = {
+    'SSI': createEmptyRetentionData(),
+    'SSDI': createEmptyRetentionData(),
+    'Multiple': createEmptyRetentionData(),
+    'Other': createEmptyRetentionData(),
+    'None': createEmptyRetentionData(),
+    'Unknown': createEmptyRetentionData(),
+    combined: createEmptyRetentionData()
+  };
+
+  const incomeValues = ['SSI', 'SSDI', 'Multiple', 'Other', 'None', 'Unknown'];
+
+  incomeValues.forEach(incomeValue => {
+    const filteredData = processedData.filter(resident => {
+      const cellValue = resident.rawData[incomeColumnIndex];
+      if (!cellValue) return incomeValue === 'None';
+      const normalizedCellValue = cellValue.toString().toLowerCase().trim();
+      const normalizedIncomeValue = incomeValue.toString().toLowerCase().trim();
+      return normalizedCellValue === normalizedIncomeValue;
+    });
+    calculateRetentionForData(filteredData, retentionData[incomeValue]);
+  });
+
+  calculateRetentionForData(processedData, retentionData.combined);
+
+  return retentionData;
+}

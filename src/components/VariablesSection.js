@@ -3,10 +3,10 @@
 import { Checkbox } from '@progress/kendo-react-inputs';
 import { useState, useEffect, useCallback } from 'react';
 import { useRetention } from '@/contexts/RetentionContext';
-import { calculateRetentionByGender, calculateRetentionByVeteran, calculateRetentionBySubstanceAbuse, calculateRetentionByFelonies, calculateRetentionByDT, calculateRetentionByFC, calculateRetentionByDisabilityCount } from '@/lib/filterUtils';
+import { calculateRetentionByGender, calculateRetentionByVeteran, calculateRetentionBySubstanceAbuse, calculateRetentionByFelonies, calculateRetentionByDT, calculateRetentionByFC, calculateRetentionByDisabilityCount, calculateRetentionByIncomeSource } from '@/lib/filterUtils';
 import FilterCard from './FilterCard';
 
-export default function VariablesSection({ onGenderFilterChange, onVeteranFilterChange, onSubstanceAbuseFilterChange, onFeloniesFilterChange, onDTFilterChange, onFosterCareFilterChange, onDisabilityCountFilterChange }) {
+export default function VariablesSection({ onGenderFilterChange, onVeteranFilterChange, onSubstanceAbuseFilterChange, onFeloniesFilterChange, onDTFilterChange, onFosterCareFilterChange, onDisabilityCountFilterChange, onIncomeSourceFilterChange }) {
   const [genderFilters, setGenderFilters] = useState({
     genderTotal: false,
     male: false,
@@ -49,6 +49,16 @@ export default function VariablesSection({ onGenderFilterChange, onVeteranFilter
     fourPlus: false
   });
   const [disabilityCountTotal, setDisabilityCountTotal] = useState(false);
+  
+  const [incomeSourceFilters, setIncomeSourceFilters] = useState({
+    ssi: false,
+    ssdi: false,
+    multiple: false,
+    other: false,
+    none: false,
+    unknown: false
+  });
+  const [incomeSourceTotal, setIncomeSourceTotal] = useState(false);
   
   const { state } = useRetention();
   const { processedData, rawData } = state;
@@ -96,6 +106,13 @@ export default function VariablesSection({ onGenderFilterChange, onVeteranFilter
   }, []);
   const handleDisabilityCountChange = useCallback((filterType, checked) => {
     setDisabilityCountFilters(prev => ({
+      ...prev,
+      [filterType]: checked
+    }));
+  }, []);
+
+  const handleIncomeSourceFilterChange = useCallback((filterType, checked) => {
+    setIncomeSourceFilters(prev => ({
       ...prev,
       [filterType]: checked
     }));
@@ -197,26 +214,64 @@ export default function VariablesSection({ onGenderFilterChange, onVeteranFilter
 
   useEffect(() => {
     if (!processedData || !rawData || !onDisabilityCountFilterChange) return;
-    const countData = calculateRetentionByDisabilityCount(processedData, rawData);
+    
+    const selectedFilters = Object.entries(disabilityCountFilters)
+      .filter(([_, checked]) => checked)
+      .map(([filterType, _]) => filterType);
+    
+    if (selectedFilters.length === 0 && !disabilityCountTotal) return;
+    
+    const disabilityCountData = calculateRetentionByDisabilityCount(processedData, rawData);
+    
     if (disabilityCountTotal) {
-      onDisabilityCountFilterChange('combined', countData.combined);
+      onDisabilityCountFilterChange('Total', disabilityCountData.combined || {});
     }
-    if (disabilityCountFilters.zero) {
-      onDisabilityCountFilterChange('Zero', countData['0']);
+    
+    selectedFilters.forEach(filterType => {
+      const mappedType = {
+        zero: '0',
+        one: '1', 
+        two: '2',
+        three: '3',
+        fourPlus: '4+'
+      }[filterType] || filterType;
+      
+      if (disabilityCountData[mappedType]) {
+        onDisabilityCountFilterChange(mappedType, disabilityCountData[mappedType]);
+      }
+    });
+  }, [disabilityCountFilters, disabilityCountTotal, processedData, rawData, onDisabilityCountFilterChange]);
+  
+  useEffect(() => {
+    if (!processedData || !rawData || !onIncomeSourceFilterChange) return;
+    
+    const selectedFilters = Object.entries(incomeSourceFilters)
+      .filter(([_, checked]) => checked)
+      .map(([filterType, _]) => filterType);
+    
+    if (selectedFilters.length === 0 && !incomeSourceTotal) return;
+    
+    const incomeSourceData = calculateRetentionByIncomeSource(processedData, rawData);
+    
+    if (incomeSourceTotal) {
+      onIncomeSourceFilterChange('Total', incomeSourceData.combined || {});
     }
-    if (disabilityCountFilters.one) {
-      onDisabilityCountFilterChange('One', countData['1']);
-    }
-    if (disabilityCountFilters.two) {
-      onDisabilityCountFilterChange('Two', countData['2']);
-    }
-    if (disabilityCountFilters.three) {
-      onDisabilityCountFilterChange('Three', countData['3']);
-    }
-    if (disabilityCountFilters.fourPlus) {
-      onDisabilityCountFilterChange('Four +', countData['4']);
-    }
-  }, [disabilityCountTotal, disabilityCountFilters, processedData, rawData]);
+    
+    selectedFilters.forEach(filterType => {
+      const mappedType = {
+        ssi: 'SSI',
+        ssdi: 'SSDI',
+        multiple: 'Multiple',
+        other: 'Other',
+        none: 'None',
+        unknown: 'Unknown'
+      }[filterType] || filterType;
+      
+      if (incomeSourceData[mappedType]) {
+        onIncomeSourceFilterChange(mappedType, incomeSourceData[mappedType]);
+      }
+    });
+  }, [incomeSourceFilters, incomeSourceTotal, processedData, rawData, onIncomeSourceFilterChange]);
   
   return (
     <div style={{
@@ -227,21 +282,6 @@ export default function VariablesSection({ onGenderFilterChange, onVeteranFilter
       scrollbarWidth: 'thin',
       scrollbarColor: '#FF5E00 #f1f1f1'
     }}>
-      <FilterCard title="Income Source">
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))',
-          gap: '10px',
-          alignItems: 'center'
-        }}>
-          <Checkbox label="SSI" />
-          <Checkbox label="SSDI" />
-          <Checkbox label="Multiple" />
-          <Checkbox label="Other" />
-          <Checkbox label="None" />
-          <Checkbox label="Unknown" />
-        </div>
-      </FilterCard>
       
       <div style={{
         marginBottom: '15px',
@@ -282,7 +322,7 @@ export default function VariablesSection({ onGenderFilterChange, onVeteranFilter
           />
         </div>
       </div>
-      
+
       <div style={{
         marginBottom: '15px',
         padding: '10px',
@@ -464,6 +504,71 @@ export default function VariablesSection({ onGenderFilterChange, onVeteranFilter
           <Checkbox label="Four +" checked={disabilityCountFilters.fourPlus} onChange={(e) => handleDisabilityCountChange('fourPlus', e.value)} />
         </div>
       </FilterCard>
+
+      <div style={{
+        marginBottom: '15px',
+        padding: '10px',
+        backgroundColor: 'white',
+        borderRadius: '4px',
+        boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+        transition: 'transform 0.2s ease-in-out'
+      }}>
+        <div style={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          marginBottom: '8px' 
+        }}>
+          <Checkbox 
+            checked={incomeSourceTotal}
+            onChange={(e) => setIncomeSourceTotal(e.value)}
+          />
+          <label style={{ 
+            fontWeight: 'bold', 
+            color: '#384C9E', 
+            fontSize: '14px', 
+            marginLeft: '8px'
+          }}>
+            Income Source
+          </label>
+        </div>
+        <div style={{ 
+          display: 'flex', 
+          flexDirection: 'column', 
+          gap: '8px', 
+          marginLeft: '20px' 
+        }}>
+          <Checkbox 
+            label="SSI" 
+            checked={incomeSourceFilters.ssi}
+            onChange={(e) => handleIncomeSourceFilterChange('ssi', e.value)}
+          />
+          <Checkbox 
+            label="SSDI" 
+            checked={incomeSourceFilters.ssdi}
+            onChange={(e) => handleIncomeSourceFilterChange('ssdi', e.value)}
+          />
+          <Checkbox 
+            label="Multiple" 
+            checked={incomeSourceFilters.multiple}
+            onChange={(e) => handleIncomeSourceFilterChange('multiple', e.value)}
+          />
+          <Checkbox 
+            label="Other" 
+            checked={incomeSourceFilters.other}
+            onChange={(e) => handleIncomeSourceFilterChange('other', e.value)}
+          />
+          <Checkbox 
+            label="None" 
+            checked={incomeSourceFilters.none}
+            onChange={(e) => handleIncomeSourceFilterChange('none', e.value)}
+          />
+          <Checkbox 
+            label="Unknown" 
+            checked={incomeSourceFilters.unknown}
+            onChange={(e) => handleIncomeSourceFilterChange('unknown', e.value)}
+          />
+        </div>
+      </div>
     </div>
   );
 }

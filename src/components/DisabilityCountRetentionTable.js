@@ -30,7 +30,7 @@ export default function DisabilityCountRetentionTable({ processedData, filters }
     if (show1) selectedKeys.push('1');
     if (show2) selectedKeys.push('2');
     if (show3) selectedKeys.push('3');
-    if (show4) selectedKeys.push('4');
+    if (show4) selectedKeys.push('4+');
 
     if (selectedKeys.length === 0) {
       const emptyData = {};

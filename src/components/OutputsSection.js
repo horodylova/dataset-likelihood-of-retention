@@ -22,7 +22,7 @@ export default function OutputsSection({ loading, retentionData = [], chartData 
       retentionData.forEach(item => {
         newSelected.add(item.filter);
       });
-      setSelectedFilters(newSelected);
+      setSelectedLegendItems(newSelected);
     }
   }, [retentionData]);
 

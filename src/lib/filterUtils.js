@@ -322,7 +322,7 @@ export function calculateRetentionByDisabilityCount(processedData, rawData) {
       '1': createEmptyRetentionData(),
       '2': createEmptyRetentionData(),
       '3': createEmptyRetentionData(),
-      '4': createEmptyRetentionData(),
+      '4+': createEmptyRetentionData(),
       combined: createEmptyRetentionData()
     };
   }
@@ -369,7 +369,7 @@ export function calculateRetentionByDisabilityCount(processedData, rawData) {
     '1': createEmptyRetentionData(),
     '2': createEmptyRetentionData(),
     '3': createEmptyRetentionData(),
-    '4': createEmptyRetentionData(),
+    '4+': createEmptyRetentionData(),
     combined: createEmptyRetentionData()
   };
 
@@ -377,7 +377,7 @@ export function calculateRetentionByDisabilityCount(processedData, rawData) {
   calculateRetentionForData(bucket1, retentionData['1']);
   calculateRetentionForData(bucket2, retentionData['2']);
   calculateRetentionForData(bucket3, retentionData['3']);
-  calculateRetentionForData(bucket4, retentionData['4']);
+  calculateRetentionForData(bucket4, retentionData['4+']);
   calculateRetentionForData(processedData, retentionData.combined);
 
   return retentionData;

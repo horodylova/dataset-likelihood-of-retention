@@ -14,6 +14,25 @@ export default function Home() {
   const { state, dispatch } = useRetention();
   const { loading, dataLoaded } = state;
 
+  const createFilterRow = useCallback((filterName, data) => {
+    const newRow = {
+      filter: filterName,
+      ...Array.from({ length: 10 }, (_, i) => ({
+        [`year${i + 1}`]: data[`Year ${i + 1}`]?.rate || 0
+      })).reduce((acc, curr) => ({ ...acc, ...curr }), {})
+    };
+    
+    setOutputData(prev => {
+      const existingIndex = prev.findIndex(r => r.filter === filterName);
+      if (existingIndex >= 0) {
+        const updated = [...prev];
+        updated[existingIndex] = newRow;
+        return updated;
+      }
+      return [...prev, newRow];
+    });
+  }, []);
+
   useEffect(() => {
     const loadData = async () => {
       if (dataLoaded) return;
@@ -40,275 +59,83 @@ export default function Home() {
 
   const addGenderFilter = useCallback((genderType, genderData) => {
     const filterName = `Gender: ${genderType}`;
-    const newRow = {
-      filter: filterName,
-      year1: genderData['Year 1']?.rate || 0,
-      year2: genderData['Year 2']?.rate || 0,
-      year3: genderData['Year 3']?.rate || 0,
-      year4: genderData['Year 4']?.rate || 0,
-      year5: genderData['Year 5']?.rate || 0,
-      year6: genderData['Year 6']?.rate || 0,
-      year7: genderData['Year 7']?.rate || 0,
-      year8: genderData['Year 8']?.rate || 0,
-      year9: genderData['Year 9']?.rate || 0,
-      year10: genderData['Year 10']?.rate || 0
-    };
-    setOutputData(prevData => {
-      const existingIndex = prevData.findIndex(row => row.filter === filterName);
-      if (existingIndex >= 0) {
-        const updatedData = [...prevData];
-        updatedData[existingIndex] = newRow;
-        return updatedData;
-      } else {
-        return [...prevData, newRow];
-      }
-    });
-  }, []);
+    createFilterRow(filterName, genderData);
+  }, [createFilterRow]);
 
   const addVeteranFilter = useCallback((veteranType, veteranData) => {
     const filterName = `Veteran: ${veteranType}`;
-    const newRow = {
-      filter: filterName,
-      year1: veteranData['Year 1']?.rate || 0,
-      year2: veteranData['Year 2']?.rate || 0,
-      year3: veteranData['Year 3']?.rate || 0,
-      year4: veteranData['Year 4']?.rate || 0,
-      year5: veteranData['Year 5']?.rate || 0,
-      year6: veteranData['Year 6']?.rate || 0,
-      year7: veteranData['Year 7']?.rate || 0,
-      year8: veteranData['Year 8']?.rate || 0,
-      year9: veteranData['Year 9']?.rate || 0,
-      year10: veteranData['Year 10']?.rate || 0
-    };
-    setOutputData(prevData => {
-      const existingIndex = prevData.findIndex(row => row.filter === filterName);
-      if (existingIndex >= 0) {
-        const updatedData = [...prevData];
-        updatedData[existingIndex] = newRow;
-        return updatedData;
-      } else {
-        return [...prevData, newRow];
-      }
-    });
-  }, []);
+    createFilterRow(filterName, veteranData);
+  }, [createFilterRow]);
 
   const addSubstanceAbuseFilter = useCallback((substanceType, substanceData) => {
     const filterName = `Substance Abuse: ${substanceType}`;
-    const newRow = {
-      filter: filterName,
-      year1: substanceData['Year 1']?.rate || 0,
-      year2: substanceData['Year 2']?.rate || 0,
-      year3: substanceData['Year 3']?.rate || 0,
-      year4: substanceData['Year 4']?.rate || 0,
-      year5: substanceData['Year 5']?.rate || 0,
-      year6: substanceData['Year 6']?.rate || 0,
-      year7: substanceData['Year 7']?.rate || 0,
-      year8: substanceData['Year 8']?.rate || 0,
-      year9: substanceData['Year 9']?.rate || 0,
-      year10: substanceData['Year 10']?.rate || 0
-    };
-    setOutputData(prevData => {
-      const existingIndex = prevData.findIndex(row => row.filter === filterName);
-      if (existingIndex >= 0) {
-        const updatedData = [...prevData];
-        updatedData[existingIndex] = newRow;
-        return updatedData;
-      } else {
-        return [...prevData, newRow];
-      }
-    });
-  }, []);
+    createFilterRow(filterName, substanceData);
+  }, [createFilterRow]);
 
   const addFeloniesFilter = useCallback((feloniesType, feloniesData) => {
     const filterName = `Felonies: ${feloniesType}`;
-    const newRow = {
-      filter: filterName,
-      year1: feloniesData['Year 1']?.rate || 0,
-      year2: feloniesData['Year 2']?.rate || 0,
-      year3: feloniesData['Year 3']?.rate || 0,
-      year4: feloniesData['Year 4']?.rate || 0,
-      year5: feloniesData['Year 5']?.rate || 0,
-      year6: feloniesData['Year 6']?.rate || 0,
-      year7: feloniesData['Year 7']?.rate || 0,
-      year8: feloniesData['Year 8']?.rate || 0,
-      year9: feloniesData['Year 9']?.rate || 0,
-      year10: feloniesData['Year 10']?.rate || 0
-    };
-    setOutputData(prevData => {
-      const existingIndex = prevData.findIndex(row => row.filter === filterName);
-      if (existingIndex >= 0) {
-        const updatedData = [...prevData];
-        updatedData[existingIndex] = newRow;
-        return updatedData;
-      } else {
-        return [...prevData, newRow];
-      }
-    });
-  }, []);
+    createFilterRow(filterName, feloniesData);
+  }, [createFilterRow]);
 
   const addDTFilter = useCallback((dtType, dtData) => {
     const filterName = `DT: ${dtType}`;
-    const newRow = {
-      filter: filterName,
-      year1: dtData['Year 1']?.rate || 0,
-      year2: dtData['Year 2']?.rate || 0,
-      year3: dtData['Year 3']?.rate || 0,
-      year4: dtData['Year 4']?.rate || 0,
-      year5: dtData['Year 5']?.rate || 0,
-      year6: dtData['Year 6']?.rate || 0,
-      year7: dtData['Year 7']?.rate || 0,
-      year8: dtData['Year 8']?.rate || 0,
-      year9: dtData['Year 9']?.rate || 0,
-      year10: dtData['Year 10']?.rate || 0
-    };
-    setOutputData(prevData => {
-      const existingIndex = prevData.findIndex(row => row.filter === filterName);
-      if (existingIndex >= 0) {
-        const updatedData = [...prevData];
-        updatedData[existingIndex] = newRow;
-        return updatedData;
-      } else {
-        return [...prevData, newRow];
-      }
-    });
-  }, []);
+    createFilterRow(filterName, dtData);
+  }, [createFilterRow]);
+
   const addFCFilter = useCallback((fcType, fcData) => {
     const filterName = `FC: ${fcType}`;
-    const newRow = {
-      filter: filterName,
-      year1: fcData['Year 1']?.rate || 0,
-      year2: fcData['Year 2']?.rate || 0,
-      year3: fcData['Year 3']?.rate || 0,
-      year4: fcData['Year 4']?.rate || 0,
-      year5: fcData['Year 5']?.rate || 0,
-      year6: fcData['Year 6']?.rate || 0,
-      year7: fcData['Year 7']?.rate || 0,
-      year8: fcData['Year 8']?.rate || 0,
-      year9: fcData['Year 9']?.rate || 0,
-      year10: fcData['Year 10']?.rate || 0
-    };
-    setOutputData(prevData => {
-      const existingIndex = prevData.findIndex(row => row.filter === filterName);
-      if (existingIndex >= 0) {
-        const updatedData = [...prevData];
-        updatedData[existingIndex] = newRow;
-        return updatedData;
-      } else {
-        return [...prevData, newRow];
-      }
-    });
-  }, []);
+    createFilterRow(filterName, fcData);
+  }, [createFilterRow]);
+
   const addVisualFilter = useCallback((type, data) => {
     const filterName = `Visual: ${type}`;
-    const newRow = { filter: filterName, year1: data['Year 1']?.rate || 0, year2: data['Year 2']?.rate || 0, year3: data['Year 3']?.rate || 0, year4: data['Year 4']?.rate || 0, year5: data['Year 5']?.rate || 0, year6: data['Year 6']?.rate || 0, year7: data['Year 7']?.rate || 0, year8: data['Year 8']?.rate || 0, year9: data['Year 9']?.rate || 0, year10: data['Year 10']?.rate || 0 };
-    setOutputData(prev => { const i = prev.findIndex(r => r.filter === filterName); if (i >= 0) { const u = [...prev]; u[i] = newRow; return u; } return [...prev, newRow]; });
-  }, []);
+    createFilterRow(filterName, data);
+  }, [createFilterRow]);
+
   const addHearingFilter = useCallback((type, data) => {
     const filterName = `Hearing: ${type}`;
-    const newRow = { filter: filterName, year1: data['Year 1']?.rate || 0, year2: data['Year 2']?.rate || 0, year3: data['Year 3']?.rate || 0, year4: data['Year 4']?.rate || 0, year5: data['Year 5']?.rate || 0, year6: data['Year 6']?.rate || 0, year7: data['Year 7']?.rate || 0, year8: data['Year 8']?.rate || 0, year9: data['Year 9']?.rate || 0, year10: data['Year 10']?.rate || 0 };
-    setOutputData(prev => { const i = prev.findIndex(r => r.filter === filterName); if (i >= 0) { const u = [...prev]; u[i] = newRow; return u; } return [...prev, newRow]; });
-  }, []);
+    createFilterRow(filterName, data);
+  }, [createFilterRow]);
+
   const addAlzheimerFilter = useCallback((type, data) => {
     const filterName = `Alzheimer's / Dementia: ${type}`;
-    const newRow = { filter: filterName, year1: data['Year 1']?.rate || 0, year2: data['Year 2']?.rate || 0, year3: data['Year 3']?.rate || 0, year4: data['Year 4']?.rate || 0, year5: data['Year 5']?.rate || 0, year6: data['Year 6']?.rate || 0, year7: data['Year 7']?.rate || 0, year8: data['Year 8']?.rate || 0, year9: data['Year 9']?.rate || 0, year10: data['Year 10']?.rate || 0 };
-    setOutputData(prev => { const i = prev.findIndex(r => r.filter === filterName); if (i >= 0) { const u = [...prev]; u[i] = newRow; return u; } return [...prev, newRow]; });
-  }, []);
+    createFilterRow(filterName, data);
+  }, [createFilterRow]);
+
   const addHIVFilter = useCallback((type, data) => {
     const filterName = `HIV / AIDS: ${type}`;
-    const newRow = { filter: filterName, year1: data['Year 1']?.rate || 0, year2: data['Year 2']?.rate || 0, year3: data['Year 3']?.rate || 0, year4: data['Year 4']?.rate || 0, year5: data['Year 5']?.rate || 0, year6: data['Year 6']?.rate || 0, year7: data['Year 7']?.rate || 0, year8: data['Year 8']?.rate || 0, year9: data['Year 9']?.rate || 0, year10: data['Year 10']?.rate || 0 };
-    setOutputData(prev => { const i = prev.findIndex(r => r.filter === filterName); if (i >= 0) { const u = [...prev]; u[i] = newRow; return u; } return [...prev, newRow]; });
-  }, []);
+    createFilterRow(filterName, data);
+  }, [createFilterRow]);
+
   const addPhysicalMedicalFilter = useCallback((type, data) => {
     const filterName = `Physical / Medical: ${type}`;
-    const newRow = { filter: filterName, year1: data['Year 1']?.rate || 0, year2: data['Year 2']?.rate || 0, year3: data['Year 3']?.rate || 0, year4: data['Year 4']?.rate || 0, year5: data['Year 5']?.rate || 0, year6: data['Year 6']?.rate || 0, year7: data['Year 7']?.rate || 0, year8: data['Year 8']?.rate || 0, year9: data['Year 9']?.rate || 0, year10: data['Year 10']?.rate || 0 };
-    setOutputData(prev => { const i = prev.findIndex(r => r.filter === filterName); if (i >= 0) { const u = [...prev]; u[i] = newRow; return u; } return [...prev, newRow]; });
-  }, []);
+    createFilterRow(filterName, data);
+  }, [createFilterRow]);
+
   const addMentalHealthFilter = useCallback((type, data) => {
     const filterName = `Mental Health: ${type}`;
-    const newRow = { filter: filterName, year1: data['Year 1']?.rate || 0, year2: data['Year 2']?.rate || 0, year3: data['Year 3']?.rate || 0, year4: data['Year 4']?.rate || 0, year5: data['Year 5']?.rate || 0, year6: data['Year 6']?.rate || 0, year7: data['Year 7']?.rate || 0, year8: data['Year 8']?.rate || 0, year9: data['Year 9']?.rate || 0, year10: data['Year 10']?.rate || 0 };
-    setOutputData(prev => { const i = prev.findIndex(r => r.filter === filterName); if (i >= 0) { const u = [...prev]; u[i] = newRow; return u; } return [...prev, newRow]; });
-  }, []);
+    createFilterRow(filterName, data);
+  }, [createFilterRow]);
+
   const addPhysicalMobilityFilter = useCallback((type, data) => {
     const filterName = `Physical / Mobility: ${type}`;
-    const newRow = { filter: filterName, year1: data['Year 1']?.rate || 0, year2: data['Year 2']?.rate || 0, year3: data['Year 3']?.rate || 0, year4: data['Year 4']?.rate || 0, year5: data['Year 5']?.rate || 0, year6: data['Year 6']?.rate || 0, year7: data['Year 7']?.rate || 0, year8: data['Year 8']?.rate || 0, year9: data['Year 9']?.rate || 0, year10: data['Year 10']?.rate || 0 };
-    setOutputData(prev => { const i = prev.findIndex(r => r.filter === filterName); if (i >= 0) { const u = [...prev]; u[i] = newRow; return u; } return [...prev, newRow]; });
-  }, []);
+    createFilterRow(filterName, data);
+  }, [createFilterRow]);
+
   const addAlcoholAbuseFilter = useCallback((type, data) => {
     const filterName = `Alcohol Abuse: ${type}`;
-    const newRow = {
-      filter: filterName,
-      year1: data['Year 1']?.rate || 0,
-      year2: data['Year 2']?.rate || 0,
-      year3: data['Year 3']?.rate || 0,
-      year4: data['Year 4']?.rate || 0,
-      year5: data['Year 5']?.rate || 0,
-      year6: data['Year 6']?.rate || 0,
-      year7: data['Year 7']?.rate || 0,
-      year8: data['Year 8']?.rate || 0,
-      year9: data['Year 9']?.rate || 0,
-      year10: data['Year 10']?.rate || 0
-    };
-    setOutputData(prev => {
-      const i = prev.findIndex(r => r.filter === filterName);
-      if (i >= 0) {
-        const u = [...prev];
-        u[i] = newRow;
-        return u;
-      }
-      return [...prev, newRow];
-    });
-  }, []);
+    createFilterRow(filterName, data);
+  }, [createFilterRow]);
+
   const addDisabilityCountFilter = useCallback((countType, countData) => {
     const filterName = `Disability Count: ${countType}`;
-    const newRow = {
-      filter: filterName,
-      year1: countData['Year 1']?.rate || 0,
-      year2: countData['Year 2']?.rate || 0,
-      year3: countData['Year 3']?.rate || 0,
-      year4: countData['Year 4']?.rate || 0,
-      year5: countData['Year 5']?.rate || 0,
-      year6: countData['Year 6']?.rate || 0,
-      year7: countData['Year 7']?.rate || 0,
-      year8: countData['Year 8']?.rate || 0,
-      year9: countData['Year 9']?.rate || 0,
-      year10: countData['Year 10']?.rate || 0
-    };
-    setOutputData(prev => {
-      const i = prev.findIndex(r => r.filter === filterName);
-      if (i >= 0) {
-        const u = [...prev];
-        u[i] = newRow;
-        return u;
-      }
-      return [...prev, newRow];
-    });
-  }, []);
+    createFilterRow(filterName, countData);
+  }, [createFilterRow]);
 
   const addIncomeSourceFilter = useCallback((incomeType, incomeData) => {
     const filterName = `Income Source: ${incomeType}`;
-    const newRow = {
-      filter: filterName,
-      year1: incomeData['Year 1']?.rate || 0,
-      year2: incomeData['Year 2']?.rate || 0,
-      year3: incomeData['Year 3']?.rate || 0,
-      year4: incomeData['Year 4']?.rate || 0,
-      year5: incomeData['Year 5']?.rate || 0,
-      year6: incomeData['Year 6']?.rate || 0,
-      year7: incomeData['Year 7']?.rate || 0,
-      year8: incomeData['Year 8']?.rate || 0,
-      year9: incomeData['Year 9']?.rate || 0,
-      year10: incomeData['Year 10']?.rate || 0
-    };
-    setOutputData(prev => {
-      const i = prev.findIndex(r => r.filter === filterName);
-      if (i >= 0) {
-        const u = [...prev];
-        u[i] = newRow;
-        return u;
-      }
-      return [...prev, newRow];
-    });
-  }, []);
+    createFilterRow(filterName, incomeData);
+  }, [createFilterRow]);
 
   console.log('Current outputData:', outputData);
 

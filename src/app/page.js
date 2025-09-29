@@ -307,7 +307,7 @@ export default function Home() {
           fontWeight: '600',
           color: 'var(--kendo-color-secondary)'
         }}>
-          Tenant Retention Analysis
+          Retention Analysis
         </h1>
         <Link 
           href="/analytics" 

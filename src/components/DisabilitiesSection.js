@@ -6,7 +6,7 @@ import { useRetention } from '@/contexts/RetentionContext';
 import { calculateRetentionByVisualImpairment, calculateRetentionByHearing, calculateRetentionByAlzheimer, calculateRetentionByHIV, calculateRetentionByPhysicalMedical, calculateRetentionByMentalHealth, calculateRetentionByPhysicalMobility, calculateRetentionByAlcoholAbuse } from '@/lib/filterUtils';
 import FilterCard from './FilterCard';
 
-export default function DisabilitiesSection({ onVisualFilterChange, onHearingFilterChange, onAlzheimerFilterChange, onHIVFilterChange, onPhysicalMedicalFilterChange, onMentalHealthFilterChange, onPhysicalMobilityFilterChange, onAlcoholAbuseFilterChange }) {
+export default function DisabilitiesSection({ onVisualFilterChange, onHearingFilterChange, onAlzheimerFilterChange, onHIVFilterChange, onPhysicalMedicalFilterChange, onMentalHealthFilterChange, onPhysicalMobilityFilterChange, onAlcoholAbuseFilterChange, mode = 'single', onMultiSelectionChange, resetSignal }) {
   const [visualFilters, setVisualFilters] = useState({ yes: false, no: false });
   const [hearingFilters, setHearingFilters] = useState({ yes: false, no: false });
   const [alzFilters, setAlzFilters] = useState({ yes: false, no: false });
@@ -39,8 +39,18 @@ export default function DisabilitiesSection({ onVisualFilterChange, onHearingFil
   const handleAlcohol = useCallback(makeHandler(setAlcoholFilters), []);
 
   useEffect(() => {
-    if (!processedData || !rawData || !onVisualFilterChange) return;
+    if (!processedData || !rawData) return;
     const data = calculateRetentionByVisualImpairment(processedData, rawData);
+
+    if (mode === 'multi') {
+      const values = [];
+      if (visualFilters.yes) values.push('Yes');
+      if (visualFilters.no) values.push('No');
+      if (onMultiSelectionChange) onMultiSelectionChange('Visual', { combined: !!visualTotal, values });
+      return;
+    }
+
+    if (!onVisualFilterChange) return;
     if (visualTotal) {
       onVisualFilterChange('combined', data.combined);
     }
@@ -50,11 +60,21 @@ export default function DisabilitiesSection({ onVisualFilterChange, onHearingFil
     if (visualFilters.no) {
       onVisualFilterChange('No', data.No);
     }
-  }, [visualTotal, visualFilters, processedData, rawData]);
+  }, [visualTotal, visualFilters, processedData, rawData, mode, onMultiSelectionChange]);
 
   useEffect(() => {
-    if (!processedData || !rawData || !onHearingFilterChange) return;
+    if (!processedData || !rawData) return;
     const data = calculateRetentionByHearing(processedData, rawData);
+
+    if (mode === 'multi') {
+      const values = [];
+      if (hearingFilters.yes) values.push('Yes');
+      if (hearingFilters.no) values.push('No');
+      if (onMultiSelectionChange) onMultiSelectionChange('Hearing', { combined: !!hearingTotal, values });
+      return;
+    }
+
+    if (!onHearingFilterChange) return;
     if (hearingTotal) {
       onHearingFilterChange('combined', data.combined);
     }
@@ -64,11 +84,20 @@ export default function DisabilitiesSection({ onVisualFilterChange, onHearingFil
     if (hearingFilters.no) {
       onHearingFilterChange('No', data.No);
     }
-  }, [hearingTotal, hearingFilters, processedData, rawData]);
+  }, [hearingTotal, hearingFilters, processedData, rawData, mode, onMultiSelectionChange]);
 
   useEffect(() => {
     if (!processedData || !rawData || !onAlzheimerFilterChange) return;
     const data = calculateRetentionByAlzheimer(processedData, rawData);
+
+    if (mode === 'multi') {
+      const values = [];
+      if (alzFilters.yes) values.push('Yes');
+      if (alzFilters.no) values.push('No');
+      if (onMultiSelectionChange) onMultiSelectionChange("Alzheimer's / Dementia", { combined: !!alzTotal, values });
+      return;
+    }
+
     if (alzTotal) {
       onAlzheimerFilterChange('combined', data.combined);
     }
@@ -78,11 +107,20 @@ export default function DisabilitiesSection({ onVisualFilterChange, onHearingFil
     if (alzFilters.no) {
       onAlzheimerFilterChange('No', data.No);
     }
-  }, [alzTotal, alzFilters, processedData, rawData]);
+  }, [alzTotal, alzFilters, processedData, rawData, mode, onMultiSelectionChange]);
 
   useEffect(() => {
     if (!processedData || !rawData || !onHIVFilterChange) return;
     const data = calculateRetentionByHIV(processedData, rawData);
+
+    if (mode === 'multi') {
+      const values = [];
+      if (hivFilters.yes) values.push('Yes');
+      if (hivFilters.no) values.push('No');
+      if (onMultiSelectionChange) onMultiSelectionChange('HIV / AIDS', { combined: !!hivTotal, values });
+      return;
+    }
+
     if (hivTotal) {
       onHIVFilterChange('combined', data.combined);
     }
@@ -92,11 +130,20 @@ export default function DisabilitiesSection({ onVisualFilterChange, onHearingFil
     if (hivFilters.no) {
       onHIVFilterChange('No', data.No);
     }
-  }, [hivTotal, hivFilters, processedData, rawData]);
+  }, [hivTotal, hivFilters, processedData, rawData, mode, onMultiSelectionChange]);
 
   useEffect(() => {
     if (!processedData || !rawData || !onPhysicalMedicalFilterChange) return;
     const data = calculateRetentionByPhysicalMedical(processedData, rawData);
+
+    if (mode === 'multi') {
+      const values = [];
+      if (pmFilters.yes) values.push('Yes');
+      if (pmFilters.no) values.push('No');
+      if (onMultiSelectionChange) onMultiSelectionChange('Physical / Medical', { combined: !!pmTotal, values });
+      return;
+    }
+
     if (pmTotal) {
       onPhysicalMedicalFilterChange('combined', data.combined);
     }
@@ -106,11 +153,20 @@ export default function DisabilitiesSection({ onVisualFilterChange, onHearingFil
     if (pmFilters.no) {
       onPhysicalMedicalFilterChange('No', data.No);
     }
-  }, [pmTotal, pmFilters, processedData, rawData]);
+  }, [pmTotal, pmFilters, processedData, rawData, mode, onMultiSelectionChange]);
 
   useEffect(() => {
     if (!processedData || !rawData || !onMentalHealthFilterChange) return;
     const data = calculateRetentionByMentalHealth(processedData, rawData);
+
+    if (mode === 'multi') {
+      const values = [];
+      if (mhFilters.yes) values.push('Yes');
+      if (mhFilters.no) values.push('No');
+      if (onMultiSelectionChange) onMultiSelectionChange('Mental Health', { combined: !!mhTotal, values });
+      return;
+    }
+
     if (mhTotal) {
       onMentalHealthFilterChange('combined', data.combined);
     }
@@ -120,11 +176,20 @@ export default function DisabilitiesSection({ onVisualFilterChange, onHearingFil
     if (mhFilters.no) {
       onMentalHealthFilterChange('No', data.No);
     }
-  }, [mhTotal, mhFilters, processedData, rawData]);
+  }, [mhTotal, mhFilters, processedData, rawData, mode, onMultiSelectionChange]);
 
   useEffect(() => {
     if (!processedData || !rawData || !onPhysicalMobilityFilterChange) return;
     const data = calculateRetentionByPhysicalMobility(processedData, rawData);
+
+    if (mode === 'multi') {
+      const values = [];
+      if (pmobFilters.yes) values.push('Yes');
+      if (pmobFilters.no) values.push('No');
+      if (onMultiSelectionChange) onMultiSelectionChange('Physical / Mobility', { combined: !!pmobTotal, values });
+      return;
+    }
+
     if (pmobTotal) {
       onPhysicalMobilityFilterChange('combined', data.combined);
     }
@@ -134,11 +199,20 @@ export default function DisabilitiesSection({ onVisualFilterChange, onHearingFil
     if (pmobFilters.no) {
       onPhysicalMobilityFilterChange('No', data.No);
     }
-  }, [pmobTotal, pmobFilters, processedData, rawData]);
+  }, [pmobTotal, pmobFilters, processedData, rawData, mode, onMultiSelectionChange]);
 
   useEffect(() => {
     if (!processedData || !rawData || !onAlcoholAbuseFilterChange) return;
     const data = calculateRetentionByAlcoholAbuse(processedData, rawData);
+
+    if (mode === 'multi') {
+      const values = [];
+      if (alcoholFilters.yes) values.push('Yes');
+      if (alcoholFilters.no) values.push('No');
+      if (onMultiSelectionChange) onMultiSelectionChange('Alcohol Abuse', { combined: !!alcoholTotal, values });
+      return;
+    }
+
     if (alcoholTotal) {
       onAlcoholAbuseFilterChange('combined', data.combined);
     }
@@ -148,8 +222,27 @@ export default function DisabilitiesSection({ onVisualFilterChange, onHearingFil
     if (alcoholFilters.no) {
       onAlcoholAbuseFilterChange('No', data.No);
     }
-  }, [alcoholTotal, alcoholFilters, processedData, rawData]);
+  }, [alcoholTotal, alcoholFilters, processedData, rawData, mode, onMultiSelectionChange]);
 
+  useEffect(() => {
+    if (resetSignal == null) return;
+    setVisualFilters({ yes: false, no: false });
+    setHearingFilters({ yes: false, no: false });
+    setAlzFilters({ yes: false, no: false });
+    setHivFilters({ yes: false, no: false });
+    setPmFilters({ yes: false, no: false });
+    setMhFilters({ yes: false, no: false });
+    setPmobFilters({ yes: false, no: false });
+    setAlcoholFilters({ yes: false, no: false });
+    setVisualTotal(false);
+    setHearingTotal(false);
+    setAlzTotal(false);
+    setHivTotal(false);
+    setPmTotal(false);
+    setMhTotal(false);
+    setPmobTotal(false);
+    setAlcoholTotal(false);
+  }, [resetSignal]);
   return (
     <div style={{
       padding: '20px',

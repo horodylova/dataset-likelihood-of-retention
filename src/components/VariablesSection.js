@@ -6,7 +6,7 @@ import { useRetention } from '@/contexts/RetentionContext';
 import { calculateRetentionByGender, calculateRetentionByVeteran, calculateRetentionBySubstanceAbuse, calculateRetentionByFelonies, calculateRetentionByDT, calculateRetentionByFC, calculateRetentionByDisabilityCount, calculateRetentionByIncomeSource } from '@/lib/filterUtils';
 import FilterCard from './FilterCard';
 
-export default function VariablesSection({ onGenderFilterChange, onVeteranFilterChange, onSubstanceAbuseFilterChange, onFeloniesFilterChange, onDTFilterChange, onFosterCareFilterChange, onDisabilityCountFilterChange, onIncomeSourceFilterChange }) {
+export default function VariablesSection({ onGenderFilterChange, onVeteranFilterChange, onSubstanceAbuseFilterChange, onFeloniesFilterChange, onDTFilterChange, onFosterCareFilterChange, onDisabilityCountFilterChange, onIncomeSourceFilterChange, mode = 'single', onMultiSelectionChange, resetSignal }) {
   const [genderFilters, setGenderFilters] = useState({
     genderTotal: false,
     male: false,
@@ -119,10 +119,18 @@ export default function VariablesSection({ onGenderFilterChange, onVeteranFilter
   }, []);
 
   useEffect(() => {
-    if (!processedData || !rawData || !onGenderFilterChange) return;
-
+    if (!processedData || !rawData) return;
     const genderData = calculateRetentionByGender(processedData, rawData);
-    
+
+    if (mode === 'multi') {
+      const values = [];
+      if (genderFilters.male) values.push('Male');
+      if (genderFilters.female) values.push('Female');
+      if (onMultiSelectionChange) onMultiSelectionChange('Gender', { combined: !!genderFilters.genderTotal, values });
+      return;
+    }
+
+    if (!onGenderFilterChange) return;
     if (genderFilters.genderTotal) {
       onGenderFilterChange('combined', genderData.combined);
     }
@@ -132,13 +140,21 @@ export default function VariablesSection({ onGenderFilterChange, onVeteranFilter
     if (genderFilters.female) {
       onGenderFilterChange('Female', genderData.Female);
     }
-  }, [genderFilters, processedData, rawData]);
-
+  }, [genderFilters, processedData, rawData, mode, onMultiSelectionChange]);
+  
   useEffect(() => {
-    if (!processedData || !rawData || !onVeteranFilterChange) return;
-
+    if (!processedData || !rawData) return;
     const veteranData = calculateRetentionByVeteran(processedData, rawData);
-    
+
+    if (mode === 'multi') {
+      const values = [];
+      if (veteranFilters.yes) values.push('Yes');
+      if (veteranFilters.no) values.push('No');
+      if (onMultiSelectionChange) onMultiSelectionChange('Veteran', { combined: !!veteranFilters.veteranTotal, values });
+      return;
+    }
+
+    if (!onVeteranFilterChange) return;
     if (veteranFilters.veteranTotal) {
       onVeteranFilterChange('combined', veteranData.combined);
     }
@@ -148,13 +164,21 @@ export default function VariablesSection({ onGenderFilterChange, onVeteranFilter
     if (veteranFilters.no) {
       onVeteranFilterChange('No', veteranData.No);
     }
-  }, [veteranFilters, processedData, rawData]);
+  }, [veteranFilters, processedData, rawData, mode, onMultiSelectionChange]);
 
   useEffect(() => {
-    if (!processedData || !rawData || !onSubstanceAbuseFilterChange) return;
-
+    if (!processedData || !rawData) return;
     const substanceData = calculateRetentionBySubstanceAbuse(processedData, rawData);
 
+    if (mode === 'multi') {
+      const values = [];
+      if (substanceFilters.yes) values.push('Yes');
+      if (substanceFilters.no) values.push('No');
+      if (onMultiSelectionChange) onMultiSelectionChange('Substance Abuse', { combined: !!substanceFilters.substanceTotal, values });
+      return;
+    }
+
+    if (!onSubstanceAbuseFilterChange) return;
     if (substanceFilters.substanceTotal) {
       onSubstanceAbuseFilterChange('combined', substanceData.combined);
     }
@@ -164,13 +188,21 @@ export default function VariablesSection({ onGenderFilterChange, onVeteranFilter
     if (substanceFilters.no) {
       onSubstanceAbuseFilterChange('No', substanceData.No);
     }
-  }, [substanceFilters, processedData, rawData]);
+  }, [substanceFilters, processedData, rawData, mode, onMultiSelectionChange]);
 
   useEffect(() => {
-    if (!processedData || !rawData || !onFeloniesFilterChange) return;
-
+    if (!processedData || !rawData) return;
     const feloniesData = calculateRetentionByFelonies(processedData, rawData);
 
+    if (mode === 'multi') {
+      const values = [];
+      if (feloniesFilters.yes) values.push('Yes');
+      if (feloniesFilters.no) values.push('No');
+      if (onMultiSelectionChange) onMultiSelectionChange('Felonies', { combined: !!feloniesFilters.feloniesTotal, values });
+      return;
+    }
+
+    if (!onFeloniesFilterChange) return;
     if (feloniesFilters.feloniesTotal) {
       onFeloniesFilterChange('combined', feloniesData.combined);
     }
@@ -180,13 +212,21 @@ export default function VariablesSection({ onGenderFilterChange, onVeteranFilter
     if (feloniesFilters.no) {
       onFeloniesFilterChange('No', feloniesData.No);
     }
-  }, [feloniesFilters, processedData, rawData]);
+  }, [feloniesFilters, processedData, rawData, mode, onMultiSelectionChange]);
 
   useEffect(() => {
-    if (!processedData || !rawData || !onDTFilterChange) return;
-
+    if (!processedData || !rawData) return;
     const dtData = calculateRetentionByDT(processedData, rawData);
 
+    if (mode === 'multi') {
+      const values = [];
+      if (dtFilters.yes) values.push('Yes');
+      if (dtFilters.no) values.push('No');
+      if (onMultiSelectionChange) onMultiSelectionChange('DT', { combined: !!dtFilters.dtTotal, values });
+      return;
+    }
+
+    if (!onDTFilterChange) return;
     if (dtFilters.dtTotal) {
       onDTFilterChange('combined', dtData.combined);
     }
@@ -196,11 +236,21 @@ export default function VariablesSection({ onGenderFilterChange, onVeteranFilter
     if (dtFilters.no) {
       onDTFilterChange('No', dtData.No);
     }
-  }, [dtFilters, processedData, rawData]);
+  }, [dtFilters, processedData, rawData, mode, onMultiSelectionChange]);
 
   useEffect(() => {
-    if (!processedData || !rawData || !onFosterCareFilterChange) return;
+    if (!processedData || !rawData) return;
     const fcData = calculateRetentionByFC(processedData, rawData);
+
+    if (mode === 'multi') {
+      const values = [];
+      if (fcFilters.yes) values.push('Yes');
+      if (fcFilters.no) values.push('No');
+      if (onMultiSelectionChange) onMultiSelectionChange('FC', { combined: !!fcTotal, values });
+      return;
+    }
+
+    if (!onFosterCareFilterChange) return;
     if (fcTotal) {
       onFosterCareFilterChange('combined', fcData.combined);
     }
@@ -210,23 +260,31 @@ export default function VariablesSection({ onGenderFilterChange, onVeteranFilter
     if (fcFilters.no) {
       onFosterCareFilterChange('No', fcData.No);
     }
-  }, [fcTotal, fcFilters, processedData, rawData]);
+  }, [fcTotal, fcFilters, processedData, rawData, mode, onMultiSelectionChange]);
 
   useEffect(() => {
-    if (!processedData || !rawData || !onDisabilityCountFilterChange) return;
-    
+    if (!processedData || !rawData) return;
+
+    if (mode === 'multi') {
+      const selected = [];
+      if (disabilityCountFilters.zero) selected.push('0');
+      if (disabilityCountFilters.one) selected.push('1');
+      if (disabilityCountFilters.two) selected.push('2');
+      if (disabilityCountFilters.three) selected.push('3');
+      if (disabilityCountFilters.fourPlus) selected.push('4+');
+      if (onMultiSelectionChange) onMultiSelectionChange('Disability Count', { combined: !!disabilityCountTotal, values: selected });
+      return;
+    }
+
+    if (!onDisabilityCountFilterChange) return;
     const selectedFilters = Object.entries(disabilityCountFilters)
       .filter(([_, checked]) => checked)
       .map(([filterType, _]) => filterType);
-    
     if (selectedFilters.length === 0 && !disabilityCountTotal) return;
-    
     const disabilityCountData = calculateRetentionByDisabilityCount(processedData, rawData);
-    
     if (disabilityCountTotal) {
       onDisabilityCountFilterChange('Total', disabilityCountData.combined || {});
     }
-    
     selectedFilters.forEach(filterType => {
       const mappedType = {
         zero: '0',
@@ -235,28 +293,37 @@ export default function VariablesSection({ onGenderFilterChange, onVeteranFilter
         three: '3',
         fourPlus: '4+'
       }[filterType] || filterType;
-      
       if (disabilityCountData[mappedType]) {
         onDisabilityCountFilterChange(mappedType, disabilityCountData[mappedType]);
       }
     });
-  }, [disabilityCountFilters, disabilityCountTotal, processedData, rawData, onDisabilityCountFilterChange]);
-  
+  }, [disabilityCountFilters, disabilityCountTotal, processedData, rawData, mode, onMultiSelectionChange]);
+
   useEffect(() => {
-    if (!processedData || !rawData || !onIncomeSourceFilterChange) return;
-    
+    if (!processedData || !rawData) return;
+
+    const incomeSourceData = calculateRetentionByIncomeSource(processedData, rawData);
+
+    if (mode === 'multi') {
+      const values = [];
+      if (incomeSourceFilters.ssi) values.push('SSI');
+      if (incomeSourceFilters.ssdi) values.push('SSDI');
+      if (incomeSourceFilters.multiple) values.push('Multiple');
+      if (incomeSourceFilters.other) values.push('Other');
+      if (incomeSourceFilters.none) values.push('None');
+      if (incomeSourceFilters.unknown) values.push('Unknown');
+      if (onMultiSelectionChange) onMultiSelectionChange('Income Source', { combined: !!incomeSourceTotal, values });
+      return;
+    }
+
+    if (!onIncomeSourceFilterChange) return;
     const selectedFilters = Object.entries(incomeSourceFilters)
       .filter(([_, checked]) => checked)
       .map(([filterType, _]) => filterType);
-    
     if (selectedFilters.length === 0 && !incomeSourceTotal) return;
-    
-    const incomeSourceData = calculateRetentionByIncomeSource(processedData, rawData);
-    
     if (incomeSourceTotal) {
       onIncomeSourceFilterChange('Total', incomeSourceData.combined || {});
     }
-    
     selectedFilters.forEach(filterType => {
       const mappedType = {
         ssi: 'SSI',
@@ -266,12 +333,26 @@ export default function VariablesSection({ onGenderFilterChange, onVeteranFilter
         none: 'None',
         unknown: 'Unknown'
       }[filterType] || filterType;
-      
       if (incomeSourceData[mappedType]) {
         onIncomeSourceFilterChange(mappedType, incomeSourceData[mappedType]);
       }
     });
-  }, [incomeSourceFilters, incomeSourceTotal, processedData, rawData, onIncomeSourceFilterChange]);
+  }, [incomeSourceFilters, incomeSourceTotal, processedData, rawData, mode, onMultiSelectionChange]);
+
+  useEffect(() => {
+    if (resetSignal == null) return;
+    setGenderFilters({ genderTotal: false, male: false, female: false });
+    setVeteranFilters({ veteranTotal: false, yes: false, no: false });
+    setSubstanceFilters({ substanceTotal: false, yes: false, no: false });
+    setFeloniesFilters({ feloniesTotal: false, yes: false, no: false });
+    setDTFilters({ dtTotal: false, yes: false, no: false });
+    setFCFilters({ yes: false, no: false });
+    setFCTotal(false);
+    setDisabilityCountFilters({ zero: false, one: false, two: false, three: false, fourPlus: false });
+    setDisabilityCountTotal(false);
+    setIncomeSourceFilters({ ssi: false, ssdi: false, multiple: false, other: false, none: false, unknown: false });
+    setIncomeSourceTotal(false);
+  }, [resetSignal]);
   
   return (
     <div style={{

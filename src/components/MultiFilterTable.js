@@ -50,7 +50,7 @@ export default function MultiFilterTable({ onSubmit, onReset }) {
 
   const styles = {
     container: {
-      width: '50%',
+      width: '100%', // make it fit the sidebar width
       minWidth: '360px',
       backgroundColor: '#fff',
       borderRadius: '8px',
@@ -68,6 +68,29 @@ export default function MultiFilterTable({ onSubmit, onReset }) {
       fontSize: '16px',
       fontWeight: 600,
       color: '#384C9E',
+    },
+    selectionBar: {
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      gap: '12px',
+      padding: '10px',
+      backgroundColor: '#f8f9fa',
+      border: '1px solid #e9ecef',
+      borderRadius: '6px',
+      marginBottom: '10px'
+    },
+    selectionText: {
+      fontSize: '13px',
+      color: '#495057',
+      flex: 1,
+      whiteSpace: 'nowrap',
+      overflow: 'hidden',
+      textOverflow: 'ellipsis'
+    },
+    actions: {
+      display: 'flex',
+      gap: '8px'
     },
     table: {
       width: '100%',
@@ -144,6 +167,84 @@ export default function MultiFilterTable({ onSubmit, onReset }) {
         <div style={styles.title}>Multi-Filter Retention</div>
       </div>
 
+      {/* Modern summary + actions */}
+      <div style={styles.selectionBar}>
+        <div style={styles.selectionText}>
+          You have selected: {
+            Object.entries(selected)
+              .filter(([_, set]) => set && set.size > 0)
+              .map(([label, set]) => `${label}: ${Array.from(set).join(', ')}`)
+              .join('; ') || 'None'
+          }
+        </div>
+        <div style={styles.actions}>
+          <Button
+            onClick={clearSelection}
+            className="k-button k-button-solid k-rounded-md"
+            style={{
+              padding: '8px 14px',
+              backgroundColor: '#007bff',
+              color: 'white',
+              border: 'none',
+              borderRadius: '6px',
+              fontSize: '13px',
+              fontWeight: 500,
+              boxShadow: '0 2px 4px rgba(0, 123, 255, 0.2)',
+              transition: 'transform 0.15s ease, box-shadow 0.15s ease'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'translateY(-1px)';
+              e.currentTarget.style.boxShadow = '0 4px 10px rgba(0, 123, 255, 0.25)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.boxShadow = '0 2px 4px rgba(0, 123, 255, 0.2)';
+            }}
+            onMouseDown={(e) => {
+              e.currentTarget.style.transform = 'scale(0.98)';
+            }}
+            onMouseUp={(e) => {
+              e.currentTarget.style.transform = 'translateY(-1px) scale(1)';
+            }}
+            title="Clear selection"
+          >
+            Reset
+          </Button>
+          <Button
+            onClick={buildSpecsAndSubmit}
+            className="k-button k-button-solid k-rounded-md"
+            style={{
+              padding: '8px 14px',
+              backgroundColor: '#28a745',
+              color: 'white',
+              border: 'none',
+              borderRadius: '6px',
+              fontSize: '13px',
+              fontWeight: 500,
+              boxShadow: '0 2px 4px rgba(40, 167, 69, 0.2)',
+              transition: 'transform 0.15s ease, box-shadow 0.15s ease'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'translateY(-1px)';
+              e.currentTarget.style.boxShadow = '0 4px 10px rgba(40, 167, 69, 0.25)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.boxShadow = '0 2px 4px rgba(40, 167, 69, 0.2)';
+            }}
+            onMouseDown={(e) => {
+              e.currentTarget.style.transform = 'scale(0.98)';
+            }}
+            onMouseUp={(e) => {
+              e.currentTarget.style.transform = 'translateY(-1px) scale(1)';
+            }}
+            title="Submit filters and compute retention"
+          >
+            Submit
+          </Button>
+        </div>
+      </div>
+
       <table style={styles.table}>
         <thead>
           <tr>
@@ -178,6 +279,7 @@ export default function MultiFilterTable({ onSubmit, onReset }) {
         </tbody>
       </table>
 
+      {/* footer buttons removed since actions moved to header */}
       <div style={styles.footer}>
         <Button
             onClick={clearSelection}

@@ -529,29 +529,62 @@ export function calculateRetentionByMultiFilters(processedData, rawData, filterS
     if (!spec || !spec.column) return true;
 
     const columnName = normalize(spec.column);
+
+    // Derived "Disability Count"
+    if (columnName === 'disability count') {
+      const columns = [
+        'visual','hearing',"alzheimer's / dementia",'hiv / aids',
+        'physical / medical','mental health','physical / mobility',
+        'alcohol abuse','substance abuse'
+      ];
+      const indices = columns.map(name => headers.findIndex(h => h === name)).filter(idx => idx !== -1);
+      let count = 0;
+      indices.forEach(idx => {
+        const v = resident.rawData[idx];
+        if (v && v.toString().toLowerCase().trim() === 'yes') count++;
+      });
+      const bucket = count >= 4 ? '4+' : String(count);
+      const values = Array.isArray(spec.values) ? spec.values.map(normalize) : [];
+      // combined для Disability Count: не фильтруем
+      if (spec.combined) return true;
+      if (values.length === 0) return true;
+      return values.includes(bucket);
+    }
+
     const columnIndex = headers.findIndex(h => h === columnName);
     if (columnIndex === -1) return false;
 
     const cellValue = normalize(resident.rawData[columnIndex]);
     const values = Array.isArray(spec.values) ? spec.values.map(normalize) : [];
 
+    // Обработка 'combined' по аналогии с одиночными функциями
+    if (spec.combined) {
+      if (columnName === 'dt') {
+        return cellValue === 'yes' || cellValue === 'no' || cellValue === '';
+      }
+      if (columnName === 'felonies') {
+        return cellValue === 'yes' || cellValue === 'no';
+      }
+      if (columnName === 'gender') {
+        return cellValue === 'male' || cellValue === 'female';
+      }
+      // Для остальных комбинированных колонок — как в single: не фильтруем
+      return true;
+    }
+
     if (values.length === 0) {
-    
       return cellValue !== '';
     }
 
     for (const v of values) {
-   
       if ((columnName === 'income source' || columnName === 'income') && v === 'none') {
         if (cellValue === '' || cellValue === 'none') return true;
       }
-
       if (columnName === 'felonies') {
         if (v === 'yes' && cellValue === 'yes') return true;
         if (v === 'no' && cellValue === 'no') return true;
         continue;
       }
-
       if (v === 'yes' && cellValue === 'yes') return true;
       if (v === 'no') {
         if (emptyIsNo.has(columnName)) {
@@ -560,7 +593,6 @@ export function calculateRetentionByMultiFilters(processedData, rawData, filterS
           if (cellValue === 'no') return true;
         }
       }
-
       if (cellValue === v) return true;
     }
 

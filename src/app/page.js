@@ -1,5 +1,6 @@
 'use client'
 
+// top-level imports
 import { Splitter, SplitterPane } from '@progress/kendo-react-layout';
 import { PanelBar, PanelBarItem } from '@progress/kendo-react-layout';
 import { useState, useEffect, useCallback } from 'react';
@@ -8,11 +9,17 @@ import DisabilitiesSection from '../components/DisabilitiesSection';
 import VariablesSection from '../components/VariablesSection';
 import OutputsSection from '../components/OutputsSection';
 import Link from 'next/link';
+import { Button, ButtonGroup } from '@progress/kendo-react-buttons';
+import MultiFilterTable from '../components/MultiFilterTable';
+import { calculateRetentionByMultiFilters } from '@/lib/filterUtils';
 
 export default function Home() {
   const [outputData, setOutputData] = useState([]);
+  const [filterMode, setFilterMode] = useState('single');
+  const [multiSpecs, setMultiSpecs] = useState({});
+  const [resetSignal, setResetSignal] = useState(0);
   const { state, dispatch } = useRetention();
-  const { loading, dataLoaded } = state;
+  const { loading, dataLoaded, processedData, rawData } = state;
 
   const createFilterRow = useCallback((filterName, data) => {
     const newRow = {
@@ -137,6 +144,58 @@ export default function Home() {
     createFilterRow(filterName, incomeData);
   }, [createFilterRow]);
 
+  // Сбор мультирежима: поддержка { combined, values }
+  const updateMultiSelection = useCallback((label, payload) => {
+    setMultiSpecs(prev => {
+      const next = { ...prev };
+      if (payload && typeof payload === 'object' && !Array.isArray(payload)) {
+        const values = Array.isArray(payload.values) ? payload.values : [];
+        if (payload.combined || values.length > 0) {
+          next[label] = { combined: !!payload.combined, values: new Set(values) };
+        } else {
+          delete next[label];
+        }
+      } else {
+        const values = Array.isArray(payload) ? payload : [];
+        if (values.length > 0) {
+          next[label] = { combined: false, values: new Set(values) };
+        } else {
+          delete next[label];
+        }
+      }
+      return next;
+    });
+  }, []);
+
+  // Сабмит мультирежима с учетом combined
+  const handleMultiSubmit = useCallback(() => {
+    if (!processedData || !rawData) return;
+
+    const specs = Object.entries(multiSpecs)
+      .filter(([_, entry]) => entry && (entry.combined || (entry.values && entry.values.size > 0)))
+      .map(([column, entry]) => ({
+        column,
+        values: Array.from(entry.values || []),
+        combined: !!entry.combined
+      }));
+
+    if (specs.length === 0) return;
+
+    const retention = calculateRetentionByMultiFilters(processedData, rawData, specs);
+    const name = specs
+      .map(s => {
+        const vals = Array.isArray(s.values) && s.values.length > 0 ? s.values.join(', ') : (s.combined ? 'combined' : '');
+        return `${s.column}: ${vals}`;
+      })
+      .join('; ');
+    createFilterRow(name, retention);
+  }, [processedData, rawData, multiSpecs, createFilterRow]);
+
+  const handleMultiReset = useCallback(() => {
+    setMultiSpecs({});
+    setResetSignal(s => s + 1);
+  }, []);
+
   console.log('Current outputData:', outputData);
 
   return (
@@ -191,37 +250,138 @@ export default function Home() {
             <div style={{ 
               height: '100%',
               overflow: 'auto',
-              padding: '10px'
+              padding: '10px',
+              position: 'relative'
             }}>
+              {/* Filtering Mode toggle */}
+              <div style={{
+                marginBottom: '12px',
+                padding: '10px',
+                backgroundColor: 'white',
+                borderRadius: '4px',
+                boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
+              }}>
+                <div style={{ 
+                  display: 'flex', 
+                  alignItems: 'center',
+                  justifyContent: 'space-between'
+                }}>
+                 
+                  <ButtonGroup selection="single">
+                    <Button 
+                      togglable={true} 
+                      selected={filterMode === 'single'} 
+                      onClick={() => setFilterMode('single')}
+                    >
+                      Single
+                    </Button>
+                    <Button 
+                      togglable={true} 
+                      selected={filterMode === 'multi'} 
+                      onClick={() => setFilterMode('multi')}
+                    >
+                      Multi-Select
+                    </Button>
+                  </ButtonGroup>
+                </div>
+              </div>
+
+              {/* Floating multi-select summary in sidebar */}
+              {filterMode === 'multi' && (
+                <div style={{
+                  position: 'sticky',
+                  top: 10,
+                  zIndex: 2,
+                  marginBottom: '12px',
+                  padding: '10px',
+                  backgroundColor: 'white',
+                  borderRadius: '6px',
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+                  border: '1px solid #e9ecef'
+                }}>
+                  <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'flex-end',
+                    gap: '12px'
+                  }}>
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                      <Button
+                        onClick={handleMultiReset}
+                        className="k-button k-button-solid k-rounded-md"
+                        style={{
+                          padding: '8px 14px',
+                          backgroundColor: '#007bff',
+                          color: 'white',
+                          border: 'none',
+                          borderRadius: '6px',
+                          fontSize: '13px',
+                          fontWeight: 500,
+                          boxShadow: '0 2px 4px rgba(0, 123, 255, 0.2)',
+                          transition: 'transform 0.15s ease, box-shadow 0.15s ease'
+                        }}
+                        title="Clear selection"
+                      >
+                        Reset
+                      </Button>
+                      <Button
+                        onClick={handleMultiSubmit}
+                        className="k-button k-button-solid k-rounded-md"
+                        style={{
+                          padding: '8px 14px',
+                          backgroundColor: '#28a745',
+                          color: 'white',
+                          border: 'none',
+                          borderRadius: '6px',
+                          fontSize: '13px',
+                          fontWeight: 500,
+                          boxShadow: '0 2px 4px rgba(40, 167, 69, 0.2)',
+                          transition: 'transform 0.15s ease, box-shadow 0.15s ease'
+                        }}
+                        title="Submit filters and compute retention"
+                      >
+                        Submit
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               <PanelBar>
                 <PanelBarItem title="Variables" expanded={true}>
                   <VariablesSection 
-                    onGenderFilterChange={addGenderFilter}
-                    onVeteranFilterChange={addVeteranFilter}
-                    onSubstanceAbuseFilterChange={addSubstanceAbuseFilter}
-                    onFeloniesFilterChange={addFeloniesFilter}
-                    onDTFilterChange={addDTFilter}
-                    onFosterCareFilterChange={addFCFilter}
-                    onDisabilityCountFilterChange={addDisabilityCountFilter}
-                    onIncomeSourceFilterChange={addIncomeSourceFilter}
+                    mode={filterMode}
+                    resetSignal={resetSignal}
+                    onMultiSelectionChange={updateMultiSelection}
+                    onGenderFilterChange={filterMode === 'single' ? addGenderFilter : undefined}
+                    onVeteranFilterChange={filterMode === 'single' ? addVeteranFilter : undefined}
+                    onSubstanceAbuseFilterChange={filterMode === 'single' ? addSubstanceAbuseFilter : undefined}
+                    onFeloniesFilterChange={filterMode === 'single' ? addFeloniesFilter : undefined}
+                    onDTFilterChange={filterMode === 'single' ? addDTFilter : undefined}
+                    onFosterCareFilterChange={filterMode === 'single' ? addFCFilter : undefined}
+                    onDisabilityCountFilterChange={filterMode === 'single' ? addDisabilityCountFilter : undefined}
+                    onIncomeSourceFilterChange={filterMode === 'single' ? addIncomeSourceFilter : undefined}
                   />
                 </PanelBarItem>
                 <PanelBarItem title="Disabilities">
                   <DisabilitiesSection 
-                    onVisualFilterChange={addVisualFilter}
-                    onHearingFilterChange={addHearingFilter}
-                    onAlzheimerFilterChange={addAlzheimerFilter}
-                    onHIVFilterChange={addHIVFilter}
-                    onPhysicalMedicalFilterChange={addPhysicalMedicalFilter}
-                    onMentalHealthFilterChange={addMentalHealthFilter}
-                    onPhysicalMobilityFilterChange={addPhysicalMobilityFilter}
-                    onAlcoholAbuseFilterChange={addAlcoholAbuseFilter}
+                    mode={filterMode}
+                    resetSignal={resetSignal}
+                    onMultiSelectionChange={updateMultiSelection}
+                    onVisualFilterChange={filterMode === 'single' ? addVisualFilter : undefined}
+                    onHearingFilterChange={filterMode === 'single' ? addHearingFilter : undefined}
+                    onAlzheimerFilterChange={filterMode === 'single' ? addAlzheimerFilter : undefined}
+                    onHIVFilterChange={filterMode === 'single' ? addHIVFilter : undefined}
+                    onPhysicalMedicalFilterChange={filterMode === 'single' ? addPhysicalMedicalFilter : undefined}
+                    onMentalHealthFilterChange={filterMode === 'single' ? addMentalHealthFilter : undefined}
+                    onPhysicalMobilityFilterChange={filterMode === 'single' ? addPhysicalMobilityFilter : undefined}
+                    onAlcoholAbuseFilterChange={filterMode === 'single' ? addAlcoholAbuseFilter : undefined}
                   />
                 </PanelBarItem>
               </PanelBar>
             </div>
           </SplitterPane>
-          
+
           <SplitterPane>
             <OutputsSection 
               loading={loading}

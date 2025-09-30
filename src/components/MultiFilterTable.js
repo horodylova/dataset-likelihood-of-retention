@@ -18,7 +18,8 @@ export default function MultiFilterTable({ onSubmit, onReset }) {
     { column: 'Felonies', name: 'Felonies', options: ['Yes', 'No'] },
     { column: 'DT', name: 'DT', options: ['Yes', 'No'] },
     { column: 'Disability Count', name: 'Disability Count', options: ['0', '1', '2', '3', '4+'] },
-    { column: 'Income Source', name: 'Income Source', options: ['SSI', 'SSDI', 'Multiple', 'Other', 'None', 'Unknown'] },
+    // ВАЖНО: колонка для расчёта — 'Income', а метка в UI — 'Income Source'
+    { column: 'Income', name: 'Income Source', options: ['SSI', 'SSDI', 'Multiple', 'Other', 'None'] },
   ];
 
   const [selected, setSelected] = useState({});
@@ -42,7 +43,8 @@ export default function MultiFilterTable({ onSubmit, onReset }) {
     filters.forEach(f => {
       const chosen = Array.from(selected[f.name] || []);
       if (chosen.length > 0) {
-        specs.push({ column: f.column, values: chosen });
+        // Передаём колонку для расчёта и отдельное поле display для красивого заголовка
+        specs.push({ column: f.column, values: chosen, display: f.name });
       }
     });
     if (onSubmit) onSubmit(specs);
@@ -163,11 +165,43 @@ export default function MultiFilterTable({ onSubmit, onReset }) {
 
   return (
     <div style={styles.container}>
-      <div style={styles.header}>
-        <div style={styles.title}>Multi-Filter Retention</div>
-      </div>
+      {/* Заголовок "Multi-Filter Retention" удален */}
 
-      {/* Modern summary + actions */}
+      <table style={styles.table}>
+        <thead>
+          <tr>
+            <th style={styles.th}>Filter</th>
+            <th style={styles.th}>Options</th>
+          </tr>
+        </thead>
+        <tbody>
+          {filters.map(f => (
+            <tr key={f.name} style={styles.tr}>
+              <td style={styles.tdName}>{f.name}{f.disabled ? ' (derived)' : ''}</td>
+              <td style={styles.tdOptions}>
+                <div style={styles.optionWrap}>
+                  {f.options.map(opt => {
+                    const isActive = (selected[f.name] || new Set()).has(opt);
+                    return (
+                      <button
+                        key={opt}
+                        type="button"
+                        style={styles.pill(isActive, !!f.disabled)}
+                        onClick={() => toggleOption(f.name, opt, !!f.disabled)}
+                        title={f.disabled ? 'Not selectable' : 'Toggle option'}
+                      >
+                        {opt}
+                      </button>
+                    );
+                  })}
+                </div>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      {/* Панель выбора перенесена вниз под таблицу без изменений */}
       <div style={styles.selectionBar}>
         <div style={styles.selectionText}>
           You have selected: {
@@ -245,107 +279,7 @@ export default function MultiFilterTable({ onSubmit, onReset }) {
         </div>
       </div>
 
-      <table style={styles.table}>
-        <thead>
-          <tr>
-            <th style={styles.th}>Filter</th>
-            <th style={styles.th}>Options</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filters.map(f => (
-            <tr key={f.name} style={styles.tr}>
-              <td style={styles.tdName}>{f.name}{f.disabled ? ' (derived)' : ''}</td>
-              <td style={styles.tdOptions}>
-                <div style={styles.optionWrap}>
-                  {f.options.map(opt => {
-                    const isActive = (selected[f.name] || new Set()).has(opt);
-                    return (
-                      <button
-                        key={opt}
-                        type="button"
-                        style={styles.pill(isActive, !!f.disabled)}
-                        onClick={() => toggleOption(f.name, opt, !!f.disabled)}
-                        title={f.disabled ? 'Not selectable' : 'Toggle option'}
-                      >
-                        {opt}
-                      </button>
-                    );
-                  })}
-                </div>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-
-      {/* footer buttons removed since actions moved to header */}
-      <div style={styles.footer}>
-        <Button
-            onClick={clearSelection}
-            className="k-button k-button-solid k-rounded-md"
-            style={{
-                padding: '10px 18px',
-                backgroundColor: '#007bff',
-                color: 'white',
-                border: 'none',
-                borderRadius: '6px',
-                fontSize: '14px',
-                fontWeight: 500,
-                boxShadow: '0 2px 4px rgba(0, 123, 255, 0.2)',
-                transition: 'transform 0.15s ease, box-shadow 0.15s ease'
-            }}
-            onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'translateY(-1px)';
-                e.currentTarget.style.boxShadow = '0 4px 10px rgba(0, 123, 255, 0.25)';
-            }}
-            onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = '0 2px 4px rgba(0, 123, 255, 0.2)';
-            }}
-            onMouseDown={(e) => {
-                e.currentTarget.style.transform = 'scale(0.98)';
-            }}
-            onMouseUp={(e) => {
-                e.currentTarget.style.transform = 'translateY(-1px) scale(1)';
-            }}
-            title="Start a new selection"
-        >
-            Select
-        </Button>
-        <Button
-            onClick={buildSpecsAndSubmit}
-            className="k-button k-button-solid k-rounded-md"
-            style={{
-                padding: '10px 18px',
-                backgroundColor: '#28a745',
-                color: 'white',
-                border: 'none',
-                borderRadius: '6px',
-                fontSize: '14px',
-                fontWeight: 500,
-                boxShadow: '0 2px 4px rgba(40, 167, 69, 0.2)',
-                transition: 'transform 0.15s ease, box-shadow 0.15s ease'
-            }}
-            onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'translateY(-1px)';
-                e.currentTarget.style.boxShadow = '0 4px 10px rgba(40, 167, 69, 0.25)';
-            }}
-            onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = '0 2px 4px rgba(40, 167, 69, 0.2)';
-            }}
-            onMouseDown={(e) => {
-                e.currentTarget.style.transform = 'scale(0.98)';
-            }}
-            onMouseUp={(e) => {
-                e.currentTarget.style.transform = 'translateY(-1px) scale(1)';
-            }}
-            title="Submit filters and compute retention"
-        >
-            Submit
-        </Button>
-      </div>
+      {/* Нижние две кнопки полностью удалены */}
     </div>
   );
 }

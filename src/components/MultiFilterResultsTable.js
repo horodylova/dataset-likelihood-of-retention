@@ -20,7 +20,7 @@ export default function MultiFilterResultsTable({ retentionData, selectedSpecs =
   const summary = selectedSpecs.length
     ? selectedSpecs
         .map(spec => {
-          const label = spec.column;
+          const label = spec.display || spec.column;
           const values = Array.isArray(spec.values) ? spec.values.join(', ') : '';
           return `${label}: ${values}`;
         })
@@ -29,14 +29,7 @@ export default function MultiFilterResultsTable({ retentionData, selectedSpecs =
 
   return (
     <div style={containerStyle}>
-      <div style={{ fontSize: '16px', fontWeight: 600, color: '#384C9E', marginBottom: '4px' }}>
-        Multi-Filter Results
-      </div>
-      {summary && (
-        <div style={{ fontSize: '12px', color: '#6c757d', marginBottom: '8px' }}>
-          {summary}
-        </div>
-      )}
+      {/* Заголовок и панель выбора удалены */}
       {hasData ? (
         <table style={tableStyle}>
           <thead>

@@ -11,8 +11,7 @@ export default function Analytics() {
         alignItems: 'center', 
         justifyContent: 'space-between',
         marginBottom: '30px',
-        paddingBottom: '20px',
-        borderBottom: '1px solid #e0e0e0'
+        paddingBottom: '20px'
       }}>
         <h1 style={{ 
           margin: 0,

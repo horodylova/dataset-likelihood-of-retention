@@ -1,7 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
+import MultiFilterTable from './MultiFilterTable';
+import MultiFilterResultsTable from './MultiFilterResultsTable';
 import { useRetention } from '@/contexts/RetentionContext';
+import { calculateRetentionByMultiFilters } from '@/lib/filterUtils';
 import { Button } from '@progress/kendo-react-buttons';
 import RawDataTable from './RawDataTable';
 import ResidentsRetentionTable from './ResidentsRetentionTable';
@@ -27,6 +30,9 @@ export default function SheetViewer() {
   const [error, setError] = useState(null);
   const [showRawData, setShowRawData] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(null);
+  const [showMultiFilter, setShowMultiFilter] = useState(false);
+  const [multiFilterResults, setMultiFilterResults] = useState({});
+  const [multiFilterSpecs, setMultiFilterSpecs] = useState([]);
   
   const { state, dispatch } = useRetention();
   const { loading, processedData, retentionData, chartData, dataLoaded, filters, rawData } = state;
@@ -119,6 +125,21 @@ export default function SheetViewer() {
     }
   };
 
+  const handleMultiFilterSubmit = (filterSpecs) => {
+    if (!filterSpecs || filterSpecs.length === 0 || !processedData || !rawData) {
+      setMultiFilterResults({});
+      return;
+    }
+    const results = calculateRetentionByMultiFilters(processedData, rawData, filterSpecs);
+    setMultiFilterSpecs(filterSpecs);
+    setMultiFilterResults(results || {});
+  };
+
+  const handleMultiFilterReset = () => {
+    setMultiFilterSpecs([]);
+    setMultiFilterResults({});
+  };
+
   return (
     <div style={{ 
       width: '100%', 
@@ -188,7 +209,7 @@ export default function SheetViewer() {
             </div>
 
             <div style={{ 
-              minHeight: '300px',
+              height: '520px',
               overflow: 'auto',
               width: '100%'
             }}>
@@ -198,11 +219,13 @@ export default function SheetViewer() {
           
           <div style={{ 
             paddingTop: '30px',
-            borderTop: '1px solid #e0e0e0',
-            marginTop: '20px'
+            marginTop: '20px',
+            display: 'flex',
+            gap: '10px'
           }}>
-            <button
+            <Button
               onClick={() => setShowRawData(!showRawData)}
+              className="k-button k-button-solid k-rounded-md"
               style={{
                 padding: '12px 24px',
                 backgroundColor: '#28a745',
@@ -213,12 +236,72 @@ export default function SheetViewer() {
                 fontSize: '14px',
                 fontWeight: '500',
                 boxShadow: '0 2px 4px rgba(40, 167, 69, 0.2)',
-                transition: 'all 0.2s ease'
+                transition: 'transform 0.15s ease, box-shadow 0.15s ease'
               }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-1px)';
+                e.currentTarget.style.boxShadow = '0 4px 10px rgba(40, 167, 69, 0.25)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = '0 2px 4px rgba(40, 167, 69, 0.2)';
+              }}
+              onMouseDown={(e) => {
+                e.currentTarget.style.transform = 'scale(0.98)';
+              }}
+              onMouseUp={(e) => {
+                e.currentTarget.style.transform = 'translateY(-1px) scale(1)';
+              }}
+              title="Toggle raw data visibility"
             >
               {showRawData ? 'Hide Raw Data' : 'Show Raw Data'}
-            </button>
+            </Button>
+            <Button
+              onClick={() => setShowMultiFilter(!showMultiFilter)}
+              className="k-button k-button-solid k-rounded-md"
+              style={{
+                padding: '12px 24px',
+                backgroundColor: '#007bff',
+                color: 'white',
+                border: 'none',
+                borderRadius: '6px',
+                cursor: 'pointer',
+                fontSize: '14px',
+                fontWeight: '500',
+                boxShadow: '0 2px 4px rgba(0, 123, 255, 0.2)',
+                transition: 'transform 0.15s ease, box-shadow 0.15s ease'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-1px)';
+                e.currentTarget.style.boxShadow = '0 4px 10px rgba(0, 123, 255, 0.25)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = '0 2px 4px rgba(0, 123, 255, 0.2)';
+              }}
+              onMouseDown={(e) => {
+                e.currentTarget.style.transform = 'scale(0.98)';
+              }}
+              onMouseUp={(e) => {
+                e.currentTarget.style.transform = 'translateY(-1px) scale(1)';
+              }}
+              title="Configure multi-filter and run retention"
+            >
+              {showMultiFilter ? 'Hide Multi-Filter' : 'Multi-Filter Retention'}
+            </Button>
           </div>
+          
+          {showMultiFilter && (
+            <div style={{ 
+              marginTop: '12px',
+              display: 'flex',
+              gap: '16px',
+              alignItems: 'flex-start'
+            }}>
+              <MultiFilterTable onSubmit={handleMultiFilterSubmit} onReset={handleMultiFilterReset} />
+              <MultiFilterResultsTable retentionData={multiFilterResults} selectedSpecs={multiFilterSpecs} />
+            </div>
+          )}
           
           {showRawData && (
             <div style={{ 

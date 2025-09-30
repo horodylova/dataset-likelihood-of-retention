@@ -86,9 +86,17 @@ export default function IncomeSourceRetentionTable({ processedData, filters }) {
 
   return (
     <div style={{ flex: 1 }}>
-      <div style={{ marginBottom: '15px', display: 'flex', alignItems: 'center', gap: '5px', flexWrap: 'wrap' }}>
+      <div style={{ 
+        marginBottom: '15px', 
+        display: 'flex', 
+        alignItems: 'center', 
+        gap: '8px', 
+        flexWrap: 'nowrap', 
+        overflowX: 'auto',
+        whiteSpace: 'nowrap'
+      }}>
         <span style={{ fontWeight: 'bold', marginRight: '10px', fontSize: '14px' }}>Income Source:</span>
-        <label style={{ marginRight: '12px', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '3px' }}>
+        <label style={{ marginRight: '12px', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '3px', flex: '0 0 auto' }}>
           <input
             type="checkbox"
             checked={showSSI}

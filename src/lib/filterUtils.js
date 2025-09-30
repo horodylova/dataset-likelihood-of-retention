@@ -500,3 +500,78 @@ export function calculateRetentionByIncomeSource(processedData, rawData) {
 
   return retentionData;
 }
+
+export function calculateRetentionByMultiFilters(processedData, rawData, filterSpecs = []) {
+ 
+  if (!processedData || processedData.length === 0 || !rawData || rawData.length === 0) {
+    return createEmptyRetentionData();
+  }
+
+  const headers = rawData[0].map(h => (h ? h.toString().toLowerCase().trim() : ''));
+  const normalize = (v) => (v ? v.toString().toLowerCase().trim() : '');
+
+  const emptyIsNo = new Set([
+    'veteran',
+    'fc',
+    'dt',
+    'visual',
+    'hearing',
+    "alzheimer's / dementia",
+    'hiv / aids',
+    'physical / medical',
+    'mental health',
+    'physical / mobility',
+    'alcohol abuse',
+    'substance abuse'
+  ]);
+
+  const matchesSpec = (resident, spec) => {
+    if (!spec || !spec.column) return true;
+
+    const columnName = normalize(spec.column);
+    const columnIndex = headers.findIndex(h => h === columnName);
+    if (columnIndex === -1) return false;
+
+    const cellValue = normalize(resident.rawData[columnIndex]);
+    const values = Array.isArray(spec.values) ? spec.values.map(normalize) : [];
+
+    if (values.length === 0) {
+    
+      return cellValue !== '';
+    }
+
+    for (const v of values) {
+   
+      if ((columnName === 'income source' || columnName === 'income') && v === 'none') {
+        if (cellValue === '' || cellValue === 'none') return true;
+      }
+
+      if (columnName === 'felonies') {
+        if (v === 'yes' && cellValue === 'yes') return true;
+        if (v === 'no' && cellValue === 'no') return true;
+        continue;
+      }
+
+      if (v === 'yes' && cellValue === 'yes') return true;
+      if (v === 'no') {
+        if (emptyIsNo.has(columnName)) {
+          if (cellValue === 'no' || cellValue === '') return true;
+        } else {
+          if (cellValue === 'no') return true;
+        }
+      }
+
+      if (cellValue === v) return true;
+    }
+
+    return false;
+  };
+
+  const filteredResidents = processedData.filter(resident =>
+    filterSpecs.every(spec => matchesSpec(resident, spec))
+  );
+
+  const retention = createEmptyRetentionData();
+  calculateRetentionForData(filteredResidents, retention);
+  return retention;
+}

@@ -16,6 +16,7 @@ export default function Home() {
   const [outputData, setOutputData] = useState([]);
   const [multiSpecs, setMultiSpecs] = useState({});
   const [resetSignal, setResetSignal] = useState(0);
+  const [submitCounter, setSubmitCounter] = useState(0); // ДОБАВЛЕНО: ключ обновления аутпута
   const { state, dispatch } = useRetention();
   const { loading, dataLoaded, processedData, rawData } = state;
 
@@ -107,11 +108,16 @@ export default function Home() {
       })
       .join('; ');
     createFilterRow(name, retention);
+    setSubmitCounter(c => c + 1); // ДОБАВЛЕНО: дергаем аутпут после сабмита
   }, [processedData, rawData, multiSpecs, createFilterRow]);
 
   const handleMultiReset = useCallback(() => {
     setMultiSpecs({});
     setResetSignal(s => s + 1);
+  }, []);
+
+  const handleClearOutputs = useCallback(() => {
+    setOutputData([]);
   }, []);
 
   return (
@@ -122,38 +128,7 @@ export default function Home() {
       overflow: 'hidden',
       boxSizing: 'border-box'
     }}>
-      <div style={{ 
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        margin: '0 0 20px 0',
-        flexShrink: 0
-      }}>
-        <h1 style={{ 
-          margin: 0,
-          fontSize: '24px',
-          fontWeight: '600',
-          color: 'var(--kendo-color-secondary)'
-        }}>
-          Retention Analysis
-        </h1>
-        <Link 
-          href="/analytics" 
-          style={{
-            padding: '8px 16px',
-            backgroundColor: 'var(--kendo-color-primary)',
-            color: 'var(--kendo-color-on-primary)',
-            textDecoration: 'none',
-            borderRadius: '4px',
-            fontSize: '13px',
-            fontWeight: '500',
-            transition: 'all 0.2s ease'
-          }}
-        >
-          View Analytics
-        </Link>
-      </div>
-
+      <Link href="/analytics" className="back-button">View Analytics</Link>
       <div style={{ 
         flex: 1,
         overflow: 'hidden'
@@ -162,12 +137,23 @@ export default function Home() {
           orientation="horizontal"
           style={{ height: '100%' }}
         >
-          <SplitterPane size="30%" min="250px">
-            <div style={{ height: '100%', overflow: 'auto', padding: '10px', position: 'relative' }}>
-              {/* Панель действий: Reset / Submit */}
+          {/* Левая панель: фиксируем ширину, чтобы не прыгала */}
+          <SplitterPane size="380px" min="320px">
+            <div style={{ 
+              height: '100%', 
+              overflow: 'auto', 
+              padding: '10px', 
+              position: 'relative',
+              width: '100%',
+              minWidth: '320px' 
+            }}>
+              {/* Панель действий: закрепляем по ширине панели */}
               <div style={{
                 position: 'sticky',
                 top: 10,
+                left: 0,
+                right: 0,
+                width: '100%',
                 zIndex: 2,
                 marginBottom: '12px',
                 padding: '12px',
@@ -176,18 +162,23 @@ export default function Home() {
                 boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
                 border: '1px solid #e9ecef',
                 display: 'flex',
-                justifyContent: 'flex-end',
-                gap: '10px'
+                justifyContent: 'center',
+                alignItems: 'center',
+                gap: '10px',
+                boxSizing: 'border-box',
+                flexWrap: 'nowrap'
               }}>
                 <Button
                   onClick={handleMultiReset}
                   className="k-button k-button-solid k-button-solid-primary k-rounded-md"
+                  style={{ flex: '0 0 auto' }}
                 >
                   Reset
                 </Button>
                 <Button
                   onClick={handleMultiSubmit}
                   className="k-button k-button-solid k-button-solid-success k-rounded-md"
+                  style={{ flex: '0 0 auto' }}
                 >
                   Submit
                 </Button>
@@ -214,6 +205,7 @@ export default function Home() {
             <OutputsSection 
               loading={loading}
               retentionData={outputData}
+              onClearOutputs={handleClearOutputs}
             />
           </SplitterPane>
         </Splitter>

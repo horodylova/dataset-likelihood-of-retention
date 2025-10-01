@@ -62,6 +62,13 @@ export default function VariablesSection({
   });
   const [incomeSourceTotal, setIncomeSourceTotal] = useState(false);
 
+  // ДОБАВЛЕНО: Status
+  const [statusFilters, setStatusFilters] = useState({
+    statusTotal: false,
+    current: false,
+    former: false
+  });
+
   const handleGenderFilterChange = useCallback((type, checked) => {
     setGenderFilters(prev => ({ ...prev, [type]: checked }));
   }, []);
@@ -92,6 +99,11 @@ export default function VariablesSection({
 
   const handleIncomeSourceFilterChange = useCallback((type, checked) => {
     setIncomeSourceFilters(prev => ({ ...prev, [type]: checked }));
+  }, []);
+
+  // ДОБАВЛЕНО: обработчик Status
+  const handleStatusFilterChange = useCallback((type, checked) => {
+    setStatusFilters(prev => ({ ...prev, [type]: checked }));
   }, []);
 
   // Передача выбранных значений вверх — только сбор выбора, без вычислений
@@ -174,6 +186,16 @@ export default function VariablesSection({
     }
   }, [incomeSourceFilters, incomeSourceTotal, onMultiSelectionChange]);
 
+  // ДОБАВЛЕНО: передача Status вверх
+  useEffect(() => {
+    const values = [];
+    if (statusFilters.current) values.push('Current Residents');
+    if (statusFilters.former) values.push('Former Residents');
+    if (onMultiSelectionChange) {
+      onMultiSelectionChange('Status', { combined: !!statusFilters.statusTotal, values });
+    }
+  }, [statusFilters, onMultiSelectionChange]);
+
   // Сброс всех чекбоксов по сигналу из родителя
   useEffect(() => {
     if (resetSignal == null) return;
@@ -188,6 +210,8 @@ export default function VariablesSection({
     setDisabilityCountTotal(false);
     setIncomeSourceFilters({ ssi: false, ssdi: false, multiple: false, other: false, none: false });
     setIncomeSourceTotal(false);
+    // ДОБАВЛЕНО: сброс Status
+    setStatusFilters({ statusTotal: false, current: false, former: false });
   }, [resetSignal]);
 
   return (
@@ -227,6 +251,43 @@ export default function VariablesSection({
             label="Male"
             checked={genderFilters.male}
             onChange={(e) => handleGenderFilterChange('male', e.value)}
+          />
+        </div>
+      </div>
+
+      {/* ДОБАВЛЕНО: Status */}
+      <div style={{
+        marginBottom: '15px',
+        padding: '10px',
+        backgroundColor: 'white',
+        borderRadius: '4px',
+        boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+        transition: 'transform 0.2s ease-in-out'
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', direction: 'column', marginBottom: '8px' }}>
+          <Checkbox
+            checked={statusFilters.statusTotal}
+            onChange={(e) => handleStatusFilterChange('statusTotal', e.value)}
+          />
+          <label style={{ fontWeight: 'bold', color: '#384C9E', fontSize: '14px', marginLeft: '8px' }}>
+            Status
+          </label>
+        </div>
+        <div style={{ 
+          display: 'flex', 
+          flexDirection: 'column',   // вертикально размещаем опции
+          gap: '8px', 
+          marginLeft: '20px' 
+        }}>
+          <Checkbox
+            label="Current Residents"
+            checked={statusFilters.current}
+            onChange={(e) => handleStatusFilterChange('current', e.value)}
+          />
+          <Checkbox
+            label="Former Residents"
+            checked={statusFilters.former}
+            onChange={(e) => handleStatusFilterChange('former', e.value)}
           />
         </div>
       </div>

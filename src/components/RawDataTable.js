@@ -12,7 +12,14 @@ export default function RawDataTable({ data, isVisible, validCount }) {
   return (
     <div style={{ marginTop: '30px' }}>
       <h3>Raw Data: {totalRecords} records, {validCount} valid</h3>
-      <div style={{ overflowX: 'auto', maxHeight: '400px', border: '1px solid #ccc' }}>
+      <div style={{ 
+        overflow: 'auto',
+        width: '100%',
+        height: 'calc(100vh - 140px)',
+        border: '1px solid #ccc',
+        borderRadius: '8px',
+        boxSizing: 'border-box'
+      }}>
         <table style={{ borderCollapse: 'collapse', width: '100%', minWidth: '600px' }}>
           <thead style={{ position: 'sticky', top: 0, backgroundColor: '#f5f5f5' }}>
             <tr>

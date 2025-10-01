@@ -530,6 +530,14 @@ export function calculateRetentionByMultiFilters(processedData, rawData, filterS
 
     const columnName = normalize(spec.column);
 
+    // Status: рассчитываем по датам, не по колонке rawData
+    if (columnName === 'status') {
+      const values = Array.isArray(spec.values) ? spec.values.map(normalize) : [];
+      if (spec.combined || values.length === 0) return true;
+      const statusLabel = resident.moveOutDate ? 'former residents' : 'current residents';
+      return values.includes(statusLabel);
+    }
+
     // Derived "Disability Count"
     if (columnName === 'disability count') {
       const columns = [

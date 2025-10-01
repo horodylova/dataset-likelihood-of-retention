@@ -3,6 +3,7 @@ import { Button } from '@progress/kendo-react-buttons';
 
 export default function MultiFilterTable({ onSubmit, onReset }) {
   const filters = [
+    { column: 'Status', name: 'Status', options: ['Current Residents', 'Former Residents'] },
     { column: 'Gender', name: 'Gender', options: ['Male', 'Female'] },
     { column: 'Veteran', name: 'Veteran', options: ['Yes', 'No'] },
     { column: 'FC', name: 'FC', options: ['Yes', 'No'] },
@@ -18,7 +19,6 @@ export default function MultiFilterTable({ onSubmit, onReset }) {
     { column: 'Felonies', name: 'Felonies', options: ['Yes', 'No'] },
     { column: 'DT', name: 'DT', options: ['Yes', 'No'] },
     { column: 'Disability Count', name: 'Disability Count', options: ['0', '1', '2', '3', '4+'] },
-    // ВАЖНО: колонка для расчёта — 'Income', а метка в UI — 'Income Source'
     { column: 'Income', name: 'Income Source', options: ['SSI', 'SSDI', 'Multiple', 'Other', 'None'] },
   ];
 

@@ -133,7 +133,7 @@ export default function SheetViewer() {
 
           {!showRawData && (
             <div className="mf-container" style={{ 
-              marginTop: '12px',
+              // marginTop: '12px',
               display: 'flex',
               gap: '16px',
               alignItems: 'flex-start'
@@ -170,7 +170,7 @@ export default function SheetViewer() {
         @media (max-width: 768px) {
           .sheet-viewer {
             height: auto !important;
-            min-height: 100vh !important;
+            min-height: 100vh;
             overflow: auto !important;
             padding: 12px !important;
           }
@@ -179,8 +179,11 @@ export default function SheetViewer() {
           }
           .results-wrapper {
             width: 100% !important;
-            max-height: 50vh !important;
+          
             overflow: auto !important;
+             font-size: 13px;
+            max-height: calc(100vh - 180px); 
+     
           }
         }
       `}</style>

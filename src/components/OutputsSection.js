@@ -4,7 +4,8 @@ import React, { useState, useEffect } from 'react';
 import { Grid, GridColumn } from '@progress/kendo-react-grid';
 import { Chart, ChartCategoryAxis, ChartCategoryAxisItem, ChartValueAxis, ChartValueAxisItem, ChartSeries, ChartSeriesItem, ChartTooltip, ChartLegend } from '@progress/kendo-react-charts';
 import { Button } from '@progress/kendo-react-buttons';
-import { PDFExport } from '@progress/kendo-react-pdf';
+import dynamic from 'next/dynamic';
+const PDFExport = dynamic(() => import('@progress/kendo-react-pdf').then(m => m.PDFExport), { ssr: false });
 
 function OutputsSection({ loading, retentionData = [], chartData, refreshKey = 0, onClearOutputs }) {
   const [selectedColumn, setSelectedColumn] = useState(null);

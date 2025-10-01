@@ -25,8 +25,13 @@ export default function SheetViewer() {
       dispatch({ type: 'SET_LOADING', payload: true });
 
       try {
-      
-        const response = await fetch(`/api/sheets`);
+        const sheetId = process.env.NEXT_PUBLIC_SHEET_ID;
+        const range = process.env.NEXT_PUBLIC_SHEET_NAME || 'EXPORT API';
+        const url = sheetId
+            ? `/api/sheets?id=${encodeURIComponent(sheetId)}&range=${encodeURIComponent(range)}`
+            : `/api/sheets`;
+
+        const response = await fetch(url);
         const result = await response.json();
 
         if (!response.ok) {

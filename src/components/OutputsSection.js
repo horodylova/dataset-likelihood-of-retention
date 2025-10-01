@@ -4,13 +4,14 @@ import React, { useState, useEffect } from 'react';
 import { Grid, GridColumn } from '@progress/kendo-react-grid';
 import { Chart, ChartCategoryAxis, ChartCategoryAxisItem, ChartValueAxis, ChartValueAxisItem, ChartSeries, ChartSeriesItem, ChartTooltip, ChartLegend } from '@progress/kendo-react-charts';
 import { Button } from '@progress/kendo-react-buttons';
+import { PDFExport } from '@progress/kendo-react-pdf';
 
 function OutputsSection({ loading, retentionData = [], chartData, refreshKey = 0, onClearOutputs }) {
   const [selectedColumn, setSelectedColumn] = useState(null);
   const [selectedLegendItems, setSelectedLegendItems] = useState(new Set());
   const [chartSeries, setChartSeries] = useState([]);
 
-  
+  const pdfExportRef = React.useRef(null);
   const gridWrapperRef = React.useRef(null);
 
   const handleColumnClick = (column) => {
@@ -81,6 +82,12 @@ function OutputsSection({ loading, retentionData = [], chartData, refreshKey = 0
     return `${e.series.name}: ${value}%`;
   };
 
+  const handleExportPDF = () => {
+    if (pdfExportRef.current) {
+      pdfExportRef.current.save();
+    }
+  };
+
   return (
     <>
       <style jsx>{`
@@ -113,6 +120,90 @@ function OutputsSection({ loading, retentionData = [], chartData, refreshKey = 0
           border-right: 3px solid #384C9E !important;
         }
       `}</style>
+
+    <div style={{ position: 'absolute', left: '-10000px', top: 0, width: '1200px' }}>
+        <PDFExport
+          ref={pdfExportRef}
+          paperSize="A3"
+          landscape={true}
+          margin={{ top: '15mm', left: '10mm', right: '10mm', bottom: '15mm' }}
+          fileName={`Retention-Outputs.pdf`}
+          scale={0.75}
+        >
+          <div style={{ fontSize: '18px', fontWeight: 600, marginBottom: '16px', color: '#000' }}>
+            Output: {retentionData.length} rows
+          </div>
+
+          <style>
+            {`
+              .pdf-grid .k-grid .k-table-thead .k-table-th {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+                color: white !important;
+                font-weight: 600 !important;
+                font-size: 12px !important;
+                padding: 10px 8px !important;
+                border: 1px solid rgba(255, 255, 255, 0.3) !important;
+              }
+              .pdf-grid .k-grid .k-table-tbody .k-table-td {
+                padding: 8px !important;
+                font-size: 11px !important;
+                border: 1px solid #ddd !important;
+              }
+              .pdf-grid .k-grid {
+                border: 1px solid #ddd !important;
+              }
+            `}
+          </style>
+
+          <div className="pdf-grid" style={{ width: 'fit-content', marginBottom: '30px' }}>
+            <Grid
+              data={retentionData}
+              style={{ width: 'auto' }}
+              scrollable={false}
+            >
+              <GridColumn field="filter" title="Filter" width="180px" />
+              <GridColumn field="year1" title="Year 1" width="85px" format="{0:n2}%" />
+              <GridColumn field="year2" title="Year 2" width="85px" format="{0:n2}%" />
+              <GridColumn field="year3" title="Year 3" width="85px" format="{0:n2}%" />
+              <GridColumn field="year4" title="Year 4" width="85px" format="{0:n2}%" />
+              <GridColumn field="year5" title="Year 5" width="85px" format="{0:n2}%" />
+              <GridColumn field="year6" title="Year 6" width="85px" format="{0:n2}%" />
+              <GridColumn field="year7" title="Year 7" width="85px" format="{0:n2}%" />
+              <GridColumn field="year8" title="Year 8" width="85px" format="{0:n2}%" />
+              <GridColumn field="year9" title="Year 9" width="85px" format="{0:n2}%" />
+              <GridColumn field="year10" title="Year 10" width="85px" format="{0:n2}%" />
+            </Grid>
+          </div>
+
+          <div style={{ width: '100%', height: '400px', pageBreakBefore: 'auto' }}>
+            <Chart style={{ height: '100%', width: '100%' }}>
+              <ChartLegend position="top" orientation="horizontal" align="center" />
+              <ChartCategoryAxis>
+                <ChartCategoryAxisItem categories={categories} />
+              </ChartCategoryAxis>
+              <ChartValueAxis>
+                <ChartValueAxisItem title={{ text: 'Retention Rate (%)' }} min={0} max={100} />
+              </ChartValueAxis>
+              <ChartSeries>
+                {chartSeries.map((series) => (
+                  <ChartSeriesItem
+                    key={series.name}
+                    type="line"
+                    data={series.data}
+                    field="rate"
+                    categoryField="year"
+                    name={series.name}
+                    color={series.color}
+                    markers={{ visible: true }}
+                  />
+                ))}
+              </ChartSeries>
+              <ChartTooltip render={tooltipRender} />
+            </Chart>
+          </div>
+        </PDFExport>
+      </div>
+
       <div style={{
         width: '100%',
         height: '100%',
@@ -137,6 +228,13 @@ function OutputsSection({ loading, retentionData = [], chartData, refreshKey = 0
             style={{ marginLeft: '12px', padding: '6px 12px' }}
           >
             Clear Output
+          </Button>
+          <Button
+            onClick={handleExportPDF}
+            className="k-button k-button-solid k-button-solid-secondary k-rounded-md"
+            style={{ marginLeft: 'auto', padding: '6px 12px' }}
+          >
+            Download PDF
           </Button>
         </div>
 

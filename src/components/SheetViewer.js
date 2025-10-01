@@ -104,10 +104,9 @@ export default function SheetViewer() {
       )}
       {dataLoaded && (
         <>
-        
           <div style={{
             position: 'fixed',
-            top: '56px',
+            bottom: '68px', // чуть выше Back to Main
             right: '12px',
             zIndex: 1000
           }}>

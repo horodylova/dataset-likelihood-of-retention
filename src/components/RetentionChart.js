@@ -81,91 +81,92 @@ export default function RetentionChart({ processedData }) {
 
   const chartSeries = prepareChartData();
 
+  // Безопасный тултип: учитывает отсутствующую серию/значение
   const tooltipRender = (e) => {
-    return `${e.series.name}: ${e.value.toFixed(1)}%`;
+      const seriesName = e?.series?.name ?? '';
+      const value = typeof e?.value === 'number' ? e.value : 0;
+      return seriesName ? `${seriesName}: ${value.toFixed(1)}%` : `${value.toFixed(1)}%`;
   };
-
+  
   return (
-    <div style={{ marginTop: '30px' }}>
-      <div style={{ 
-        display: 'flex', 
-        alignItems: 'center', 
-        gap: '20px', 
-        marginBottom: '20px',
-        flexWrap: 'wrap'
-      }}>
-        <h4 style={{ margin: 0 }}>Retention Analysis Chart</h4>
-        
-        <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-          <span style={{ fontWeight: 'bold' }}>Gender:</span>
-          <label style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-            <input
-              type="checkbox"
-              checked={showMale}
-              onChange={(e) => setShowMale(e.target.checked)}
-            />
-            Male
-          </label>
-          <label style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-            <input
-              type="checkbox"
-              checked={showFemale}
-              onChange={(e) => setShowFemale(e.target.checked)}
-            />
-            Female
-          </label>
-        </div>
-
-        <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-          <span style={{ fontWeight: 'bold' }}>Veteran:</span>
-          <label style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-            <input
-              type="checkbox"
-              checked={showVeteranYes}
-              onChange={(e) => setShowVeteranYes(e.target.checked)}
-            />
-            Yes
-          </label>
-          <label style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-            <input
-              type="checkbox"
-              checked={showVeteranNo}
-              onChange={(e) => setShowVeteranNo(e.target.checked)}
-            />
-            No
-          </label>
-        </div>
+      <div style={{ marginTop: '30px' }}>
+          <div style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: '20px', 
+            marginBottom: '20px',
+            flexWrap: 'wrap'
+          }}>
+            <h4 style={{ margin: 0 }}>Retention Analysis Chart</h4>
+            
+            <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+              <span style={{ fontWeight: 'bold' }}>Gender:</span>
+              <label style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                <input
+                  type="checkbox"
+                  checked={showMale}
+                  onChange={(e) => setShowMale(e.target.checked)}
+                />
+                Male
+              </label>
+              <label style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                <input
+                  type="checkbox"
+                  checked={showFemale}
+                  onChange={(e) => setShowFemale(e.target.checked)}
+                />
+                Female
+              </label>
+            </div>
+  
+            <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+              <span style={{ fontWeight: 'bold' }}>Veteran:</span>
+              <label style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                <input
+                  type="checkbox"
+                  checked={showVeteranYes}
+                  onChange={(e) => setShowVeteranYes(e.target.checked)}
+                />
+                Yes
+              </label>
+              <label style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                <input
+                  type="checkbox"
+                  checked={showVeteranNo}
+                  onChange={(e) => setShowVeteranNo(e.target.checked)}
+                />
+                No
+              </label>
+            </div>
+          </div>
+  
+          <div style={{ height: '400px', width: '100%' }}>
+              <Chart style={{ height: '100%' }}>
+                  <ChartCategoryAxis>
+                      <ChartCategoryAxisItem categories={categories} />
+                  </ChartCategoryAxis>
+                  <ChartValueAxis>
+                      <ChartValueAxisItem title={{ text: 'Retention Rate (%)' }} min={0} max={100} />
+                  </ChartValueAxis>
+                  <ChartSeries>
+                      {Array.isArray(chartSeries) && chartSeries
+                          .filter(s => s && s.name && Array.isArray(s.data))
+                          .map((series, index) => (
+                              <ChartSeriesItem
+                                  key={series.name || `series-${index}`}
+                                  type="line"
+                                  data={series.data}
+                                  field="rate"
+                                  categoryField="year"
+                                  name={series.name || `Series ${index + 1}`}
+                                  color={series.color}
+                                  markers={{ visible: true }}
+                              />
+                          ))}
+                  </ChartSeries>
+                  <ChartTooltip render={tooltipRender} />
+              </Chart>
+          </div>
       </div>
-
-      <div style={{ height: '400px', width: '100%' }}>
-        <Chart style={{ height: '100%' }}>
-          <ChartCategoryAxis>
-            <ChartCategoryAxisItem categories={categories} />
-          </ChartCategoryAxis>
-          <ChartValueAxis>
-            <ChartValueAxisItem 
-              title={{ text: 'Retention Rate (%)' }}
-              min={0}
-              max={100}
-            />
-          </ChartValueAxis>
-          <ChartSeries>
-            {chartSeries.map((series, index) => (
-              <ChartSeriesItem
-                key={series.name}
-                type="line"
-                data={series.data}
-                field="rate"
-                categoryField="year"
-                name={series.name}
-                color={series.color}
-                markers={{ visible: true }}
-              />
-            ))}
-          </ChartSeries>
-          <ChartTooltip render={tooltipRender} />
-        </Chart>
-      </div>
-    </div>
   );
 }

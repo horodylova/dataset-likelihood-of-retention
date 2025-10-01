@@ -25,7 +25,7 @@ export default function SheetViewer() {
       dispatch({ type: 'SET_LOADING', payload: true });
 
       try {
-        const sheetId = process.env.NEXT_PUBLIC_SHEET_ID;
+        const sheetId = '1k8Az5lkHrT54NZk_L6W4TLVp4GInU_Tmh-rZQhHe3JI';
         const range = 'EXPORT API';
 
         const response = await fetch(

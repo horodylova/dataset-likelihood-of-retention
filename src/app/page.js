@@ -121,10 +121,10 @@ export default function Home() {
 
   return (
     <div className="container" style={{
-      height: '100vh',
+      minHeight: '100vh',
       display: 'flex',
       flexDirection: 'column',
-      overflow: 'hidden',
+      overflow: 'visible',
       boxSizing: 'border-box'
     }}>
       <style jsx>{`

@@ -213,7 +213,7 @@ function OutputsSection({ loading, retentionData = [], chartData, refreshKey = 0
         boxSizing: 'border-box',
         display: 'flex',
         flexDirection: 'column',
-        overflow: 'hidden'
+        overflow: 'visible'
       }}>
         <div style={{
           margin: '0 0 20px 0',

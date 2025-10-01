@@ -80,8 +80,17 @@ function OutputsSection({ loading, retentionData = [], chartData, refreshKey = 0
   }, [retentionData.length]);
 
   const tooltipRender = (e) => {
-    const value = typeof e.value === 'number' ? e.value.toFixed(1) : e.value;
-    return `${e.series.name}: ${value}%`;
+    const seriesName = e?.series?.name ?? e?.point?.series?.name ?? '';
+    // Kendo может передавать значение в e.point.value или e.value
+    let rawValue = e?.value;
+    if (rawValue == null) {
+        const pv = e?.point?.value;
+        // point.value может быть числом или массивом [category, value]
+        rawValue = Array.isArray(pv) ? pv[1] : pv;
+    }
+    const num = typeof rawValue === 'number' ? rawValue : Number(rawValue);
+    const valueStr = Number.isFinite(num) ? num.toFixed(1) : '';
+    return seriesName ? `${seriesName}: ${valueStr}%` : `${valueStr}%`;
   };
 
   const handleExportPDF = () => {
@@ -372,36 +381,35 @@ function OutputsSection({ loading, retentionData = [], chartData, refreshKey = 0
         </div>
 
         <div style={{ flex: 1, minHeight: '300px', marginTop: '20px', display: 'flex', flexDirection: 'column' }}>
-          <h4 style={{ margin: '0 0 10px 0', flexShrink: 0 }}>Retention Rate Chart</h4>
-          <div style={{ flex: 1, minHeight: 0, width: '100%' }}>
-            <Chart
-              key={refreshKey}
-              style={{ height: '100%', width: '100%' }}
-            >
-              <ChartLegend position="top" orientation="horizontal" align="center" />
-              <ChartCategoryAxis>
-                <ChartCategoryAxisItem categories={categories} />
-              </ChartCategoryAxis>
-              <ChartValueAxis>
-                <ChartValueAxisItem title={{ text: 'Retention Rate (%)' }} min={0} max={100} />
-              </ChartValueAxis>
-              <ChartSeries>
-                {chartSeries.map((series) => (
-                  <ChartSeriesItem
-                    key={series.name}
-                    type="line"
-                    data={series.data}
-                    field="rate"
-                    categoryField="year"
-                    name={series.name}
-                    color={series.color}
-                    markers={{ visible: true }}
-                  />
-                ))}
-              </ChartSeries>
-              <ChartTooltip render={tooltipRender} />
-            </Chart>
-          </div>
+            <div style={{ height: '420px', width: '100%' }}>
+                <Chart
+                    key={refreshKey}
+                    style={{ height: '100%', width: '100%' }}
+                >
+                    <ChartLegend position="top" orientation="horizontal" align="center" />
+                    <ChartCategoryAxis>
+                        <ChartCategoryAxisItem categories={categories} />
+                    </ChartCategoryAxis>
+                    <ChartValueAxis>
+                        <ChartValueAxisItem title={{ text: 'Retention Rate (%)' }} min={0} max={100} />
+                    </ChartValueAxis>
+                    <ChartSeries>
+                        {chartSeries.map((series) => (
+                            <ChartSeriesItem
+                                key={series.name}
+                                type="line"
+                                data={series.data}
+                                field="rate"
+                                categoryField="year"
+                                name={series.name}
+                                color={series.color}
+                                markers={{ visible: true }}
+                            />
+                        ))}
+                    </ChartSeries>
+                    <ChartTooltip render={tooltipRender} />
+                </Chart>
+            </div>
         </div>
       </div>
     </>

@@ -20,12 +20,6 @@ export default function VariablesSection({
     no: false
   });
 
-  const [substanceFilters, setSubstanceFilters] = useState({
-    substanceTotal: false,
-    yes: false,
-    no: false
-  });
-
   const [feloniesFilters, setFeloniesFilters] = useState({
     feloniesTotal: false,
     yes: false,
@@ -62,7 +56,6 @@ export default function VariablesSection({
   });
   const [incomeSourceTotal, setIncomeSourceTotal] = useState(false);
 
- 
   const [statusFilters, setStatusFilters] = useState({
     statusTotal: false,
     current: false,
@@ -75,10 +68,6 @@ export default function VariablesSection({
 
   const handleVeteranFilterChange = useCallback((type, checked) => {
     setVeteranFilters(prev => ({ ...prev, [type]: checked }));
-  }, []);
-
-  const handleSubstanceFilterChange = useCallback((type, checked) => {
-    setSubstanceFilters(prev => ({ ...prev, [type]: checked }));
   }, []);
 
   const handleFeloniesFilterChange = useCallback((type, checked) => {
@@ -101,12 +90,10 @@ export default function VariablesSection({
     setIncomeSourceFilters(prev => ({ ...prev, [type]: checked }));
   }, []);
 
- 
   const handleStatusFilterChange = useCallback((type, checked) => {
     setStatusFilters(prev => ({ ...prev, [type]: checked }));
   }, []);
 
- 
   useEffect(() => {
     const values = [];
     if (genderFilters.male) values.push('Male');
@@ -124,15 +111,6 @@ export default function VariablesSection({
       onMultiSelectionChange('Veteran', { combined: !!veteranFilters.veteranTotal, values });
     }
   }, [veteranFilters, onMultiSelectionChange]);
-
-  useEffect(() => {
-    const values = [];
-    if (substanceFilters.yes) values.push('Yes');
-    if (substanceFilters.no) values.push('No');
-    if (onMultiSelectionChange) {
-      onMultiSelectionChange('Substance Abuse', { combined: !!substanceFilters.substanceTotal, values });
-    }
-  }, [substanceFilters, onMultiSelectionChange]);
 
   useEffect(() => {
     const values = [];
@@ -181,11 +159,10 @@ export default function VariablesSection({
     if (incomeSourceFilters.other) values.push('Other');
     if (incomeSourceFilters.none) values.push('None');
     if (onMultiSelectionChange) {
-      
       onMultiSelectionChange('Income', { combined: !!incomeSourceTotal, values });
     }
   }, [incomeSourceFilters, incomeSourceTotal, onMultiSelectionChange]);
- 
+
   useEffect(() => {
     const values = [];
     if (statusFilters.current) values.push('Current Residents');
@@ -194,12 +171,11 @@ export default function VariablesSection({
       onMultiSelectionChange('Status', { combined: !!statusFilters.statusTotal, values });
     }
   }, [statusFilters, onMultiSelectionChange]);
- 
+
   useEffect(() => {
     if (resetSignal == null) return;
     setGenderFilters({ genderTotal: false, male: false, female: false });
     setVeteranFilters({ veteranTotal: false, yes: false, no: false });
-    setSubstanceFilters({ substanceTotal: false, yes: false, no: false });
     setFeloniesFilters({ feloniesTotal: false, yes: false, no: false });
     setDTFilters({ dtTotal: false, yes: false, no: false });
     setFCFilters({ yes: false, no: false });
@@ -208,7 +184,6 @@ export default function VariablesSection({
     setDisabilityCountTotal(false);
     setIncomeSourceFilters({ ssi: false, ssdi: false, multiple: false, other: false, none: false });
     setIncomeSourceTotal(false);
-   
     setStatusFilters({ statusTotal: false, current: false, former: false });
   }, [resetSignal]);
 
@@ -221,7 +196,7 @@ export default function VariablesSection({
       scrollbarWidth: 'thin',
       scrollbarColor: '#FF5E00 #f1f1f1'
     }}>
- 
+      {/* Gender */}
       <div style={{
         marginBottom: '15px',
         padding: '10px',
@@ -253,7 +228,7 @@ export default function VariablesSection({
         </div>
       </div>
 
-    
+      {/* Status */}
       <div style={{
         marginBottom: '15px',
         padding: '10px',
@@ -271,11 +246,11 @@ export default function VariablesSection({
             Status
           </label>
         </div>
-        <div style={{ 
-          display: 'flex', 
-          flexDirection: 'column',   
-          gap: '8px', 
-          marginLeft: '20px' 
+        <div style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '8px',
+          marginLeft: '20px'
         }}>
           <Checkbox
             label="Current Residents"
@@ -318,38 +293,6 @@ export default function VariablesSection({
             label="No"
             checked={veteranFilters.no}
             onChange={(e) => handleVeteranFilterChange('no', e.value)}
-          />
-        </div>
-      </div>
-
-      {/* Substance Abuse */}
-      <div style={{
-        marginBottom: '15px',
-        padding: '10px',
-        backgroundColor: 'white',
-        borderRadius: '4px',
-        boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-        transition: 'transform 0.2s ease-in-out'
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', marginBottom: '8px' }}>
-          <Checkbox
-            checked={substanceFilters.substanceTotal}
-            onChange={(e) => handleSubstanceFilterChange('substanceTotal', e.value)}
-          />
-          <label style={{ fontWeight: 'bold', color: '#384C9E', fontSize: '14px', marginLeft: '8px' }}>
-            Substance Abuse
-          </label>
-        </div>
-        <div style={{ display: 'flex', gap: '15px', marginLeft: '20px' }}>
-          <Checkbox
-            label="Yes"
-            checked={substanceFilters.yes}
-            onChange={(e) => handleSubstanceFilterChange('yes', e.value)}
-          />
-          <Checkbox
-            label="No"
-            checked={substanceFilters.no}
-            onChange={(e) => handleSubstanceFilterChange('no', e.value)}
           />
         </div>
       </div>
@@ -400,7 +343,7 @@ export default function VariablesSection({
             checked={dtFilters.dtTotal}
             onChange={(e) => handleDTFilterChange('dtTotal', e.value)}
           />
-        <label style={{ fontWeight: 'bold', color: '#384C9E', fontSize: '14px', marginLeft: '8px' }}>
+          <label style={{ fontWeight: 'bold', color: '#384C9E', fontSize: '14px', marginLeft: '8px' }}>
             DT
           </label>
         </div>

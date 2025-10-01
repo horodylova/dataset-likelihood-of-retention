@@ -13,6 +13,7 @@ export default function DisabilitiesSection({ onMultiSelectionChange, resetSigna
   const [mhFilters, setMhFilters] = useState({ yes: false, no: false });
   const [pmobFilters, setPmobFilters] = useState({ yes: false, no: false });
   const [alcoholFilters, setAlcoholFilters] = useState({ yes: false, no: false });
+  const [substanceFilters, setSubstanceFilters] = useState({ yes: false, no: false });
 
   const [visualTotal, setVisualTotal] = useState(false);
   const [hearingTotal, setHearingTotal] = useState(false);
@@ -22,6 +23,7 @@ export default function DisabilitiesSection({ onMultiSelectionChange, resetSigna
   const [mhTotal, setMhTotal] = useState(false);
   const [pmobTotal, setPmobTotal] = useState(false);
   const [alcoholTotal, setAlcoholTotal] = useState(false);
+  const [substanceTotal, setSubstanceTotal] = useState(false);
 
   const makeHandler = (setter) => (type, checked) => setter(prev => ({ ...prev, [type]: checked }));
   const handleVisual = useCallback(makeHandler(setVisualFilters), []);
@@ -32,7 +34,8 @@ export default function DisabilitiesSection({ onMultiSelectionChange, resetSigna
   const handleMh = useCallback(makeHandler(setMhFilters), []);
   const handlePmob = useCallback(makeHandler(setPmobFilters), []);
   const handleAlcohol = useCallback(makeHandler(setAlcoholFilters), []);
- 
+  const handleSubstance = useCallback(makeHandler(setSubstanceFilters), []);
+
   useEffect(() => {
     const values = [];
     if (visualFilters.yes) values.push('Yes');
@@ -84,12 +87,18 @@ export default function DisabilitiesSection({ onMultiSelectionChange, resetSigna
 
   useEffect(() => {
     const values = [];
+    if (substanceFilters.yes) values.push('Yes');
+    if (substanceFilters.no) values.push('No');
+    if (onMultiSelectionChange) onMultiSelectionChange('Substance Abuse', { combined: !!substanceTotal, values });
+  }, [substanceTotal, substanceFilters, onMultiSelectionChange]);
+
+  useEffect(() => {
+    const values = [];
     if (alcoholFilters.yes) values.push('Yes');
     if (alcoholFilters.no) values.push('No');
     if (onMultiSelectionChange) onMultiSelectionChange('Alcohol Abuse', { combined: !!alcoholTotal, values });
   }, [alcoholTotal, alcoholFilters, onMultiSelectionChange]);
 
- 
   useEffect(() => {
     if (resetSignal == null) return;
     setVisualFilters({ yes: false, no: false });
@@ -100,6 +109,7 @@ export default function DisabilitiesSection({ onMultiSelectionChange, resetSigna
     setMhFilters({ yes: false, no: false });
     setPmobFilters({ yes: false, no: false });
     setAlcoholFilters({ yes: false, no: false });
+    setSubstanceFilters({ yes: false, no: false });
 
     setVisualTotal(false);
     setHearingTotal(false);
@@ -109,6 +119,7 @@ export default function DisabilitiesSection({ onMultiSelectionChange, resetSigna
     setMhTotal(false);
     setPmobTotal(false);
     setAlcoholTotal(false);
+    setSubstanceTotal(false);
   }, [resetSignal]);
 
   return (
@@ -166,6 +177,13 @@ export default function DisabilitiesSection({ onMultiSelectionChange, resetSigna
         <div style={{ display: 'flex', gap: '15px' }}>
           <Checkbox label="Yes" checked={pmobFilters.yes} onChange={(e) => handlePmob('yes', e.value)} />
           <Checkbox label="No" checked={pmobFilters.no} onChange={(e) => handlePmob('no', e.value)} />
+        </div>
+      </FilterCard>
+
+      <FilterCard title="Substance Abuse" headerChecked={substanceTotal} headerOnChange={(e) => setSubstanceTotal(e.value)}>
+        <div style={{ display: 'flex', gap: '15px' }}>
+          <Checkbox label="Yes" checked={substanceFilters.yes} onChange={(e) => handleSubstance('yes', e.value)} />
+          <Checkbox label="No" checked={substanceFilters.no} onChange={(e) => handleSubstance('no', e.value)} />
         </div>
       </FilterCard>
 

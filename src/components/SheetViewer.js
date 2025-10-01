@@ -21,15 +21,19 @@ export default function SheetViewer() {
     const loadData = async () => {
       if (dataLoaded) return;
 
+      const sheetId = process.env.NEXT_PUBLIC_SHEET_ID;
+      
+      if (!sheetId) {
+        setError('Sheet ID not configured');
+        return;
+      }
+
       setError(null);
       dispatch({ type: 'SET_LOADING', payload: true });
 
       try {
-        const sheetId = process.env.NEXT_PUBLIC_SHEET_ID;
         const range = process.env.NEXT_PUBLIC_SHEET_NAME || 'EXPORT API';
-        const url = sheetId
-            ? `/api/sheets?id=${encodeURIComponent(sheetId)}&range=${encodeURIComponent(range)}`
-            : `/api/sheets`;
+        const url = `/api/sheets?id=${encodeURIComponent(sheetId)}&range=${encodeURIComponent(range)}`;
 
         const response = await fetch(url);
         const result = await response.json();

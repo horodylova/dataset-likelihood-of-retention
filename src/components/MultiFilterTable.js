@@ -43,7 +43,7 @@ export default function MultiFilterTable({ onSubmit, onReset }) {
     filters.forEach(f => {
       const chosen = Array.from(selected[f.name] || []);
       if (chosen.length > 0) {
-        // Передаём колонку для расчёта и отдельное поле display для красивого заголовка
+ 
         specs.push({ column: f.column, values: chosen, display: f.name });
       }
     });
@@ -52,7 +52,7 @@ export default function MultiFilterTable({ onSubmit, onReset }) {
 
   const styles = {
     container: {
-      width: '100%', // make it fit the sidebar width
+      width: '100%',  
       minWidth: '360px',
       backgroundColor: '#fff',
       borderRadius: '8px',

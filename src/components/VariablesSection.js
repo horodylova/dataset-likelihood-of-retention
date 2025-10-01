@@ -62,7 +62,7 @@ export default function VariablesSection({
   });
   const [incomeSourceTotal, setIncomeSourceTotal] = useState(false);
 
-  // ДОБАВЛЕНО: Status
+ 
   const [statusFilters, setStatusFilters] = useState({
     statusTotal: false,
     current: false,
@@ -101,12 +101,12 @@ export default function VariablesSection({
     setIncomeSourceFilters(prev => ({ ...prev, [type]: checked }));
   }, []);
 
-  // ДОБАВЛЕНО: обработчик Status
+ 
   const handleStatusFilterChange = useCallback((type, checked) => {
     setStatusFilters(prev => ({ ...prev, [type]: checked }));
   }, []);
 
-  // Передача выбранных значений вверх — только сбор выбора, без вычислений
+ 
   useEffect(() => {
     const values = [];
     if (genderFilters.male) values.push('Male');
@@ -181,12 +181,11 @@ export default function VariablesSection({
     if (incomeSourceFilters.other) values.push('Other');
     if (incomeSourceFilters.none) values.push('None');
     if (onMultiSelectionChange) {
-      // ВАЖНО: передаем колонку 'Income', чтобы совпало с данными
+      
       onMultiSelectionChange('Income', { combined: !!incomeSourceTotal, values });
     }
   }, [incomeSourceFilters, incomeSourceTotal, onMultiSelectionChange]);
-
-  // ДОБАВЛЕНО: передача Status вверх
+ 
   useEffect(() => {
     const values = [];
     if (statusFilters.current) values.push('Current Residents');
@@ -195,8 +194,7 @@ export default function VariablesSection({
       onMultiSelectionChange('Status', { combined: !!statusFilters.statusTotal, values });
     }
   }, [statusFilters, onMultiSelectionChange]);
-
-  // Сброс всех чекбоксов по сигналу из родителя
+ 
   useEffect(() => {
     if (resetSignal == null) return;
     setGenderFilters({ genderTotal: false, male: false, female: false });
@@ -210,7 +208,7 @@ export default function VariablesSection({
     setDisabilityCountTotal(false);
     setIncomeSourceFilters({ ssi: false, ssdi: false, multiple: false, other: false, none: false });
     setIncomeSourceTotal(false);
-    // ДОБАВЛЕНО: сброс Status
+   
     setStatusFilters({ statusTotal: false, current: false, former: false });
   }, [resetSignal]);
 
@@ -223,7 +221,7 @@ export default function VariablesSection({
       scrollbarWidth: 'thin',
       scrollbarColor: '#FF5E00 #f1f1f1'
     }}>
-      {/* Gender */}
+ 
       <div style={{
         marginBottom: '15px',
         padding: '10px',
@@ -255,7 +253,7 @@ export default function VariablesSection({
         </div>
       </div>
 
-      {/* ДОБАВЛЕНО: Status */}
+    
       <div style={{
         marginBottom: '15px',
         padding: '10px',
@@ -275,7 +273,7 @@ export default function VariablesSection({
         </div>
         <div style={{ 
           display: 'flex', 
-          flexDirection: 'column',   // вертикально размещаем опции
+          flexDirection: 'column',   
           gap: '8px', 
           marginLeft: '20px' 
         }}>

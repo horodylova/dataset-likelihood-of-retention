@@ -553,7 +553,7 @@ export function calculateRetentionByMultiFilters(processedData, rawData, filterS
       });
       const bucket = count >= 4 ? '4+' : String(count);
       const values = Array.isArray(spec.values) ? spec.values.map(normalize) : [];
-      // combined для Disability Count: не фильтруем
+   
       if (spec.combined) return true;
       if (values.length === 0) return true;
       return values.includes(bucket);
@@ -564,8 +564,7 @@ export function calculateRetentionByMultiFilters(processedData, rawData, filterS
 
     const cellValue = normalize(resident.rawData[columnIndex]);
     const values = Array.isArray(spec.values) ? spec.values.map(normalize) : [];
-
-    // Обработка 'combined' по аналогии с одиночными функциями
+ 
     if (spec.combined) {
       if (columnName === 'dt') {
         return cellValue === 'yes' || cellValue === 'no' || cellValue === '';
@@ -576,7 +575,7 @@ export function calculateRetentionByMultiFilters(processedData, rawData, filterS
       if (columnName === 'gender') {
         return cellValue === 'male' || cellValue === 'female';
       }
-      // Для остальных комбинированных колонок — как в single: не фильтруем
+  
       return true;
     }
 

@@ -32,8 +32,7 @@ export default function DisabilitiesSection({ onMultiSelectionChange, resetSigna
   const handleMh = useCallback(makeHandler(setMhFilters), []);
   const handlePmob = useCallback(makeHandler(setPmobFilters), []);
   const handleAlcohol = useCallback(makeHandler(setAlcoholFilters), []);
-
-  // Сбор выбора: только передаём { combined, values } наверх, без расчётов и без авто-вывода
+ 
   useEffect(() => {
     const values = [];
     if (visualFilters.yes) values.push('Yes');
@@ -90,7 +89,7 @@ export default function DisabilitiesSection({ onMultiSelectionChange, resetSigna
     if (onMultiSelectionChange) onMultiSelectionChange('Alcohol Abuse', { combined: !!alcoholTotal, values });
   }, [alcoholTotal, alcoholFilters, onMultiSelectionChange]);
 
-  // Reset от родителя
+ 
   useEffect(() => {
     if (resetSignal == null) return;
     setVisualFilters({ yes: false, no: false });

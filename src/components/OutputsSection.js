@@ -10,6 +10,9 @@ function OutputsSection({ loading, retentionData = [], chartData, refreshKey = 0
   const [selectedLegendItems, setSelectedLegendItems] = useState(new Set());
   const [chartSeries, setChartSeries] = useState([]);
 
+  
+  const gridWrapperRef = React.useRef(null);
+
   const handleColumnClick = (column) => {
     setSelectedColumn(prev => (prev === column ? null : column));
   };
@@ -63,6 +66,15 @@ function OutputsSection({ loading, retentionData = [], chartData, refreshKey = 0
     }
     setChartSeries(prepareChartSeries());
   }, [refreshKey, retentionData, selectedLegendItems]);
+ 
+  useEffect(() => {
+    const wrapper = gridWrapperRef.current;
+    if (!wrapper) return;
+    const content = wrapper.querySelector('.k-grid-content');
+    if (content) {
+      content.scrollTop = content.scrollHeight;
+    }
+  }, [retentionData.length]);
 
   const tooltipRender = (e) => {
     const value = typeof e.value === 'number' ? e.value.toFixed(1) : e.value;
@@ -135,12 +147,16 @@ function OutputsSection({ loading, retentionData = [], chartData, refreshKey = 0
         )}
 
         <div style={{ flexShrink: 0, marginBottom: '30px' }}>
-          <div className="outputs-grid" style={{ height: '200px', overflow: 'hidden' }}>
+          <div
+            className="outputs-grid"
+            ref={gridWrapperRef}
+            style={{ height: '360px', overflow: 'auto' }}
+          >
             <Grid 
               data={retentionData} 
               style={{ width: '100%', height: '100%' }} 
               scrollable={true} 
-            >
+            > 
               <GridColumn 
                 field="filter" 
                 title="Filter" 

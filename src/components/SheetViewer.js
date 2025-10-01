@@ -21,14 +21,12 @@ export default function SheetViewer() {
     const loadData = async () => {
       if (dataLoaded) return;
 
-      const spreadsheetId = '1k8Az5lkHrT54NZk_L6W4TLVp4GInU_Tmh-rZQhHe3JI';
-      const range = 'EXPORT API';
-
       setError(null);
       dispatch({ type: 'SET_LOADING', payload: true });
 
       try {
-        const response = await fetch(`/api/sheets?id=${encodeURIComponent(spreadsheetId)}&range=${encodeURIComponent(range)}`);
+      
+        const response = await fetch(`/api/sheets`);
         const result = await response.json();
 
         if (!response.ok) {
@@ -65,7 +63,7 @@ export default function SheetViewer() {
   };
 
   return (
-    <div style={{ 
+    <div className="sheet-viewer" style={{ 
       width: '100%', 
       height: '100vh',
       display: 'flex',
@@ -102,7 +100,7 @@ export default function SheetViewer() {
       )}
       {dataLoaded && (
         <>
-          {/* Кнопка показа/скрытия датасета — под Back to Main */}
+        
           <div style={{
             position: 'fixed',
             top: '56px',
@@ -130,14 +128,14 @@ export default function SheetViewer() {
           </div>
 
           {!showRawData && (
-            <div style={{ 
+            <div className="mf-container" style={{ 
               marginTop: '12px',
               display: 'flex',
               gap: '16px',
               alignItems: 'flex-start'
             }}>
               <MultiFilterTable onSubmit={handleMultiFilterSubmit} onReset={handleMultiFilterReset} />
-              <div style={{ fontSize: '13px' }}>
+              <div className="results-wrapper" style={{ fontSize: '13px' }}>
                 <MultiFilterResultsTable retentionData={multiFilterResults} selectedSpecs={multiFilterSpecs} />
               </div>
             </div>
@@ -163,6 +161,25 @@ export default function SheetViewer() {
           )}
         </>
       )}
+
+      <style jsx>{`
+        @media (max-width: 768px) {
+          .sheet-viewer {
+            height: auto !important;
+            min-height: 100vh !important;
+            overflow: auto !important;
+            padding: 12px !important;
+          }
+          .mf-container {
+            flex-direction: column !important;
+          }
+          .results-wrapper {
+            width: 100% !important;
+            max-height: 50vh !important;
+            overflow: auto !important;
+          }
+        }
+      `}</style>
     </div>
   );
 }

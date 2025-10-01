@@ -17,19 +17,9 @@ export default function MultiFilterResultsTable({ retentionData, selectedSpecs =
 
   const hasData = retentionData && Object.keys(retentionData).length > 0;
 
-  const summary = selectedSpecs.length
-    ? selectedSpecs
-        .map(spec => {
-          const label = spec.display || spec.column;
-          const values = Array.isArray(spec.values) ? spec.values.join(', ') : '';
-          return `${label}: ${values}`;
-        })
-        .join(' | ')
-    : '';
-
   return (
     <div style={containerStyle}>
-      {/* Заголовок и панель выбора удалены */}
+  
       {hasData ? (
         <table style={tableStyle}>
           <thead>

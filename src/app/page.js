@@ -1,6 +1,5 @@
 'use client'
-
-// top-level imports
+ 
 import { Splitter, SplitterPane } from '@progress/kendo-react-layout';
 import { PanelBar, PanelBarItem } from '@progress/kendo-react-layout';
 import { useState, useEffect, useCallback } from 'react';
@@ -16,7 +15,7 @@ export default function Home() {
   const [outputData, setOutputData] = useState([]);
   const [multiSpecs, setMultiSpecs] = useState({});
   const [resetSignal, setResetSignal] = useState(0);
-  const [submitCounter, setSubmitCounter] = useState(0); // ДОБАВЛЕНО: ключ обновления аутпута
+  const [submitCounter, setSubmitCounter] = useState(0);  
   const { state, dispatch } = useRetention();
   const { loading, dataLoaded, processedData, rawData } = state;
 
@@ -63,7 +62,7 @@ export default function Home() {
     loadData();
   }, [dispatch, dataLoaded]);
 
-  // Сбор выборов из секций
+ 
   const updateMultiSelection = useCallback((label, payload) => {
     setMultiSpecs(prev => {
       const next = { ...prev };
@@ -86,7 +85,7 @@ export default function Home() {
     });
   }, []);
 
-  // Submit: считаем по текущим выбранным спецификациям (один или много)
+ 
   const handleMultiSubmit = useCallback(() => {
     if (!processedData || !rawData) return;
 
@@ -108,7 +107,7 @@ export default function Home() {
       })
       .join('; ');
     createFilterRow(name, retention);
-    setSubmitCounter(c => c + 1); // ДОБАВЛЕНО: дергаем аутпут после сабмита
+    setSubmitCounter(c => c + 1);  
   }, [processedData, rawData, multiSpecs, createFilterRow]);
 
   const handleMultiReset = useCallback(() => {
@@ -128,6 +127,41 @@ export default function Home() {
       overflow: 'hidden',
       boxSizing: 'border-box'
     }}>
+      <style jsx>{`
+        @media (max-width: 768px) {
+          :global(.k-splitter) {
+            flex-direction: column !important;
+          }
+          :global(.k-splitter-bar) {
+            display: none !important;
+          }
+          :global(.k-splitter-pane) {
+            width: 100% !important;
+            height: auto !important;
+            margin-bottom: 12px !important;
+          }
+          :global(.k-splitter-pane:last-child) {
+            margin-bottom: 0 !important;
+          }
+          :global(.container) {
+            height: auto !important;
+            min-height: 100vh !important;
+          }
+          /* Таблица вывода — делаем видимыми нижние строки */
+          :global(.outputs-grid) {
+            height: 420px !important;
+            overflow: auto !important;
+          }
+          /* График — фиксированная комфортная высота на моб */
+          :global(.k-chart) {
+            height: 280px !important;
+          }
+          /* Сайдбар — занимает всю ширину на моб */
+          :global(.k-panelbar) {
+            width: 100% !important;
+          }
+        }
+      `}</style>
       <Link href="/analytics" className="back-button">View Analytics</Link>
       <div style={{ 
         flex: 1,
@@ -137,7 +171,7 @@ export default function Home() {
           orientation="horizontal"
           style={{ height: '100%' }}
         >
-          {/* Левая панель: фиксируем ширину, чтобы не прыгала */}
+        
           <SplitterPane size="380px" min="320px">
             <div style={{ 
               height: '100%', 
@@ -147,7 +181,7 @@ export default function Home() {
               width: '100%',
               minWidth: '320px' 
             }}>
-              {/* Панель действий: закрепляем по ширине панели */}
+       
               <div style={{
                 position: 'sticky',
                 top: 10,

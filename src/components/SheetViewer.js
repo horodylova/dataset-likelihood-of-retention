@@ -26,7 +26,7 @@ export default function SheetViewer() {
 
       try {
         const sheetId = process.env.NEXT_PUBLIC_SHEET_ID;
-        const range = process.env.NEXT_PUBLIC_SHEET_NAME;
+        const range = 'EXPORT API';
 
         const response = await fetch(
           `/api/sheets?id=${encodeURIComponent(sheetId)}&range=${encodeURIComponent(range)}`

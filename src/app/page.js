@@ -147,22 +147,19 @@ export default function Home() {
             height: auto !important;
             min-height: 100vh !important;
           }
-          /* Таблица вывода — делаем видимыми нижние строки */
           :global(.outputs-grid) {
             height: 420px !important;
             overflow: auto !important;
           }
-          /* График — фиксированная комфортная высота на моб */
           :global(.k-chart) {
             height: 280px !important;
           }
-          /* Сайдбар — занимает всю ширину на моб */
           :global(.k-panelbar) {
             width: 100% !important;
           }
         }
       `}</style>
-      <Link href="/analytics" className="back-button">View Analytics</Link>
+      {/* удалена фиксированная кнопка View Analytics */}
       <div style={{ 
         flex: 1,
         overflow: 'hidden'

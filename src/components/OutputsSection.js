@@ -5,6 +5,7 @@ import { Grid, GridColumn } from '@progress/kendo-react-grid';
 import { Chart, ChartCategoryAxis, ChartCategoryAxisItem, ChartValueAxis, ChartValueAxisItem, ChartSeries, ChartSeriesItem, ChartTooltip, ChartLegend } from '@progress/kendo-react-charts';
 import { Button } from '@progress/kendo-react-buttons';
 import dynamic from 'next/dynamic';
+import Link from 'next/link';
 const PDFExport = dynamic(() => import('@progress/kendo-react-pdf').then(m => m.PDFExport), { ssr: false });
 
 function OutputsSection({ loading, retentionData = [], chartData, refreshKey = 0, onClearOutputs }) {
@@ -218,7 +219,9 @@ function OutputsSection({ loading, retentionData = [], chartData, refreshKey = 0
           margin: '0 0 20px 0',
           flexShrink: 0,
           display: 'flex',
-          alignItems: 'center'
+          alignItems: 'center',
+          gap: '12px',
+          flexWrap: 'nowrap'
         }}>
           <span style={{ fontSize: '20px', fontWeight: 600 }}>
             Output: {retentionData.length} rows
@@ -226,17 +229,27 @@ function OutputsSection({ loading, retentionData = [], chartData, refreshKey = 0
           <Button
             onClick={() => onClearOutputs && onClearOutputs()}
             className="k-button k-button-solid k-button-solid-base k-rounded-md"
-            style={{ marginLeft: '12px', padding: '6px 12px' }}
+            style={{ padding: '6px 12px' }}
           >
             Clear Output
           </Button>
-          <Button
-            onClick={handleExportPDF}
-            className="k-button k-button-solid k-button-solid-secondary k-rounded-md"
-            style={{ marginLeft: 'auto', padding: '6px 12px' }}
-          >
-            Download PDF
-          </Button>
+          <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <Link href="/analytics">
+              <Button
+                className="k-button k-button-solid k-button-solid-primary k-rounded-md"
+                style={{ padding: '6px 12px' }}
+              >
+                View Analytics
+              </Button>
+            </Link>
+            <Button
+              onClick={handleExportPDF}
+              className="k-button k-button-solid k-button-solid-secondary k-rounded-md"
+              style={{ padding: '6px 12px' }}
+            >
+              Download PDF
+            </Button>
+          </div>
         </div>
 
         {loading && (

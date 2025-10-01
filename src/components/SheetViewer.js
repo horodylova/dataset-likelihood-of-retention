@@ -7,8 +7,9 @@ import { useRetention } from '@/contexts/RetentionContext';
 import { calculateRetentionByMultiFilters } from '@/lib/filterUtils';
 import { Button } from '@progress/kendo-react-buttons';
 import RawDataTable from './RawDataTable';
+import Link from 'next/link';
 
-export default function SheetViewer() {
+export default function SheetViewer({ externalControls = false, registerToggle }) {
   const [error, setError] = useState(null);
   const [showRawData, setShowRawData] = useState(false);
   const [multiFilterResults, setMultiFilterResults] = useState({});
@@ -20,33 +21,25 @@ export default function SheetViewer() {
   useEffect(() => {
     const loadData = async () => {
       if (dataLoaded) return;
-
       setError(null);
       dispatch({ type: 'SET_LOADING', payload: true });
-
       try {
         const sheetId = '1k8Az5lkHrT54NZk_L6W4TLVp4GInU_Tmh-rZQhHe3JI';
         const range = 'EXPORT API';
-
-        const response = await fetch(
-          `/api/sheets?id=${encodeURIComponent(sheetId)}&range=${encodeURIComponent(range)}`
-        );
+        const response = await fetch(`/api/sheets?id=${encodeURIComponent(sheetId)}&range=${encodeURIComponent(range)}`);
         const result = await response.json();
-
         if (!response.ok) {
           throw new Error(result.error || 'Failed to fetch data');
         }
         if (!result.data || !result.data.values || result.data.values.length === 0) {
           throw new Error('No data found in the spreadsheet');
         }
-
         dispatch({ type: 'SET_DATA', payload: result.data.values });
       } catch (err) {
         setError(err.message);
         dispatch({ type: 'SET_LOADING', payload: false });
       }
     };
-
     loadData();
   }, [dispatch, dataLoaded]);
 
@@ -65,6 +58,12 @@ export default function SheetViewer() {
     setMultiFilterSpecs([]);
     setMultiFilterResults({});
   };
+
+  useEffect(() => {
+    if (typeof registerToggle === 'function') {
+      registerToggle(() => setShowRawData(prev => !prev));
+    }
+  }, [registerToggle]);
 
   return (
     <div className="sheet-viewer" style={{ 
@@ -104,30 +103,32 @@ export default function SheetViewer() {
       )}
       {dataLoaded && (
         <>
+          {/* Верхний правый тулбар внутри контейнера, в потоке документа */}
           <div style={{
-            position: 'fixed',
-            bottom: '68px', // чуть выше Back to Main
-            right: '12px',
-            zIndex: 1000
+            display: 'flex',
+            justifyContent: 'flex-end',
+            alignItems: 'center',
+            gap: '8px',
+            marginBottom: '12px'
           }}>
             <Button
-              onClick={() => setShowRawData(!showRawData)}
-              className="k-button k-button-solid k-rounded-md"
+              onClick={() => setShowRawData(v => !v)}
+              className="k-button k-button-solid k-button-solid-success k-rounded-md"
               style={{
-                padding: '10px 16px',
-                backgroundColor: '#28a745',
-                color: 'white',
-                border: 'none',
-                borderRadius: '6px',
-                cursor: 'pointer',
-                fontSize: '13px',
-                fontWeight: '500',
-                boxShadow: '0 2px 4px rgba(40, 167, 69, 0.2)'
+                padding: '6px 12px'
               }}
               title="Toggle raw data visibility"
             >
               {showRawData ? 'Hide Raw Data' : 'Show Raw Data'}
             </Button>
+            <Link href="/">
+              <Button
+                className="k-button k-button-solid k-button-solid-secondary k-rounded-md"
+                style={{ padding: '6px 12px' }}
+              >
+                Back to Main
+              </Button>
+            </Link>
           </div>
 
           {!showRawData && (

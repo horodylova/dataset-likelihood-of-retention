@@ -16,22 +16,7 @@ export default function Analytics() {
           }
         }
       `}</style>
-      {/* Компактная кнопка возврата, фиксированно, без заголовка */}
-      <Link
-        href="/"
-        className="back-button"
-        style={{
-          position: 'fixed',
-          bottom: '12px',
-          right: '12px',
-          top: 'auto',            // сброс растяжения сверху
-          display: 'inline-block',// кнопка по размеру контента
-          zIndex: 1000
-        }}
-      >
-        Back to Main
-      </Link>
-
+      {/* Удалено: фиксированная кнопка Back to Main в нижнем правом углу */}
       <div className="analytics-card">
         <SheetViewer />
       </div>

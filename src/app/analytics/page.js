@@ -5,7 +5,7 @@ import Link from 'next/link';
 
 export default function Analytics() {
   return (
-    <div className="container analytics-page">
+    <div className="container analytics-page" style={{ minHeight: '100vh', overflow: 'visible' }}>
       <style jsx>{`
         @media (max-width: 768px) {
           :global(.analytics-page) {

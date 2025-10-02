@@ -200,28 +200,23 @@ export default function Home() {
                 alignItems: 'center',
                 gap: '10px',
                 boxSizing: 'border-box',
-                flexWrap: 'nowrap'
+                flexWrap: 'nowrap',
+                overflow: 'visible'  // ключевое: убираем обрезание при hover-трансформации
               }}>
-                <div style={{ flex: '0 0 auto' }}>
-                  <Fade appear={true}>
-                    <Button
-                      onClick={handleMultiReset}
-                      className="k-button k-button-solid k-button-solid-primary k-rounded-md"
-                    >
-                      Reset
-                    </Button>
-                  </Fade>
-                </div>
-                <div style={{ flex: '0 0 auto' }}>
-                  <Fade appear={true}>
-                    <Button
-                      onClick={handleMultiSubmit}
-                      className="k-button k-button-solid k-button-solid-success k-rounded-md"
-                    >
-                      Submit
-                    </Button>
-                  </Fade>
-                </div>
+                <Button
+                  onClick={handleMultiReset}
+                  className="k-button k-button-solid k-button-solid-primary k-rounded-md"
+                  style={{ flex: '0 0 auto' }}
+                >
+                  Reset
+                </Button>
+                <Button
+                  onClick={handleMultiSubmit}
+                  className="k-button k-button-solid k-button-solid-success k-rounded-md"
+                  style={{ flex: '0 0 auto' }}
+                >
+                  Submit
+                </Button>
               </div>
 
               <PanelBar>

@@ -39,7 +39,10 @@ export default function FilterCard({ title, children, style = {}, headerChecked 
           </label>
         </div>
       )}
-      {children}
+      {/* Единый отступ слева для содержимого фильтра */}
+      <div style={{ marginLeft: '20px' }}>
+        {children}
+      </div>
     </div>
   );
 }

@@ -375,7 +375,8 @@ export default function VariablesSection({
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fit, minmax(100px, 1fr))',
           gap: '10px',
-          alignItems: 'center'
+          alignItems: 'center',
+          marginLeft: '20px'
         }}>
           <Checkbox label="Zero" checked={disabilityCountFilters.zero} onChange={(e) => handleDisabilityCountChange('zero', e.value)} />
           <Checkbox label="One" checked={disabilityCountFilters.one} onChange={(e) => handleDisabilityCountChange('one', e.value)} />

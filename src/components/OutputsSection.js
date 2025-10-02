@@ -16,6 +16,79 @@ function OutputsSection({ loading, retentionData = [], chartData, refreshKey = 0
   const pdfExportRef = React.useRef(null);
   const gridWrapperRef = React.useRef(null);
 
+  const expandedData = React.useMemo(() => {
+    if (!Array.isArray(retentionData)) return [];
+    const makeYearFieldsFromRetention = (ret, field) => {
+      const out = {};
+      for (let i = 1; i <= 10; i++) {
+        const v = ret?.[`Year ${i}`]?.[field];
+        out[`year${i}`] = Number(v || 0);
+      }
+      return out;
+    };
+
+    return retentionData.flatMap(row => {
+      const ret = row?._retention || null;
+
+      // Первая строка: проценты как строки "XX.XX%"
+      const percentYearFields = {};
+      for (let i = 1; i <= 10; i++) {
+        const val = Number(row[`year${i}`] || 0);
+        percentYearFields[`year${i}`] = Number.isFinite(val) ? `${val.toFixed(2)}%` : '';
+      }
+      const percentRow = {
+        filter: `${row.filter} — Percent`,
+        ...percentYearFields
+      };
+
+      const eligibleRow = {
+        filter: `${row.filter} — Eligible`,
+        ...(ret ? makeYearFieldsFromRetention(ret, 'eligible') :
+          Array.from({ length: 10 }, (_, i) => ({ [`year${i + 1}`]: 0 }))
+            .reduce((acc, curr) => ({ ...acc, ...curr }), {})
+        )
+      };
+      const retainedRow = {
+        filter: `${row.filter} — Retained`,
+        ...(ret ? makeYearFieldsFromRetention(ret, 'retained') :
+          Array.from({ length: 10 }, (_, i) => ({ [`year${i + 1}`]: 0 }))
+            .reduce((acc, curr) => ({ ...acc, ...curr }), {})
+        )
+      };
+      return [percentRow, eligibleRow, retainedRow];
+    });
+  }, [retentionData]);
+
+  // условный рендер ячеек: проценты с %, eligible/retained — числа
+  const makeYearCell = (field) => {
+    const YearCell = (props) => {
+      const { dataItem, className, style } = props;
+      const isPercentRow = (dataItem?.filter || '').includes('— Percent');
+      const raw = dataItem?.[field];
+
+      if (isPercentRow) {
+        const num = Number(raw);
+        const display = Number.isFinite(num)
+          ? `${num.toFixed(2)}%`
+          : (typeof raw === 'string' ? raw : '');
+        return (
+          <td className={className} style={style}>
+            {display}
+          </td>
+        );
+      }
+
+      const v = Number(raw || 0);
+      return (
+        <td className={className} style={style}>
+          {v}
+        </td>
+      );
+    };
+    YearCell.displayName = `YearCell_${field}`;
+    return YearCell;
+  };
+
   const handleColumnClick = (column) => {
     setSelectedColumn(prev => (prev === column ? null : column));
   };
@@ -69,15 +142,24 @@ function OutputsSection({ loading, retentionData = [], chartData, refreshKey = 0
     }
     setChartSeries(prepareChartSeries());
   }, [refreshKey, retentionData, selectedLegendItems]);
- 
-  useEffect(() => {
+
+  // Автопрокрутка к свежим данным внизу таблицы
+  const scrollToLatestRow = React.useCallback(() => {
     const wrapper = gridWrapperRef.current;
     if (!wrapper) return;
     const content = wrapper.querySelector('.k-grid-content');
-    if (content) {
+    if (!content) return;
+    requestAnimationFrame(() => {
       content.scrollTop = content.scrollHeight;
-    }
-  }, [retentionData.length]);
+      const rows = content.querySelectorAll('tbody tr');
+      const last = rows[rows.length - 1];
+      if (last) last.scrollIntoView({ block: 'end' });
+    });
+  }, []);
+
+  useEffect(() => {
+    scrollToLatestRow();
+  }, [retentionData.length, scrollToLatestRow]);
 
   const tooltipRender = (e) => {
     const seriesName = e?.series?.name ?? e?.point?.series?.name ?? '';
@@ -130,6 +212,10 @@ function OutputsSection({ loading, retentionData = [], chartData, refreshKey = 0
           border-left: 3px solid #384C9E !important;
           border-right: 3px solid #384C9E !important;
         }
+        .outputs-grid :global(.k-grid .k-table-tbody tr:nth-child(3n) .k-table-td) {
+          border-bottom-width: 3px !important;
+          border-bottom-color: #000 !important;
+        }
       `}</style>
 
     <div style={{ position: 'absolute', left: '-10000px', top: 0, width: '1200px' }}>
@@ -163,26 +249,30 @@ function OutputsSection({ loading, retentionData = [], chartData, refreshKey = 0
               .pdf-grid .k-grid {
                 border: 1px solid #ddd !important;
               }
+              .pdf-grid .k-grid .k-table-tbody tr:nth-child(3n) .k-table-td {
+                border-bottom-width: 3px !important;
+                border-bottom-color: #000 !important;
+              }
             `}
           </style>
 
           <div className="pdf-grid" style={{ width: 'fit-content', marginBottom: '30px' }}>
             <Grid
-              data={retentionData}
+              data={expandedData}
               style={{ width: 'auto' }}
               scrollable={false}
             >
               <GridColumn field="filter" title="Filter" width="180px" />
-              <GridColumn field="year1" title="Year 1" width="85px" format="{0:n2}%" />
-              <GridColumn field="year2" title="Year 2" width="85px" format="{0:n2}%" />
-              <GridColumn field="year3" title="Year 3" width="85px" format="{0:n2}%" />
-              <GridColumn field="year4" title="Year 4" width="85px" format="{0:n2}%" />
-              <GridColumn field="year5" title="Year 5" width="85px" format="{0:n2}%" />
-              <GridColumn field="year6" title="Year 6" width="85px" format="{0:n2}%" />
-              <GridColumn field="year7" title="Year 7" width="85px" format="{0:n2}%" />
-              <GridColumn field="year8" title="Year 8" width="85px" format="{0:n2}%" />
-              <GridColumn field="year9" title="Year 9" width="85px" format="{0:n2}%" />
-              <GridColumn field="year10" title="Year 10" width="85px" format="{0:n2}%" />
+              <GridColumn field="year1" title="Year 1" width="85px" cell={makeYearCell('year1')} />
+              <GridColumn field="year2" title="Year 2" width="85px" cell={makeYearCell('year2')} />
+              <GridColumn field="year3" title="Year 3" width="85px" cell={makeYearCell('year3')} />
+              <GridColumn field="year4" title="Year 4" width="85px" cell={makeYearCell('year4')} />
+              <GridColumn field="year5" title="Year 5" width="85px" cell={makeYearCell('year5')} />
+              <GridColumn field="year6" title="Year 6" width="85px" cell={makeYearCell('year6')} />
+              <GridColumn field="year7" title="Year 7" width="85px" cell={makeYearCell('year7')} />
+              <GridColumn field="year8" title="Year 8" width="85px" cell={makeYearCell('year8')} />
+              <GridColumn field="year9" title="Year 9" width="85px" cell={makeYearCell('year9')} />
+              <GridColumn field="year10" title="Year 10" width="85px" cell={makeYearCell('year10')} />
             </Grid>
           </div>
 
@@ -243,14 +333,7 @@ function OutputsSection({ loading, retentionData = [], chartData, refreshKey = 0
             Clear Output
           </Button>
           <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Link href="/analytics">
-              <Button
-                className="k-button k-button-solid k-button-solid-primary k-rounded-md"
-                style={{ padding: '6px 12px' }}
-              >
-                View Analytics
-              </Button>
-            </Link>
+            {/* Убрана кнопка View Analytics */}
             <Button
               onClick={handleExportPDF}
               className="k-button k-button-solid k-button-solid-secondary k-rounded-md"
@@ -271,11 +354,19 @@ function OutputsSection({ loading, retentionData = [], chartData, refreshKey = 0
           <div
             className="outputs-grid"
             ref={gridWrapperRef}
-            style={{ height: '360px', overflow: 'auto' }}
+            style={{
+              width: 'fit-content',
+              maxWidth: '100%',
+              height: '360px',
+              overflowX: 'auto',
+              overflowY: 'auto',
+              flexShrink: 0,
+              marginBottom: '30px'
+            }}
           >
             <Grid 
-              data={retentionData} 
-              style={{ width: '100%', height: '100%' }} 
+              data={expandedData} 
+              style={{ width: 'auto', height: '100%' }} 
               scrollable={true} 
             > 
               <GridColumn 
@@ -290,7 +381,7 @@ function OutputsSection({ loading, retentionData = [], chartData, refreshKey = 0
                 field="year1"
                 title="Year 1"
                 width="100px"
-                format="{0:n2}%"
+                cell={makeYearCell('year1')}
                 headerClassName={selectedColumn === 'year1' ? 'selected-column' : ''}
                 className={selectedColumn === 'year1' ? 'selected-column' : ''}
                 onHeaderClick={() => handleColumnClick('year1')}
@@ -299,7 +390,7 @@ function OutputsSection({ loading, retentionData = [], chartData, refreshKey = 0
                 field="year2"
                 title="Year 2"
                 width="100px"
-                format="{0:n2}%"
+                cell={makeYearCell('year2')}
                 headerClassName={selectedColumn === 'year2' ? 'selected-column' : ''}
                 className={selectedColumn === 'year2' ? 'selected-column' : ''}
                 onHeaderClick={() => handleColumnClick('year2')}
@@ -308,7 +399,7 @@ function OutputsSection({ loading, retentionData = [], chartData, refreshKey = 0
                 field="year3"
                 title="Year 3"
                 width="100px"
-                format="{0:n2}%"
+                cell={makeYearCell('year3')}
                 headerClassName={selectedColumn === 'year3' ? 'selected-column' : ''}
                 className={selectedColumn === 'year3' ? 'selected-column' : ''}
                 onHeaderClick={() => handleColumnClick('year3')}
@@ -317,7 +408,7 @@ function OutputsSection({ loading, retentionData = [], chartData, refreshKey = 0
                 field="year4"
                 title="Year 4"
                 width="100px"
-                format="{0:n2}%"
+                cell={makeYearCell('year4')}
                 headerClassName={selectedColumn === 'year4' ? 'selected-column' : ''}
                 className={selectedColumn === 'year4' ? 'selected-column' : ''}
                 onHeaderClick={() => handleColumnClick('year4')}
@@ -326,7 +417,7 @@ function OutputsSection({ loading, retentionData = [], chartData, refreshKey = 0
                 field="year5"
                 title="Year 5"
                 width="100px"
-                format="{0:n2}%"
+                cell={makeYearCell('year5')}
                 headerClassName={selectedColumn === 'year5' ? 'selected-column' : ''}
                 className={selectedColumn === 'year5' ? 'selected-column' : ''}
                 onHeaderClick={() => handleColumnClick('year5')}
@@ -335,7 +426,7 @@ function OutputsSection({ loading, retentionData = [], chartData, refreshKey = 0
                 field="year6"
                 title="Year 6"
                 width="100px"
-                format="{0:n2}%"
+                cell={makeYearCell('year6')}
                 headerClassName={selectedColumn === 'year6' ? 'selected-column' : ''}
                 className={selectedColumn === 'year6' ? 'selected-column' : ''}
                 onHeaderClick={() => handleColumnClick('year6')}
@@ -344,7 +435,7 @@ function OutputsSection({ loading, retentionData = [], chartData, refreshKey = 0
                 field="year7"
                 title="Year 7"
                 width="100px"
-                format="{0:n2}%"
+                cell={makeYearCell('year7')}
                 headerClassName={selectedColumn === 'year7' ? 'selected-column' : ''}
                 className={selectedColumn === 'year7' ? 'selected-column' : ''}
                 onHeaderClick={() => handleColumnClick('year7')}
@@ -353,7 +444,7 @@ function OutputsSection({ loading, retentionData = [], chartData, refreshKey = 0
                 field="year8"
                 title="Year 8"
                 width="100px"
-                format="{0:n2}%"
+                cell={makeYearCell('year8')}
                 headerClassName={selectedColumn === 'year8' ? 'selected-column' : ''}
                 className={selectedColumn === 'year8' ? 'selected-column' : ''}
                 onHeaderClick={() => handleColumnClick('year8')}
@@ -362,7 +453,7 @@ function OutputsSection({ loading, retentionData = [], chartData, refreshKey = 0
                 field="year9"
                 title="Year 9"
                 width="100px"
-                format="{0:n2}%"
+                cell={makeYearCell('year9')}
                 headerClassName={selectedColumn === 'year9' ? 'selected-column' : ''}
                 className={selectedColumn === 'year9' ? 'selected-column' : ''}
                 onHeaderClick={() => handleColumnClick('year9')}
@@ -371,7 +462,7 @@ function OutputsSection({ loading, retentionData = [], chartData, refreshKey = 0
                 field="year10"
                 title="Year 10"
                 width="100px"
-                format="{0:n2}%"
+                cell={makeYearCell('year10')}
                 headerClassName={selectedColumn === 'year10' ? 'selected-column' : ''}
                 className={selectedColumn === 'year10' ? 'selected-column' : ''}
                 onHeaderClick={() => handleColumnClick('year10')}

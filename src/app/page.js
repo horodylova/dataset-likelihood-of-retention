@@ -22,6 +22,8 @@ export default function Home() {
   const createFilterRow = useCallback((filterName, data) => {
     const newRow = {
       filter: filterName,
+      // сохраняем исходный объект ретеншна для Eligible/Retained
+      _retention: data,
       ...Array.from({ length: 10 }, (_, i) => ({
         [`year${i + 1}`]: data[`Year ${i + 1}`]?.rate || 0
       })).reduce((acc, curr) => ({ ...acc, ...curr }), {})

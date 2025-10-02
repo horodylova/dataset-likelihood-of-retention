@@ -306,3 +306,10 @@ table tr:hover td {
     font-size: 11px;
   }
 }
+.k-button {
+  transition: transform 150ms ease, box-shadow 150ms ease;
+}
+.k-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}

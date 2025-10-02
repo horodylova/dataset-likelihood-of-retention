@@ -9,6 +9,7 @@ import VariablesSection from '../components/VariablesSection';
 import OutputsSection from '../components/OutputsSection';
 import Link from 'next/link';
 import { Button } from '@progress/kendo-react-buttons';
+import { Fade } from '@progress/kendo-react-animation';
 import { calculateRetentionByMultiFilters } from '@/lib/filterUtils';
 
 export default function Home() {
@@ -201,20 +202,26 @@ export default function Home() {
                 boxSizing: 'border-box',
                 flexWrap: 'nowrap'
               }}>
-                <Button
-                  onClick={handleMultiReset}
-                  className="k-button k-button-solid k-button-solid-primary k-rounded-md"
-                  style={{ flex: '0 0 auto' }}
-                >
-                  Reset
-                </Button>
-                <Button
-                  onClick={handleMultiSubmit}
-                  className="k-button k-button-solid k-button-solid-success k-rounded-md"
-                  style={{ flex: '0 0 auto' }}
-                >
-                  Submit
-                </Button>
+                <div style={{ flex: '0 0 auto' }}>
+                  <Fade appear={true}>
+                    <Button
+                      onClick={handleMultiReset}
+                      className="k-button k-button-solid k-button-solid-primary k-rounded-md"
+                    >
+                      Reset
+                    </Button>
+                  </Fade>
+                </div>
+                <div style={{ flex: '0 0 auto' }}>
+                  <Fade appear={true}>
+                    <Button
+                      onClick={handleMultiSubmit}
+                      className="k-button k-button-solid k-button-solid-success k-rounded-md"
+                    >
+                      Submit
+                    </Button>
+                  </Fade>
+                </div>
               </div>
 
               <PanelBar>

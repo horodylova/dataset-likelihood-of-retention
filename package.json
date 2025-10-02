@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@progress/kendo-data-query": "^1.7.1",
+    "@progress/kendo-date-math": "^1.5.14",
     "@progress/kendo-drawing": "^1.21.2",
     "@progress/kendo-licensing": "^1.7.1",
     "@progress/kendo-react-buttons": "^12.0.2",
@@ -19,6 +20,7 @@
     "@progress/kendo-react-excel-export": "^12.0.2",
     "@progress/kendo-react-grid": "^12.0.2",
     "@progress/kendo-react-pdf": "^12.0.2",
+    "@progress/kendo-react-ripple": "^12.0.2",
     "@progress/kendo-theme-bootstrap": "^12.0.1",
     "googleapis": "^160.0.0",
     "next": "15.5.3",

@@ -103,7 +103,7 @@ export default function SheetViewer({ externalControls = false, registerToggle }
       )}
       {dataLoaded && (
         <>
-          {/* Верхний правый тулбар внутри контейнера, в потоке документа */}
+        
           <div style={{
             display: 'flex',
             justifyContent: 'flex-end',

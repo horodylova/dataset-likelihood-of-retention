@@ -16,7 +16,7 @@ export default function Analytics() {
           }
         }
       `}</style>
-      {/* Удалено: фиксированная кнопка Back to Main в нижнем правом углу */}
+     
       <div className="analytics-card">
         <SheetViewer />
       </div>

@@ -81,7 +81,6 @@ export default function RetentionChart({ processedData }) {
 
   const chartSeries = prepareChartData();
 
-  // Безопасный тултип: учитывает отсутствующую серию/значение
   const tooltipRender = (e) => {
       const seriesName = e?.series?.name ?? '';
       const value = typeof e?.value === 'number' ? e.value : 0;

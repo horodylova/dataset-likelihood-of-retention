@@ -5,7 +5,7 @@ import { makeYearCell } from './utils';
 function OutputsGrid({ data, selectedColumn, onHeaderClick }) {
   const gridWrapperRef = useRef(null);
 
-  // Автопрокрутка вниз при добавлении новых данных
+
   const scrollToLatestRow = useCallback(() => {
     const wrapper = gridWrapperRef.current;
     if (!wrapper) return;

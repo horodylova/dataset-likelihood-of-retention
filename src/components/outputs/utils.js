@@ -1,6 +1,5 @@
 import React from 'react';
 
-// Формирование 3 строк для каждой записи: Percent, Eligible, Retained
 export function expandRetentionData(retentionData) {
   if (!Array.isArray(retentionData)) return [];
 
@@ -21,7 +20,7 @@ export function expandRetentionData(retentionData) {
       yearFields[`year${i}`] = Number(row[`year${i}`] || 0);
     }
 
-    // Форматируем проценты как строки "XX.XX%"
+  
     const percentYearFields = {};
     for (let i = 1; i <= 10; i++) {
       const val = Number(row[`year${i}`] || 0);
@@ -69,7 +68,6 @@ export function expandRetentionData(retentionData) {
   });
 }
 
-// Серии для графика по выбранным легендам
 export function buildChartSeries(retentionData, selectedLegendItems, categories, colors) {
   if (!retentionData || retentionData.length === 0) return [];
   if (!selectedLegendItems || selectedLegendItems.size === 0) return [];
@@ -93,7 +91,6 @@ export function buildChartSeries(retentionData, selectedLegendItems, categories,
   return series;
 }
 
-// Именованный cell-компонент для kendo Grid
 export function makeYearCell(field) {
   const YearCell = (props) => {
     const { dataItem, className, style } = props;
@@ -130,7 +127,7 @@ export function makeYearCell(field) {
   YearCell.displayName = `YearCell_${field}`;
   return YearCell;
 }
-// Тултип для графика
+
 export function chartTooltipRender(e) {
   const seriesName = e?.series?.name ?? e?.point?.series?.name ?? '';
   let rawValue = e?.value;

@@ -201,7 +201,6 @@ export default function MultiFilterTable({ onSubmit, onReset }) {
         </tbody>
       </table>
 
-      {/* Панель выбора перенесена вниз под таблицу без изменений */}
       <div style={styles.selectionBar}>
         <div style={styles.selectionText}>
           You have selected: {
@@ -279,7 +278,6 @@ export default function MultiFilterTable({ onSubmit, onReset }) {
         </div>
       </div>
 
-      {/* Нижние две кнопки полностью удалены */}
     </div>
   );
 }

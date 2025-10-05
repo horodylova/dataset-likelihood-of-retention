@@ -5,7 +5,7 @@ import { Grid, GridColumn } from '@progress/kendo-react-grid';
 import { Chart, ChartCategoryAxis, ChartCategoryAxisItem, ChartValueAxis, ChartValueAxisItem, ChartSeries, ChartSeriesItem, ChartTooltip, ChartLegend } from '@progress/kendo-react-charts';
 import { Button } from '@progress/kendo-react-buttons';
 import dynamic from 'next/dynamic';
-import Link from 'next/link';
+
 const PDFExport = dynamic(() => import('@progress/kendo-react-pdf').then(m => m.PDFExport), { ssr: false });
 
 function OutputsSection({ loading, retentionData = [], chartData, refreshKey = 0, onClearOutputs }) {
@@ -30,7 +30,6 @@ function OutputsSection({ loading, retentionData = [], chartData, refreshKey = 0
     return retentionData.flatMap(row => {
       const ret = row?._retention || null;
 
-      // Первая строка: проценты как строки "XX.XX%"
       const percentYearFields = {};
       for (let i = 1; i <= 10; i++) {
         const val = Number(row[`year${i}`] || 0);
@@ -59,7 +58,7 @@ function OutputsSection({ loading, retentionData = [], chartData, refreshKey = 0
     });
   }, [retentionData]);
 
-  // условный рендер ячеек: проценты с %, eligible/retained — числа
+
   const makeYearCell = (field) => {
     const YearCell = (props) => {
       const { dataItem, className, style } = props;
@@ -143,7 +142,6 @@ function OutputsSection({ loading, retentionData = [], chartData, refreshKey = 0
     setChartSeries(prepareChartSeries());
   }, [refreshKey, retentionData, selectedLegendItems]);
 
-  // Автопрокрутка к свежим данным внизу таблицы
   const scrollToLatestRow = React.useCallback(() => {
     const wrapper = gridWrapperRef.current;
     if (!wrapper) return;
@@ -163,11 +161,11 @@ function OutputsSection({ loading, retentionData = [], chartData, refreshKey = 0
 
   const tooltipRender = (e) => {
     const seriesName = e?.series?.name ?? e?.point?.series?.name ?? '';
-    // Kendo может передавать значение в e.point.value или e.value
+   
     let rawValue = e?.value;
     if (rawValue == null) {
         const pv = e?.point?.value;
-        // point.value может быть числом или массивом [category, value]
+        
         rawValue = Array.isArray(pv) ? pv[1] : pv;
     }
     const num = typeof rawValue === 'number' ? rawValue : Number(rawValue);

@@ -196,7 +196,7 @@ export default function VariablesSection({
       scrollbarWidth: 'thin',
       scrollbarColor: '#FF5E00 #f1f1f1'
     }}>
-      {/* Gender */}
+   
       <div style={{
         marginBottom: '15px',
         padding: '10px',
@@ -228,7 +228,7 @@ export default function VariablesSection({
         </div>
       </div>
 
-      {/* Status */}
+ 
       <div style={{
         marginBottom: '15px',
         padding: '10px',

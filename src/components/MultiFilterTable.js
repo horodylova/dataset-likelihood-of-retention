@@ -20,6 +20,25 @@ export default function MultiFilterTable({ onSubmit, onReset }) {
     { column: 'DT', name: 'DT', options: ['Yes', 'No'] },
     { column: 'Disability Count', name: 'Disability Count', options: ['0', '1', '2', '3', '4+'] },
     { column: 'Income', name: 'Income Source', options: ['SSI', 'SSDI', 'Multiple', 'Other', 'None'] },
+    { 
+      column: 'Age', 
+      name: 'Age', 
+      options: [
+        '18-24: Young Adult',
+        '25-34: Youth',
+        '35-44: Mid-Age',
+        '45-54: Mid-Age +',
+        '55-64: Mature',
+        '65+: Seniors'
+      ],
+      disabled: true
+    },
+    { 
+      column: 'AB Score', 
+      name: 'AB Score', 
+      options: ['None', '1-6', '7-9', '10-12', '13+'],
+      disabled: true
+    },
   ];
 
   const [selected, setSelected] = useState({});
@@ -182,13 +201,21 @@ export default function MultiFilterTable({ onSubmit, onReset }) {
                 <div style={styles.optionWrap}>
                   {f.options.map(opt => {
                     const isActive = (selected[f.name] || new Set()).has(opt);
-                    return (
+                    return f.disabled ? (
+                      <span
+                        key={opt}
+                        style={styles.pill(false, true)}
+                        title="Not selectable"
+                      >
+                        {opt}
+                      </span>
+                    ) : (
                       <button
                         key={opt}
                         type="button"
                         style={styles.pill(isActive, !!f.disabled)}
-                        onClick={() => toggleOption(f.name, opt, !!f.disabled)}
-                        title={f.disabled ? 'Not selectable' : 'Toggle option'}
+                        onClick={() => toggleOption(f.name, opt)}
+                        title="Toggle option"
                       >
                         {opt}
                       </button>

@@ -13,6 +13,7 @@ function OutputsSection({ loading, retentionData = [], chartData, refreshKey = 0
   const [selectedLegendItems, setSelectedLegendItems] = useState(new Set());
   const [chartSeries, setChartSeries] = useState([]);
 
+
   const pdfExportRef = React.useRef(null);
   const gridWrapperRef = React.useRef(null);
 
@@ -326,7 +327,14 @@ function OutputsSection({ loading, retentionData = [], chartData, refreshKey = 0
             Clear Output
           </Button>
           <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            {/* Убрана кнопка View Analytics */}
+            <a href="/sheet-viewer">
+              <Button
+                className="k-button k-button-solid k-button-solid-secondary k-rounded-md"
+                style={{ padding: '6px 12px' }}
+              >
+                Open Sheet Viewer
+              </Button>
+            </a>
             <Button
               onClick={handleExportPDF}
               className="k-button k-button-solid k-button-solid-secondary k-rounded-md"
@@ -495,6 +503,7 @@ function OutputsSection({ loading, retentionData = [], chartData, refreshKey = 0
                 </Chart>
             </div>
         </div>
+
       </div>
     </>
   );

@@ -26,7 +26,6 @@ export default function MultiFilterResultsTable({ retentionData, selectedSpecs =
             <tr>
               <th style={thStyle}>Year</th>
               <th style={thStyle}>Eligible</th>
-              <th style={thStyle}>Retained</th>
               <th style={thStyle}>Rate %</th>
             </tr>
           </thead>
@@ -35,7 +34,6 @@ export default function MultiFilterResultsTable({ retentionData, selectedSpecs =
               <tr key={year}>
                 <td style={tdStyle}>{year}</td>
                 <td style={tdStyle}>{data.eligible}</td>
-                <td style={tdStyle}>{data.retained}</td>
                 <td style={tdStyle}>{Number(data.rate || 0).toFixed(1)}%</td>
               </tr>
             ))}

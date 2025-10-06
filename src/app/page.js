@@ -26,7 +26,7 @@ export default function Home() {
       // сохраняем исходный объект ретеншна для Eligible/Retained
       _retention: data,
       ...Array.from({ length: 10 }, (_, i) => ({
-        [`year${i + 1}`]: data[`Year ${i + 1}`]?.rate || 0
+        [`year${i}`]: data[`Year ${i}`]?.rate || 0
       })).reduce((acc, curr) => ({ ...acc, ...curr }), {})
     };
     
@@ -248,3 +248,4 @@ export default function Home() {
     </div>
   );
 }
+

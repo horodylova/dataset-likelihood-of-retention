@@ -20,7 +20,7 @@ function OutputsSection({ loading, retentionData = [], chartData, refreshKey = 0
     if (!Array.isArray(retentionData)) return [];
     const makeYearFieldsFromRetention = (ret, field) => {
       const out = {};
-      for (let i = 1; i <= 10; i++) {
+      for (let i = 0; i <= 9; i++) {
         const v = ret?.[`Year ${i}`]?.[field];
         out[`year${i}`] = Number(v || 0);
       }
@@ -31,7 +31,7 @@ function OutputsSection({ loading, retentionData = [], chartData, refreshKey = 0
       const ret = row?._retention || null;
 
       const percentYearFields = {};
-      for (let i = 1; i <= 10; i++) {
+      for (let i = 0; i <= 9; i++) {
         const val = Number(row[`year${i}`] || 0);
         percentYearFields[`year${i}`] = Number.isFinite(val) ? `${val.toFixed(2)}%` : '';
       }
@@ -43,18 +43,11 @@ function OutputsSection({ loading, retentionData = [], chartData, refreshKey = 0
       const eligibleRow = {
         filter: `${row.filter} — Eligible`,
         ...(ret ? makeYearFieldsFromRetention(ret, 'eligible') :
-          Array.from({ length: 10 }, (_, i) => ({ [`year${i + 1}`]: 0 }))
+          Array.from({ length: 10 }, (_, i) => ({ [`year${i}`]: 0 }))
             .reduce((acc, curr) => ({ ...acc, ...curr }), {})
         )
       };
-      const retainedRow = {
-        filter: `${row.filter} — Retained`,
-        ...(ret ? makeYearFieldsFromRetention(ret, 'retained') :
-          Array.from({ length: 10 }, (_, i) => ({ [`year${i + 1}`]: 0 }))
-            .reduce((acc, curr) => ({ ...acc, ...curr }), {})
-        )
-      };
-      return [percentRow, eligibleRow, retainedRow];
+      return [percentRow, eligibleRow];
     });
   }, [retentionData]);
 
@@ -92,12 +85,14 @@ function OutputsSection({ loading, retentionData = [], chartData, refreshKey = 0
     setSelectedColumn(prev => (prev === column ? null : column));
   };
 
-  const categories = ['Year 1', 'Year 2', 'Year 3', 'Year 4', 'Year 5', 'Year 6', 'Year 7', 'Year 8', 'Year 9', 'Year 10'];
+  const categories = ['Year 0', 'Year 1', 'Year 2', 'Year 3', 'Year 4', 'Year 5', 'Year 6', 'Year 7', 'Year 8', 'Year 9'];
   const colors = [
     '#28a745', '#FF5E00', '#384C9E', '#dc3545', '#6f42c1',
     '#fd7e14', '#20c997', '#e83e8c', '#6610f2', '#007bff',
     '#ffc107', '#17a2b8', '#343a40', '#6c757d', '#e91e63'
   ];
+  const valueAxisMax = 110;
+  const valueAxisMin = -10;
 
   useEffect(() => {
     if (retentionData && retentionData.length > 0) {
@@ -122,7 +117,7 @@ function OutputsSection({ loading, retentionData = [], chartData, refreshKey = 0
 
       const data = categories.map((year, yearIndex) => ({
         year,
-        rate: item[`year${yearIndex + 1}`] || 0
+        rate: item[`year${yearIndex}`] || 0
       }));
 
       series.push({
@@ -210,7 +205,7 @@ function OutputsSection({ loading, retentionData = [], chartData, refreshKey = 0
           border-left: 3px solid #384C9E !important;
           border-right: 3px solid #384C9E !important;
         }
-        .outputs-grid :global(.k-grid .k-table-tbody tr:nth-child(3n) .k-table-td) {
+        .outputs-grid :global(.k-grid .k-table-tbody tr:nth-child(2n) .k-table-td) {
           border-bottom-width: 3px !important;
           border-bottom-color: #000 !important;
         }
@@ -247,7 +242,7 @@ function OutputsSection({ loading, retentionData = [], chartData, refreshKey = 0
               .pdf-grid .k-grid {
                 border: 1px solid #ddd !important;
               }
-              .pdf-grid .k-grid .k-table-tbody tr:nth-child(3n) .k-table-td {
+              .pdf-grid .k-grid .k-table-tbody tr:nth-child(2n) .k-table-td {
                 border-bottom-width: 3px !important;
                 border-bottom-color: #000 !important;
               }
@@ -261,6 +256,7 @@ function OutputsSection({ loading, retentionData = [], chartData, refreshKey = 0
               scrollable={false}
             >
               <GridColumn field="filter" title="Filter" width="180px" />
+              <GridColumn field="year0" title="Year 0" width="85px" cell={makeYearCell('year0')} />
               <GridColumn field="year1" title="Year 1" width="85px" cell={makeYearCell('year1')} />
               <GridColumn field="year2" title="Year 2" width="85px" cell={makeYearCell('year2')} />
               <GridColumn field="year3" title="Year 3" width="85px" cell={makeYearCell('year3')} />
@@ -270,7 +266,6 @@ function OutputsSection({ loading, retentionData = [], chartData, refreshKey = 0
               <GridColumn field="year7" title="Year 7" width="85px" cell={makeYearCell('year7')} />
               <GridColumn field="year8" title="Year 8" width="85px" cell={makeYearCell('year8')} />
               <GridColumn field="year9" title="Year 9" width="85px" cell={makeYearCell('year9')} />
-              <GridColumn field="year10" title="Year 10" width="85px" cell={makeYearCell('year10')} />
             </Grid>
           </div>
 
@@ -281,7 +276,7 @@ function OutputsSection({ loading, retentionData = [], chartData, refreshKey = 0
                 <ChartCategoryAxisItem categories={categories} />
               </ChartCategoryAxis>
               <ChartValueAxis>
-                <ChartValueAxisItem title={{ text: 'Retention Rate (%)' }} min={0} max={100} />
+                <ChartValueAxisItem title={{ text: 'Retention Rate (%)' }} min={valueAxisMin} max={valueAxisMax} axisCrossingValue={valueAxisMin - 1} labels={{ content: (e) => (e.value < 0 ? '' : `${e.value}%`) }} />
               </ChartValueAxis>
               <ChartSeries>
                 {chartSeries.map((series) => (
@@ -376,6 +371,15 @@ function OutputsSection({ loading, retentionData = [], chartData, refreshKey = 0
                 onHeaderClick={() => handleColumnClick('filter')} 
               /> 
               <GridColumn
+                field="year0"
+                title="Year 0"
+                width="100px"
+                cell={makeYearCell('year0')}
+                headerClassName={selectedColumn === 'year0' ? 'selected-column' : ''}
+                className={selectedColumn === 'year0' ? 'selected-column' : ''}
+                onHeaderClick={() => handleColumnClick('year0')}
+              />
+              <GridColumn
                 field="year1"
                 title="Year 1"
                 width="100px"
@@ -456,15 +460,6 @@ function OutputsSection({ loading, retentionData = [], chartData, refreshKey = 0
                 className={selectedColumn === 'year9' ? 'selected-column' : ''}
                 onHeaderClick={() => handleColumnClick('year9')}
               />
-              <GridColumn
-                field="year10"
-                title="Year 10"
-                width="100px"
-                cell={makeYearCell('year10')}
-                headerClassName={selectedColumn === 'year10' ? 'selected-column' : ''}
-                className={selectedColumn === 'year10' ? 'selected-column' : ''}
-                onHeaderClick={() => handleColumnClick('year10')}
-              />
             </Grid>
           </div>
         </div>
@@ -480,7 +475,7 @@ function OutputsSection({ loading, retentionData = [], chartData, refreshKey = 0
                         <ChartCategoryAxisItem categories={categories} />
                     </ChartCategoryAxis>
                     <ChartValueAxis>
-                        <ChartValueAxisItem title={{ text: 'Retention Rate (%)' }} min={0} max={100} />
+                        <ChartValueAxisItem title={{ text: 'Retention Rate (%)' }} min={valueAxisMin} max={valueAxisMax} axisCrossingValue={valueAxisMin - 1} labels={{ content: (e) => (e.value < 0 ? '' : `${e.value}%`) }} />
                     </ChartValueAxis>
                     <ChartSeries>
                         {chartSeries.map((series) => (

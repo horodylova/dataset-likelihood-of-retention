@@ -2,7 +2,7 @@ import { calculateYearsLived } from '@/lib/dataUtils';
 
 function createEmptyRetentionData() {
   const data = {};
-  for (let year = 1; year <= 10; year++) {
+  for (let year = 0; year <= 9; year++) {
     data[`Year ${year}`] = { eligible: 0, retained: 0, rate: 0 };
   }
   return data;
@@ -398,19 +398,36 @@ function calculateRetentionForData(data, retentionObject) {
   data.forEach(resident => {
     if (!resident.moveInDate) return;
     const yearsLived = calculateYearsLived(resident.moveInDate, resident.moveOutDate);
-    for (let year = 1; year <= 10; year++) {
-      if (yearsLived >= year) {
-        retentionObject[`Year ${year}`].eligible++;
-        if (yearsLived >= year + 1) {
-          retentionObject[`Year ${year}`].retained++;
+    for (let year = 0; year <= 9; year++) {
+      if (year === 0) {
+        if (yearsLived > 0) {
+          retentionObject['Year 0'].eligible++;
+          if (yearsLived >= 1) {
+            retentionObject['Year 0'].retained++;
+          }
+        }
+      } else {
+        if (yearsLived >= year) {
+          retentionObject[`Year ${year}`].eligible++;
+          if (yearsLived >= year + 1) {
+            retentionObject[`Year ${year}`].retained++;
+          }
         }
       }
     }
   });
 
+  const baseEligible = retentionObject['Year 0']?.eligible || 0;
+
   Object.keys(retentionObject).forEach(year => {
     const yearData = retentionObject[year];
-    yearData.rate = yearData.eligible > 0 ? Math.round((yearData.retained / yearData.eligible) * 100 * 100) / 100 : 0;
+    if (year === 'Year 0') {
+      yearData.rate = 100;
+    } else {
+      yearData.rate = baseEligible > 0
+        ? Math.round((yearData.eligible / baseEligible) * 100 * 100) / 100
+        : 0;
+    }
   });
 }
 

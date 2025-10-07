@@ -62,6 +62,34 @@ export default function VariablesSection({
     former: false
   });
 
+  const [ageFilters, setAgeFilters] = useState({
+    ageTotal: false,
+    youngAdult: false,
+    youth: false,
+    midAge: false,
+    midAgePlus: false,
+    mature: false,
+    seniors: false
+  });
+
+  const [abScoreFilters, setAbScoreFilters] = useState({
+    abScoreTotal: false,
+    none: false,
+    oneSix: false,
+    sevenNine: false,
+    tenTwelve: false,
+    thirteenPlus: false
+  });
+
+  const [ychFilters, setYchFilters] = useState({
+    ychTotal: false,
+    oneTwo: false,
+    threeFour: false,
+    fiveSeven: false,
+    eightFourteen: false,
+    fifteenPlus: false
+  });
+
   const handleGenderFilterChange = useCallback((type, checked) => {
     setGenderFilters(prev => ({ ...prev, [type]: checked }));
   }, []);
@@ -92,6 +120,18 @@ export default function VariablesSection({
 
   const handleStatusFilterChange = useCallback((type, checked) => {
     setStatusFilters(prev => ({ ...prev, [type]: checked }));
+  }, []);
+
+  const handleAgeFilterChange = useCallback((type, checked) => {
+    setAgeFilters(prev => ({ ...prev, [type]: checked }));
+  }, []);
+
+  const handleABScoreFilterChange = useCallback((type, checked) => {
+    setAbScoreFilters(prev => ({ ...prev, [type]: checked }));
+  }, []);
+
+  const handleYCHFilterChange = useCallback((type, checked) => {
+    setYchFilters(prev => ({ ...prev, [type]: checked }));
   }, []);
 
   useEffect(() => {
@@ -173,6 +213,43 @@ export default function VariablesSection({
   }, [statusFilters, onMultiSelectionChange]);
 
   useEffect(() => {
+    const values = [];
+    if (ageFilters.youngAdult) values.push('Young Adult');
+    if (ageFilters.youth) values.push('Youth');
+    if (ageFilters.midAge) values.push('Mid-Age');
+    if (ageFilters.midAgePlus) values.push('Mid-Age +');
+    if (ageFilters.mature) values.push('Mature');
+    if (ageFilters.seniors) values.push('Seniors');
+    if (onMultiSelectionChange) {
+      onMultiSelectionChange('Age', { combined: !!ageFilters.ageTotal, values });
+    }
+  }, [ageFilters, onMultiSelectionChange]);
+
+  useEffect(() => {
+    const values = [];
+    if (abScoreFilters.none) values.push('None');
+    if (abScoreFilters.oneSix) values.push('1-6');
+    if (abScoreFilters.sevenNine) values.push('7-9');
+    if (abScoreFilters.tenTwelve) values.push('10-12');
+    if (abScoreFilters.thirteenPlus) values.push('13+');
+    if (onMultiSelectionChange) {
+      onMultiSelectionChange('AB Score', { combined: !!abScoreFilters.abScoreTotal, values });
+    }
+  }, [abScoreFilters, onMultiSelectionChange]);
+
+  useEffect(() => {
+    const values = [];
+    if (ychFilters.oneTwo) values.push('1-2');
+    if (ychFilters.threeFour) values.push('3-4');
+    if (ychFilters.fiveSeven) values.push('5-7');
+    if (ychFilters.eightFourteen) values.push('8-14');
+    if (ychFilters.fifteenPlus) values.push('15+');
+    if (onMultiSelectionChange) {
+      onMultiSelectionChange('YCH', { combined: !!ychFilters.ychTotal, values });
+    }
+  }, [ychFilters, onMultiSelectionChange]);
+
+  useEffect(() => {
     if (resetSignal == null) return;
     setGenderFilters({ genderTotal: false, male: false, female: false });
     setVeteranFilters({ veteranTotal: false, yes: false, no: false });
@@ -185,6 +262,10 @@ export default function VariablesSection({
     setIncomeSourceFilters({ ssi: false, ssdi: false, multiple: false, other: false, none: false });
     setIncomeSourceTotal(false);
     setStatusFilters({ statusTotal: false, current: false, former: false });
+
+    setAgeFilters({ ageTotal: false, youngAdult: false, youth: false, midAge: false, midAgePlus: false, mature: false, seniors: false });
+    setAbScoreFilters({ abScoreTotal: false, none: false, oneSix: false, sevenNine: false, tenTwelve: false, thirteenPlus: false });
+    setYchFilters({ ychTotal: false, oneTwo: false, threeFour: false, fiveSeven: false, eightFourteen: false, fifteenPlus: false });
   }, [resetSignal]);
 
   return (
@@ -383,6 +464,58 @@ export default function VariablesSection({
           <Checkbox label="Two" checked={disabilityCountFilters.two} onChange={(e) => handleDisabilityCountChange('two', e.value)} />
           <Checkbox label="Three" checked={disabilityCountFilters.three} onChange={(e) => handleDisabilityCountChange('three', e.value)} />
           <Checkbox label="Four +" checked={disabilityCountFilters.fourPlus} onChange={(e) => handleDisabilityCountChange('fourPlus', e.value)} />
+        </div>
+      </FilterCard>
+
+      {/* Age */}
+      <FilterCard title="Age" headerChecked={ageFilters.ageTotal} headerOnChange={(e) => handleAgeFilterChange('ageTotal', e.value)}>
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+          gap: '10px',
+          alignItems: 'center',
+          marginLeft: '20px'
+        }}>
+          <Checkbox label="18-24: Young Adult" checked={ageFilters.youngAdult} onChange={(e) => handleAgeFilterChange('youngAdult', e.value)} />
+          <Checkbox label="25-34: Youth" checked={ageFilters.youth} onChange={(e) => handleAgeFilterChange('youth', e.value)} />
+          <Checkbox label="35-44: Mid-Age" checked={ageFilters.midAge} onChange={(e) => handleAgeFilterChange('midAge', e.value)} />
+          <Checkbox label="45-54: Mid-Age +" checked={ageFilters.midAgePlus} onChange={(e) => handleAgeFilterChange('midAgePlus', e.value)} />
+          <Checkbox label="55-64: Mature" checked={ageFilters.mature} onChange={(e) => handleAgeFilterChange('mature', e.value)} />
+          <Checkbox label="65+: Seniors" checked={ageFilters.seniors} onChange={(e) => handleAgeFilterChange('seniors', e.value)} />
+        </div>
+      </FilterCard>
+
+      {/* AB Score */}
+      <FilterCard title="AB Score" headerChecked={abScoreFilters.abScoreTotal} headerOnChange={(e) => handleABScoreFilterChange('abScoreTotal', e.value)}>
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(100px, 1fr))',
+          gap: '10px',
+          alignItems: 'center',
+          marginLeft: '20px'
+        }}>
+          <Checkbox label="None" checked={abScoreFilters.none} onChange={(e) => handleABScoreFilterChange('none', e.value)} />
+          <Checkbox label="1-6" checked={abScoreFilters.oneSix} onChange={(e) => handleABScoreFilterChange('oneSix', e.value)} />
+          <Checkbox label="7-9" checked={abScoreFilters.sevenNine} onChange={(e) => handleABScoreFilterChange('sevenNine', e.value)} />
+          <Checkbox label="10-12" checked={abScoreFilters.tenTwelve} onChange={(e) => handleABScoreFilterChange('tenTwelve', e.value)} />
+          <Checkbox label="13+" checked={abScoreFilters.thirteenPlus} onChange={(e) => handleABScoreFilterChange('thirteenPlus', e.value)} />
+        </div>
+      </FilterCard>
+
+      {/* YCH */}
+      <FilterCard title="YCH" headerChecked={ychFilters.ychTotal} headerOnChange={(e) => handleYCHFilterChange('ychTotal', e.value)}>
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(100px, 1fr))',
+          gap: '10px',
+          alignItems: 'center',
+          marginLeft: '20px'
+        }}>
+          <Checkbox label="1-2" checked={ychFilters.oneTwo} onChange={(e) => handleYCHFilterChange('oneTwo', e.value)} />
+          <Checkbox label="3-4" checked={ychFilters.threeFour} onChange={(e) => handleYCHFilterChange('threeFour', e.value)} />
+          <Checkbox label="5-7" checked={ychFilters.fiveSeven} onChange={(e) => handleYCHFilterChange('fiveSeven', e.value)} />
+          <Checkbox label="8-14" checked={ychFilters.eightFourteen} onChange={(e) => handleYCHFilterChange('eightFourteen', e.value)} />
+          <Checkbox label="15+" checked={ychFilters.fifteenPlus} onChange={(e) => handleYCHFilterChange('fifteenPlus', e.value)} />
         </div>
       </FilterCard>
 

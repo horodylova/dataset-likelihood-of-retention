@@ -31,12 +31,18 @@ export default function MultiFilterTable({ onSubmit, onReset }) {
         '55-64: Mature',
         '65+: Seniors'
       ],
-      disabled: true
+      disabled: false
     },
     { 
       column: 'AB Score', 
       name: 'AB Score', 
       options: ['None', '1-6', '7-9', '10-12', '13+'],
+      disabled: true
+    },
+    { 
+      column: 'YCH', 
+      name: 'YCH', 
+      options: ['1-2', '3-4', '5-7', '8-14', '15+'],
       disabled: true
     },
   ];
@@ -62,8 +68,18 @@ export default function MultiFilterTable({ onSubmit, onReset }) {
     filters.forEach(f => {
       const chosen = Array.from(selected[f.name] || []);
       if (chosen.length > 0) {
- 
-        specs.push({ column: f.column, values: chosen, display: f.name });
+        let values = chosen;
+
+        // Преобразуем отображаемые опции Age в чистые категории,
+        // чтобы утилита сопоставила их с "Birth Year" -> возрастными корзинами
+        if (f.column === 'Age') {
+          values = chosen.map(opt => {
+            const parts = opt.split(':');
+            return parts.length > 1 ? parts[1].trim() : opt.trim(); // 'Young Adult', 'Youth', ...
+          });
+        }
+
+        specs.push({ column: f.column, values, display: f.name });
       }
     });
     if (onSubmit) onSubmit(specs);

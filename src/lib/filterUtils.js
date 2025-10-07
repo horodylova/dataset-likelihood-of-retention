@@ -576,6 +576,33 @@ export function calculateRetentionByMultiFilters(processedData, rawData, filterS
       return values.includes(bucket);
     }
 
+    // Derived "Age" (based on 'Birth Year')
+    if (columnName === 'age') {
+      const birthYearIndex = headers.findIndex(h => h === 'birth year');
+      if (birthYearIndex === -1) return false;
+
+      const rawBirthYear = resident.rawData[birthYearIndex];
+      const birthYear = rawBirthYear ? parseInt(rawBirthYear.toString().trim(), 10) : NaN;
+      if (Number.isNaN(birthYear)) return false;
+
+      const nowYear = new Date().getFullYear();
+      const age = nowYear - birthYear;
+
+      let bucket = '';
+      if (age >= 18 && age <= 24) bucket = 'young adult';
+      else if (age >= 25 && age <= 34) bucket = 'youth';
+      else if (age >= 35 && age <= 44) bucket = 'mid-age';
+      else if (age >= 45 && age <= 54) bucket = 'mid-age +';
+      else if (age >= 55 && age <= 64) bucket = 'mature';
+      else if (age >= 65) bucket = 'seniors';
+
+      const values = Array.isArray(spec.values) ? spec.values.map(normalize) : [];
+
+      if (spec.combined) return true;
+      if (values.length === 0) return bucket !== '';
+      return values.includes(bucket);
+    }
+
     const columnIndex = headers.findIndex(h => h === columnName);
     if (columnIndex === -1) return false;
 
@@ -623,9 +650,85 @@ export function calculateRetentionByMultiFilters(processedData, rawData, filterS
     return false;
   };
 
-  const filteredResidents = processedData.filter(resident =>
-    filterSpecs.every(spec => matchesSpec(resident, spec))
-  );
+  const filteredResidents = [];
+  const excludedResidents = [];
+
+  processedData.forEach(resident => {
+    const allMatch = filterSpecs.every(spec => matchesSpec(resident, spec));
+    if (allMatch) {
+      filteredResidents.push(resident);
+    } else {
+      const failures = filterSpecs
+        .filter(spec => !matchesSpec(resident, spec))
+        .map(spec => {
+          const col = normalize(spec.column);
+          const specValues = Array.isArray(spec.values) ? spec.values : [];
+
+          if (col === 'age') {
+            const birthYearIndex = headers.findIndex(h => h === 'birth year');
+            const rawBirthYear = birthYearIndex !== -1 ? resident.rawData[birthYearIndex] : null;
+            const birthYear = rawBirthYear ? parseInt(rawBirthYear.toString().trim(), 10) : NaN;
+            const nowYear = new Date().getFullYear();
+            const age = Number.isNaN(birthYear) ? null : nowYear - birthYear;
+            let bucket = '';
+            if (age != null) {
+              if (age >= 18 && age <= 24) bucket = 'young adult';
+              else if (age >= 25 && age <= 34) bucket = 'youth';
+              else if (age >= 35 && age <= 44) bucket = 'mid-age';
+              else if (age >= 45 && age <= 54) bucket = 'mid-age +';
+              else if (age >= 55 && age <= 64) bucket = 'mature';
+              else if (age >= 65) bucket = 'seniors';
+            }
+            return { column: spec.column, values: specValues, birthYear: rawBirthYear ?? null, age, bucket };
+          }
+
+          if (col === 'disability count') {
+            const columns = [
+              'visual','hearing',"alzheimer's / dementia",'hiv / aids',
+              'physical / medical','mental health','physical / mobility',
+              'alcohol abuse','substance abuse'
+            ];
+            const indices = columns.map(name => headers.findIndex(h => h === name)).filter(idx => idx !== -1);
+            let count = 0;
+            indices.forEach(idx => {
+              const v = resident.rawData[idx];
+              if (v && v.toString().toLowerCase().trim() === 'yes') count++;
+            });
+            const bucket = count >= 4 ? '4+' : String(count);
+            return { column: spec.column, values: specValues, count, bucket };
+          }
+
+          if (col === 'status') {
+            const statusLabel = resident.moveOutDate ? 'former residents' : 'current residents';
+            return { column: spec.column, values: specValues, statusLabel };
+          }
+
+          const columnIndex = headers.findIndex(h => h === col);
+          const cell = columnIndex !== -1 ? resident.rawData[columnIndex] : null;
+          const cellValue = cell ? cell.toString().toLowerCase().trim() : '';
+          return { column: spec.column, values: specValues, cellValue };
+        });
+
+      excludedResidents.push({ resident, failures });
+    }
+  });
+
+  if (excludedResidents.length > 0) {
+    const birthYearIndex = headers.findIndex(h => h === 'birth year');
+    console.group('MultiFilter debug: excluded residents (showing up to 25)');
+    excludedResidents.slice(0, 25).forEach((item, idx) => {
+      const rawBirthYear = birthYearIndex !== -1 ? item.resident.rawData[birthYearIndex] : null;
+      const birthYear = rawBirthYear ? parseInt(rawBirthYear.toString().trim(), 10) : null;
+      console.log({
+        index: idx + 1,
+        moveInDate: item.resident.moveInDate,
+        moveOutDate: item.resident.moveOutDate,
+        birthYear,
+        failures: item.failures
+      });
+    });
+    console.groupEnd();
+  }
 
   const retention = createEmptyRetentionData();
   calculateRetentionForData(filteredResidents, retention);

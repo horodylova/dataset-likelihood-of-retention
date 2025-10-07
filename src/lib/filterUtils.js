@@ -603,10 +603,72 @@ export function calculateRetentionByMultiFilters(processedData, rawData, filterS
       return values.includes(bucket);
     }
 
+    // Derived "AB Score" (группы по колонке 'AB Score')
+    if (columnName === 'ab score') {
+      const abIndex = headers.findIndex(h => h === 'ab score');
+      if (abIndex === -1) return false;
+
+      const raw = resident.rawData[abIndex];
+      const str = raw ? raw.toString().trim() : '';
+      const values = Array.isArray(spec.values) ? spec.values.map(normalize) : [];
+
+      if (spec.combined) return true;
+      if (values.length === 0) return true;
+
+      const normStr = normalize(str);
+      let bucket = 'none';
+
+      if (normStr !== '' && normStr !== 'none') {
+        const n = parseInt(str, 10);
+        if (!Number.isNaN(n)) {
+          if (n >= 13) bucket = '13+';
+          else if (n >= 10) bucket = '10-12';
+          else if (n >= 7) bucket = '7-9';
+          else if (n >= 1) bucket = '1-6';
+          else bucket = 'none';
+        } else {
+          bucket = 'none';
+        }
+      }
+
+      return values.includes(bucket.toLowerCase());
+    }
+
+    // Derived "YCH" (группы по колонке 'YCH'; пустые значения исключаем)
+    if (columnName === 'ych') {
+      const ychIndex = headers.findIndex(h => h === 'ych');
+      if (ychIndex === -1) return false;
+
+      const raw = resident.rawData[ychIndex];
+      const str = raw ? raw.toString().trim() : '';
+      const values = Array.isArray(spec.values) ? spec.values.map(normalize) : [];
+
+      if (spec.combined) return true;
+      // Если значения не заданы, не включаем пустые ячейки в статистику
+      if (values.length === 0) return str !== '';
+
+      const n = parseInt(str, 10);
+      if (Number.isNaN(n)) return false;
+
+      let bucket = '';
+      if (n >= 15) bucket = '15+';
+      else if (n >= 8) bucket = '8-14';
+      else if (n >= 5) bucket = '5-7';
+      else if (n >= 3) bucket = '3-4';
+      else if (n >= 1) bucket = '1-2';
+
+      if (bucket === '') return false;
+      return values.includes(bucket.toLowerCase());
+    }
+
     const columnIndex = headers.findIndex(h => h === columnName);
     if (columnIndex === -1) return false;
 
-    const cellValue = normalize(resident.rawData[columnIndex]);
+    let cellValue = normalize(resident.rawData[columnIndex]);
+    // Convert 'Y' in DT column to 'yes'
+    if (columnName === 'dt' && cellValue === 'y') {
+      cellValue = 'yes';
+    }
     const values = Array.isArray(spec.values) ? spec.values.map(normalize) : [];
  
     if (spec.combined) {
@@ -699,9 +761,53 @@ export function calculateRetentionByMultiFilters(processedData, rawData, filterS
           }
 
           if (col === 'status') {
-            const statusLabel = resident.moveOutDate ? 'former residents' : 'current residents';
-            return { column: spec.column, values: specValues, statusLabel };
-          }
+                const statusLabel = resident.moveOutDate ? 'former residents' : 'current residents';
+                return { column: spec.column, values: specValues, statusLabel };
+              }
+
+              if (col === 'ab score') {
+                const abIndex = headers.findIndex(h => h === 'ab score');
+                const raw = abIndex !== -1 ? resident.rawData[abIndex] : null;
+                const str = raw ? raw.toString().trim() : '';
+                const normStr = normalize(str);
+                let bucket = 'none';
+                let parsed = null;
+
+                if (normStr !== '' && normStr !== 'none') {
+                  const n = parseInt(str, 10);
+                  parsed = Number.isNaN(n) ? null : n;
+                  if (parsed != null) {
+                    if (parsed >= 13) bucket = '13+';
+                    else if (parsed >= 10) bucket = '10-12';
+                    else if (parsed >= 7) bucket = '7-9';
+                    else if (parsed >= 1) bucket = '1-6';
+                    else bucket = 'none';
+                  } else {
+                    bucket = 'none';
+                  }
+                }
+
+                return { column: spec.column, values: specValues, rawValue: str, parsed, bucket };
+              }
+
+              if (col === 'ych') {
+                const ychIndex = headers.findIndex(h => h === 'ych');
+                const raw = ychIndex !== -1 ? resident.rawData[ychIndex] : null;
+                const str = raw ? raw.toString().trim() : '';
+                const n = parseInt(str, 10);
+                let bucket = '';
+                const parsed = Number.isNaN(n) ? null : n;
+
+                if (parsed != null) {
+                  if (parsed >= 15) bucket = '15+';
+                  else if (parsed >= 8) bucket = '8-14';
+                  else if (parsed >= 5) bucket = '5-7';
+                  else if (parsed >= 3) bucket = '3-4';
+                  else if (parsed >= 1) bucket = '1-2';
+                }
+
+                return { column: spec.column, values: specValues, rawValue: str, parsed, bucket };
+              }
 
           const columnIndex = headers.findIndex(h => h === col);
           const cell = columnIndex !== -1 ? resident.rawData[columnIndex] : null;

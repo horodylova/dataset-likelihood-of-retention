@@ -17,7 +17,7 @@ export default function MultiFilterTable({ onSubmit, onReset }) {
     { column: 'Alcohol Abuse', name: 'Alcohol Abuse', options: ['Yes', 'No'] },
     { column: 'Substance Abuse', name: 'Substance Abuse', options: ['Yes', 'No'] },
     { column: 'Felonies', name: 'Felonies', options: ['Yes', 'No'] },
-    { column: 'DT', name: 'DT', options: ['Yes', 'No'] },
+    { column: 'DT', name: 'DT', options: ['YES'] },
     { column: 'Disability Count', name: 'Disability Count', options: ['0', '1', '2', '3', '4+'] },
     { column: 'Income', name: 'Income Source', options: ['SSI', 'SSDI', 'Multiple', 'Other', 'None'] },
     { 
@@ -37,13 +37,13 @@ export default function MultiFilterTable({ onSubmit, onReset }) {
       column: 'AB Score', 
       name: 'AB Score', 
       options: ['None', '1-6', '7-9', '10-12', '13+'],
-      disabled: true
+      disabled: false
     },
     { 
       column: 'YCH', 
       name: 'YCH', 
       options: ['1-2', '3-4', '5-7', '8-14', '15+'],
-      disabled: true
+      disabled: false
     },
   ];
 
@@ -70,18 +70,24 @@ export default function MultiFilterTable({ onSubmit, onReset }) {
       if (chosen.length > 0) {
         let values = chosen;
 
-        // Преобразуем отображаемые опции Age в чистые категории,
-        // чтобы утилита сопоставила их с "Birth Year" -> возрастными корзинами
+        // Для Age превращаем "18-24: Young Adult" -> "Young Adult" и т.п.
         if (f.column === 'Age') {
           values = chosen.map(opt => {
             const parts = opt.split(':');
-            return parts.length > 1 ? parts[1].trim() : opt.trim(); // 'Young Adult', 'Youth', ...
+            return parts.length > 1 ? parts[1].trim() : opt.trim();
           });
         }
 
         specs.push({ column: f.column, values, display: f.name });
       }
     });
+
+    // Временный консоль-лог: что именно отправляется на расчет
+    console.group('MultiFilterTable debug: submitted filter specs');
+    console.log('Specs:', specs);
+    console.log('Note: excluded residents are logged by filterUtils.');
+    console.groupEnd();
+
     if (onSubmit) onSubmit(specs);
   };
 

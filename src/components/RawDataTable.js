@@ -20,25 +20,26 @@ export default function RawDataTable({ data, isVisible, validCount }) {
         borderRadius: '8px',
         boxSizing: 'border-box'
       }}>
-        <table style={{ borderCollapse: 'collapse', width: '100%', minWidth: '600px' }}>
-          <thead style={{ position: 'sticky', top: 0, backgroundColor: '#f5f5f5' }}>
+        <table style={{ borderCollapse: 'collapse', width: '100%', minWidth: '600px', position: 'relative' }}>
+          <thead style={{ position: 'sticky', top: 0, backgroundColor: '#f5f5f5', zIndex: 10 }}>
             <tr>
               {headers.map((header, index) => {
                 const baseStyle = {
                   border: '1px solid #ccc',
                   padding: '8px',
                   textAlign: 'left',
-                  fontWeight: 'bold'
+                  fontWeight: 'bold',
+                  backgroundColor: '#f5f5f5',
+                  zIndex: 10
                 };
-                const stickyStyle = index === 0 ? {
+                const stickyLeft = index === 0 ? {
                   position: 'sticky',
                   left: 0,
-                  backgroundColor: '#f5f5f5',
-                  zIndex: 3,
+                  zIndex: 11,
                   minWidth: '70px'
                 } : {};
                 return (
-                  <th key={index} style={{ ...baseStyle, ...stickyStyle }}>
+                  <th key={index} style={{ ...baseStyle, ...stickyLeft }}>
                     {header}
                   </th>
                 );
@@ -54,7 +55,7 @@ export default function RawDataTable({ data, isVisible, validCount }) {
                     padding: '8px',
                     whiteSpace: 'nowrap'
                   };
-                  const stickyCell = colIndex === 0 ? {
+                  const stickyLeftCell = colIndex === 0 ? {
                     position: 'sticky',
                     left: 0,
                     backgroundColor: rowIndex % 2 === 0 ? '#fff' : '#f9f9f9',
@@ -63,7 +64,7 @@ export default function RawDataTable({ data, isVisible, validCount }) {
                     boxShadow: '2px 0 0 rgba(0,0,0,0.04)'
                   } : {};
                   return (
-                    <td key={colIndex} style={{ ...baseCell, ...stickyCell }}>
+                    <td key={colIndex} style={{ ...baseCell, ...stickyLeftCell }}>
                       {row[colIndex] || ''}
                     </td>
                   );

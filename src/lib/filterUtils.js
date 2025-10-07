@@ -547,7 +547,6 @@ export function calculateRetentionByMultiFilters(processedData, rawData, filterS
 
     const columnName = normalize(spec.column);
 
-    // Status: рассчитываем по датам, не по колонке rawData
     if (columnName === 'status') {
       const values = Array.isArray(spec.values) ? spec.values.map(normalize) : [];
       if (spec.combined || values.length === 0) return true;
@@ -555,7 +554,6 @@ export function calculateRetentionByMultiFilters(processedData, rawData, filterS
       return values.includes(statusLabel);
     }
 
-    // Derived "Disability Count"
     if (columnName === 'disability count') {
       const columns = [
         'visual','hearing',"alzheimer's / dementia",'hiv / aids',
@@ -603,7 +601,6 @@ export function calculateRetentionByMultiFilters(processedData, rawData, filterS
       return values.includes(bucket);
     }
 
-    // Derived "AB Score" (группы по колонке 'AB Score')
     if (columnName === 'ab score') {
       const abIndex = headers.findIndex(h => h === 'ab score');
       if (abIndex === -1) return false;
@@ -634,7 +631,6 @@ export function calculateRetentionByMultiFilters(processedData, rawData, filterS
       return values.includes(bucket.toLowerCase());
     }
 
-    // Derived "YCH" (группы по колонке 'YCH'; пустые значения исключаем)
     if (columnName === 'ych') {
       const ychIndex = headers.findIndex(h => h === 'ych');
       if (ychIndex === -1) return false;
@@ -644,7 +640,7 @@ export function calculateRetentionByMultiFilters(processedData, rawData, filterS
       const values = Array.isArray(spec.values) ? spec.values.map(normalize) : [];
 
       if (spec.combined) return true;
-      // Если значения не заданы, не включаем пустые ячейки в статистику
+     
       if (values.length === 0) return str !== '';
 
       const n = parseInt(str, 10);
@@ -665,7 +661,7 @@ export function calculateRetentionByMultiFilters(processedData, rawData, filterS
     if (columnIndex === -1) return false;
 
     let cellValue = normalize(resident.rawData[columnIndex]);
-    // Convert 'Y' in DT column to 'yes'
+ 
     if (columnName === 'dt' && cellValue === 'y') {
       cellValue = 'yes';
     }
@@ -820,21 +816,12 @@ export function calculateRetentionByMultiFilters(processedData, rawData, filterS
   });
 
   if (excludedResidents.length > 0) {
-    const birthYearIndex = headers.findIndex(h => h === 'birth year');
-    console.group('MultiFilter debug: excluded residents (showing up to 25)');
-    excludedResidents.slice(0, 25).forEach((item, idx) => {
-      const rawBirthYear = birthYearIndex !== -1 ? item.resident.rawData[birthYearIndex] : null;
-      const birthYear = rawBirthYear ? parseInt(rawBirthYear.toString().trim(), 10) : null;
-      console.log({
-        index: idx + 1,
-        moveInDate: item.resident.moveInDate,
-        moveOutDate: item.resident.moveOutDate,
-        birthYear,
-        failures: item.failures
+      const birthYearIndex = headers.findIndex(h => h === 'birth year');
+      excludedResidents.slice(0, 25).forEach((item, idx) => {
+        const rawBirthYear = birthYearIndex !== -1 ? item.resident.rawData[birthYearIndex] : null;
+        const birthYear = rawBirthYear ? parseInt(rawBirthYear.toString().trim(), 10) : null;
       });
-    });
-    console.groupEnd();
-  }
+    }
 
   const retention = createEmptyRetentionData();
   calculateRetentionForData(filteredResidents, retention);

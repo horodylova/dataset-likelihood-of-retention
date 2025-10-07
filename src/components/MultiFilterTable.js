@@ -82,12 +82,6 @@ export default function MultiFilterTable({ onSubmit, onReset }) {
       }
     });
 
-    // Временный консоль-лог: что именно отправляется на расчет
-    console.group('MultiFilterTable debug: submitted filter specs');
-    console.log('Specs:', specs);
-    console.log('Note: excluded residents are logged by filterUtils.');
-    console.groupEnd();
-
     if (onSubmit) onSubmit(specs);
   };
 

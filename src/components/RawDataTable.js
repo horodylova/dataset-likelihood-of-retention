@@ -23,30 +23,51 @@ export default function RawDataTable({ data, isVisible, validCount }) {
         <table style={{ borderCollapse: 'collapse', width: '100%', minWidth: '600px' }}>
           <thead style={{ position: 'sticky', top: 0, backgroundColor: '#f5f5f5' }}>
             <tr>
-              {headers.map((header, index) => (
-                <th key={index} style={{ 
-                  border: '1px solid #ccc', 
-                  padding: '8px', 
+              {headers.map((header, index) => {
+                const baseStyle = {
+                  border: '1px solid #ccc',
+                  padding: '8px',
                   textAlign: 'left',
                   fontWeight: 'bold'
-                }}>
-                  {header}
-                </th>
-              ))}
+                };
+                const stickyStyle = index === 0 ? {
+                  position: 'sticky',
+                  left: 0,
+                  backgroundColor: '#f5f5f5',
+                  zIndex: 3,
+                  minWidth: '70px'
+                } : {};
+                return (
+                  <th key={index} style={{ ...baseStyle, ...stickyStyle }}>
+                    {header}
+                  </th>
+                );
+              })}
             </tr>
           </thead>
           <tbody>
             {rows.map((row, rowIndex) => (
               <tr key={rowIndex} style={{ backgroundColor: rowIndex % 2 === 0 ? '#fff' : '#f9f9f9' }}>
-                {headers.map((header, colIndex) => (
-                  <td key={colIndex} style={{ 
-                    border: '1px solid #ccc', 
+                {headers.map((header, colIndex) => {
+                  const baseCell = {
+                    border: '1px solid #ccc',
                     padding: '8px',
                     whiteSpace: 'nowrap'
-                  }}>
-                    {row[colIndex] || ''}
-                  </td>
-                ))}
+                  };
+                  const stickyCell = colIndex === 0 ? {
+                    position: 'sticky',
+                    left: 0,
+                    backgroundColor: rowIndex % 2 === 0 ? '#fff' : '#f9f9f9',
+                    zIndex: 2,
+                    minWidth: '70px',
+                    boxShadow: '2px 0 0 rgba(0,0,0,0.04)'
+                  } : {};
+                  return (
+                    <td key={colIndex} style={{ ...baseCell, ...stickyCell }}>
+                      {row[colIndex] || ''}
+                    </td>
+                  );
+                })}
               </tr>
             ))}
           </tbody>

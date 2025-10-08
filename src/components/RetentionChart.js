@@ -14,7 +14,7 @@ export default function RetentionChart({ processedData }) {
   const { state } = useRetention();
   const { rawData } = state;
 
-  const categories = ['Year 1', 'Year 2', 'Year 3', 'Year 4', 'Year 5', 'Year 6', 'Year 7', 'Year 8', 'Year 9', 'Year 10'];
+  const categories = ['Year 0', 'Year 1', 'Year 2', 'Year 3', 'Year 4', 'Year 5', 'Year 6', 'Year 7', 'Year 8', 'Year 9'];
 
   const prepareChartData = () => {
     if (!processedData || !rawData) return [];

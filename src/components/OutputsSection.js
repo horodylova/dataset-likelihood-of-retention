@@ -48,7 +48,16 @@ function OutputsSection({ loading, retentionData = [], chartData, refreshKey = 0
             .reduce((acc, curr) => ({ ...acc, ...curr }), {})
         )
       };
-      return [percentRow, eligibleRow];
+
+      const retainedRow = {
+        filter: `${row.filter} — Retained`,
+        ...(ret ? makeYearFieldsFromRetention(ret, 'retained') :
+          Array.from({ length: 10 }, (_, i) => ({ [`year${i}`]: 0 }))
+            .reduce((acc, curr) => ({ ...acc, ...curr }), {})
+        )
+      };
+
+      return [percentRow, eligibleRow, retainedRow];
     });
   }, [retentionData]);
 
@@ -206,7 +215,7 @@ function OutputsSection({ loading, retentionData = [], chartData, refreshKey = 0
           border-left: 3px solid #384C9E !important;
           border-right: 3px solid #384C9E !important;
         }
-        .outputs-grid :global(.k-grid .k-table-tbody tr:nth-child(2n) .k-table-td) {
+        .outputs-grid :global(.k-grid .k-table-tbody tr:nth-child(3n) .k-table-td) {
           border-bottom-width: 3px !important;
           border-bottom-color: #000 !important;
         }
@@ -243,7 +252,7 @@ function OutputsSection({ loading, retentionData = [], chartData, refreshKey = 0
               .pdf-grid .k-grid {
                 border: 1px solid #ddd !important;
               }
-              .pdf-grid .k-grid .k-table-tbody tr:nth-child(2n) .k-table-td {
+              .pdf-grid .k-grid .k-table-tbody tr:nth-child(3n) .k-table-td {
                 border-bottom-width: 3px !important;
                 border-bottom-color: #000 !important;
               }

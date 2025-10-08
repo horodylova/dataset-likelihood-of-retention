@@ -7,6 +7,8 @@ import { useRetention } from '@/contexts/RetentionContext';
 import DisabilitiesSection from '../components/DisabilitiesSection';
 import VariablesSection from '../components/VariablesSection';
 import OutputsSection from '../components/OutputsSection';
+import IncomeSection from '../components/IncomeSection';
+import AgencySection from '../components/AgencySection';
 import Link from 'next/link';
 import { Button } from '@progress/kendo-react-buttons';
 import { Fade } from '@progress/kendo-react-animation';
@@ -228,6 +230,18 @@ export default function Home() {
                 </PanelBarItem>
                 <PanelBarItem title="Disabilities">
                   <DisabilitiesSection 
+                    resetSignal={resetSignal}
+                    onMultiSelectionChange={updateMultiSelection}
+                  />
+                </PanelBarItem>
+                <PanelBarItem title="Income">
+                  <IncomeSection
+                    resetSignal={resetSignal}
+                    onMultiSelectionChange={updateMultiSelection}
+                  />
+                </PanelBarItem>
+                <PanelBarItem title="Agency">
+                  <AgencySection
                     resetSignal={resetSignal}
                     onMultiSelectionChange={updateMultiSelection}
                   />

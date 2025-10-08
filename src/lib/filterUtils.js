@@ -421,13 +421,9 @@ function calculateRetentionForData(data, retentionObject) {
 
   Object.keys(retentionObject).forEach(year => {
     const yearData = retentionObject[year];
-    if (year === 'Year 0') {
-      yearData.rate = 100;
-    } else {
-      yearData.rate = baseEligible > 0
-        ? Math.round((yearData.eligible / baseEligible) * 100 * 100) / 100
-        : 0;
-    }
+    yearData.rate = yearData.eligible > 0
+      ? Math.round((yearData.retained / yearData.eligible) * 100 * 100) / 100
+      : 0;
   });
 }
 
@@ -657,6 +653,20 @@ export function calculateRetentionByMultiFilters(processedData, rawData, filterS
       return values.includes(bucket.toLowerCase());
     }
 
+    if (columnName === 'deceased') {
+      const moveOutReasonIndex = headers.findIndex(h => h === 'move-out reason' || h === 'move out reason');
+      if (moveOutReasonIndex === -1) return false;
+      const raw = resident.rawData[moveOutReasonIndex];
+      const val = raw ? raw.toString().trim() : '';
+      const values = Array.isArray(spec.values) ? spec.values.map(normalize) : [];
+      if (spec.combined) return true;
+      if (values.length === 0) return true;
+      if (values.includes('yes')) {
+        return normalize(val).includes('deceased');
+      }
+      return false;
+    }
+
     const columnIndex = headers.findIndex(h => h === columnName);
     if (columnIndex === -1) return false;
 
@@ -787,23 +797,31 @@ export function calculateRetentionByMultiFilters(processedData, rawData, filterS
               }
 
               if (col === 'ych') {
-                const ychIndex = headers.findIndex(h => h === 'ych');
-                const raw = ychIndex !== -1 ? resident.rawData[ychIndex] : null;
-                const str = raw ? raw.toString().trim() : '';
-                const n = parseInt(str, 10);
-                let bucket = '';
-                const parsed = Number.isNaN(n) ? null : n;
+            const ychIndex = headers.findIndex(h => h === 'ych');
+            const raw = ychIndex !== -1 ? resident.rawData[ychIndex] : null;
+            const str = raw ? raw.toString().trim() : '';
+            const n = parseInt(str, 10);
+            let bucket = '';
+            const parsed = Number.isNaN(n) ? null : n;
 
-                if (parsed != null) {
-                  if (parsed >= 15) bucket = '15+';
-                  else if (parsed >= 8) bucket = '8-14';
-                  else if (parsed >= 5) bucket = '5-7';
-                  else if (parsed >= 3) bucket = '3-4';
-                  else if (parsed >= 1) bucket = '1-2';
-                }
+            if (parsed != null) {
+              if (parsed >= 15) bucket = '15+';
+              else if (parsed >= 8) bucket = '8-14';
+              else if (parsed >= 5) bucket = '5-7';
+              else if (parsed >= 3) bucket = '3-4';
+              else if (parsed >= 1) bucket = '1-2';
+            }
 
-                return { column: spec.column, values: specValues, rawValue: str, parsed, bucket };
-              }
+            return { column: spec.column, values: specValues, rawValue: str, parsed, bucket };
+          }
+
+          if (col === 'deceased') {
+            const moveOutReasonIndex = headers.findIndex(h => h === 'move-out reason' || h === 'move out reason');
+            const raw = moveOutReasonIndex !== -1 ? resident.rawData[moveOutReasonIndex] : null;
+            const str = raw ? raw.toString().trim() : '';
+            const hasDeceased = normalize(str).includes('deceased');
+            return { column: spec.column, values: specValues, rawValue: str, hasDeceased };
+          }
 
           const columnIndex = headers.findIndex(h => h === col);
           const cell = columnIndex !== -1 ? resident.rawData[columnIndex] : null;

@@ -38,29 +38,42 @@ export default function VariablesSection({
   });
   const [fcTotal, setFCTotal] = useState(false);
 
-  const [disabilityCountFilters, setDisabilityCountFilters] = useState({
-    zero: false,
-    one: false,
-    two: false,
-    three: false,
-    fourPlus: false
-  });
-  const [disabilityCountTotal, setDisabilityCountTotal] = useState(false);
 
-  const [incomeSourceFilters, setIncomeSourceFilters] = useState({
-    ssi: false,
-    ssdi: false,
-    multiple: false,
-    other: false,
-    none: false
-  });
-  const [incomeSourceTotal, setIncomeSourceTotal] = useState(false);
 
-  const [statusFilters, setStatusFilters] = useState({
-    statusTotal: false,
-    current: false,
-    former: false
+
+
+
+  const [raceFilters, setRaceFilters] = useState({
+    white: false,
+    black: false,
+    hispanic: false,
+    asian: false,
+    native: false
   });
+  const [raceTotal, setRaceTotal] = useState(false);
+
+  // Deceased: один чекбокс Yes → маппится на Move-Out Reason
+  const [deceasedYes, setDeceasedYes] = useState(false);
+
+  useEffect(() => {
+    const values = [];
+    if (deceasedYes) values.push('Yes');
+    if (onMultiSelectionChange) {
+      onMultiSelectionChange('Deceased', { combined: false, values });
+    }
+  }, [deceasedYes, onMultiSelectionChange]);
+
+  useEffect(() => {
+    const values = [];
+    if (raceFilters.white) values.push('White');
+    if (raceFilters.black) values.push('Black or African American');
+    if (raceFilters.hispanic) values.push('Hispanic or Latino');
+    if (raceFilters.asian) values.push('Asian');
+    if (raceFilters.native) values.push('American Indian or Alaska Native');
+    if (onMultiSelectionChange) {
+      onMultiSelectionChange('Race', { combined: !!raceTotal, values });
+    }
+  }, [raceFilters, raceTotal, onMultiSelectionChange]);
 
   const [ageFilters, setAgeFilters] = useState({
     ageTotal: false,
@@ -110,16 +123,13 @@ export default function VariablesSection({
     setFCFilters(prev => ({ ...prev, [type]: checked }));
   }, []);
 
-  const handleDisabilityCountChange = useCallback((type, checked) => {
-    setDisabilityCountFilters(prev => ({ ...prev, [type]: checked }));
-  }, []);
 
-  const handleIncomeSourceFilterChange = useCallback((type, checked) => {
-    setIncomeSourceFilters(prev => ({ ...prev, [type]: checked }));
-  }, []);
 
-  const handleStatusFilterChange = useCallback((type, checked) => {
-    setStatusFilters(prev => ({ ...prev, [type]: checked }));
+
+
+
+  const handleRaceFilterChange = useCallback((type, checked) => {
+    setRaceFilters(prev => ({ ...prev, [type]: checked }));
   }, []);
 
   const handleAgeFilterChange = useCallback((type, checked) => {
@@ -179,38 +189,10 @@ export default function VariablesSection({
     }
   }, [fcFilters, fcTotal, onMultiSelectionChange]);
 
-  useEffect(() => {
-    const values = [];
-    if (disabilityCountFilters.zero) values.push('0');
-    if (disabilityCountFilters.one) values.push('1');
-    if (disabilityCountFilters.two) values.push('2');
-    if (disabilityCountFilters.three) values.push('3');
-    if (disabilityCountFilters.fourPlus) values.push('4+');
-    if (onMultiSelectionChange) {
-      onMultiSelectionChange('Disability Count', { combined: !!disabilityCountTotal, values });
-    }
-  }, [disabilityCountFilters, disabilityCountTotal, onMultiSelectionChange]);
 
-  useEffect(() => {
-    const values = [];
-    if (incomeSourceFilters.ssi) values.push('SSI');
-    if (incomeSourceFilters.ssdi) values.push('SSDI');
-    if (incomeSourceFilters.multiple) values.push('Multiple');
-    if (incomeSourceFilters.other) values.push('Other');
-    if (incomeSourceFilters.none) values.push('None');
-    if (onMultiSelectionChange) {
-      onMultiSelectionChange('Income', { combined: !!incomeSourceTotal, values });
-    }
-  }, [incomeSourceFilters, incomeSourceTotal, onMultiSelectionChange]);
 
-  useEffect(() => {
-    const values = [];
-    if (statusFilters.current) values.push('Current Residents');
-    if (statusFilters.former) values.push('Former Residents');
-    if (onMultiSelectionChange) {
-      onMultiSelectionChange('Status', { combined: !!statusFilters.statusTotal, values });
-    }
-  }, [statusFilters, onMultiSelectionChange]);
+
+
 
   useEffect(() => {
     const values = [];
@@ -257,12 +239,9 @@ export default function VariablesSection({
     setDTFilters({ dtTotal: false, yes: false, no: false });
     setFCFilters({ yes: false, no: false });
     setFCTotal(false);
-    setDisabilityCountFilters({ zero: false, one: false, two: false, three: false, fourPlus: false });
-    setDisabilityCountTotal(false);
-    setIncomeSourceFilters({ ssi: false, ssdi: false, multiple: false, other: false, none: false });
-    setIncomeSourceTotal(false);
-    setStatusFilters({ statusTotal: false, current: false, former: false });
-
+    setRaceFilters({ white: false, black: false, hispanic: false, asian: false, native: false });
+    setRaceTotal(false);
+    setDeceasedYes(false);
     setAgeFilters({ ageTotal: false, youngAdult: false, youth: false, midAge: false, midAgePlus: false, mature: false, seniors: false });
     setAbScoreFilters({ abScoreTotal: false, none: false, oneSix: false, sevenNine: false, tenTwelve: false, thirteenPlus: false });
     setYchFilters({ ychTotal: false, oneTwo: false, threeFour: false, fiveSeven: false, eightFourteen: false, fifteenPlus: false });
@@ -277,25 +256,18 @@ export default function VariablesSection({
       scrollbarWidth: 'thin',
       scrollbarColor: '#FF5E00 #f1f1f1'
     }}>
-   
-      <div style={{
-        marginBottom: '15px',
-        padding: '10px',
-        backgroundColor: 'white',
-        borderRadius: '4px',
-        boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-        transition: 'transform 0.2s ease-in-out'
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', marginBottom: '8px' }}>
+      <FilterCard title="Deceased">
+        <div style={{ display: 'flex', gap: '15px' }}>
           <Checkbox
-            checked={genderFilters.genderTotal}
-            onChange={(e) => handleGenderFilterChange('genderTotal', e.value)}
+            label="Yes"
+            checked={deceasedYes}
+            onChange={(e) => setDeceasedYes(e.value)}
           />
-          <label style={{ fontWeight: 'bold', color: '#384C9E', fontSize: '14px', marginLeft: '8px' }}>
-            Gender
-          </label>
         </div>
-        <div style={{ display: 'flex', gap: '15px', marginLeft: '20px' }}>
+      </FilterCard>
+   
+      <FilterCard title="Gender" headerChecked={genderFilters.genderTotal} headerOnChange={(e) => handleGenderFilterChange('genderTotal', e.value)}>
+        <div style={{ display: 'flex', gap: '15px' }}>
           <Checkbox
             label="Female"
             checked={genderFilters.female}
@@ -307,64 +279,14 @@ export default function VariablesSection({
             onChange={(e) => handleGenderFilterChange('male', e.value)}
           />
         </div>
-      </div>
+      </FilterCard>
 
  
-      <div style={{
-        marginBottom: '15px',
-        padding: '10px',
-        backgroundColor: 'white',
-        borderRadius: '4px',
-        boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-        transition: 'transform 0.2s ease-in-out'
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', direction: 'column', marginBottom: '8px' }}>
-          <Checkbox
-            checked={statusFilters.statusTotal}
-            onChange={(e) => handleStatusFilterChange('statusTotal', e.value)}
-          />
-          <label style={{ fontWeight: 'bold', color: '#384C9E', fontSize: '14px', marginLeft: '8px' }}>
-            Status
-          </label>
-        </div>
-        <div style={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '8px',
-          marginLeft: '20px'
-        }}>
-          <Checkbox
-            label="Current Residents"
-            checked={statusFilters.current}
-            onChange={(e) => handleStatusFilterChange('current', e.value)}
-          />
-          <Checkbox
-            label="Former Residents"
-            checked={statusFilters.former}
-            onChange={(e) => handleStatusFilterChange('former', e.value)}
-          />
-        </div>
-      </div>
+
 
       {/* Veteran */}
-      <div style={{
-        marginBottom: '15px',
-        padding: '10px',
-        backgroundColor: 'white',
-        borderRadius: '4px',
-        boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-        transition: 'transform 0.2s ease-in-out'
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', marginBottom: '8px' }}>
-          <Checkbox
-            checked={veteranFilters.veteranTotal}
-            onChange={(e) => handleVeteranFilterChange('veteranTotal', e.value)}
-          />
-          <label style={{ fontWeight: 'bold', color: '#384C9E', fontSize: '14px', marginLeft: '8px' }}>
-            Veteran
-          </label>
-        </div>
-        <div style={{ display: 'flex', gap: '15px', marginLeft: '20px' }}>
+      <FilterCard title="Veteran" headerChecked={veteranFilters.veteranTotal} headerOnChange={(e) => handleVeteranFilterChange('veteranTotal', e.value)}>
+        <div style={{ display: 'flex', gap: '15px' }}>
           <Checkbox
             label="Yes"
             checked={veteranFilters.yes}
@@ -376,27 +298,11 @@ export default function VariablesSection({
             onChange={(e) => handleVeteranFilterChange('no', e.value)}
           />
         </div>
-      </div>
+      </FilterCard>
 
       {/* Felonies */}
-      <div style={{
-        marginBottom: '15px',
-        padding: '10px',
-        backgroundColor: 'white',
-        borderRadius: '4px',
-        boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-        transition: 'transform 0.2s ease-in-out'
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', marginBottom: '8px' }}>
-          <Checkbox
-            checked={feloniesFilters.feloniesTotal}
-            onChange={(e) => handleFeloniesFilterChange('feloniesTotal', e.value)}
-          />
-          <label style={{ fontWeight: 'bold', color: '#384C9E', fontSize: '14px', marginLeft: '8px' }}>
-            Felonies
-          </label>
-        </div>
-        <div style={{ display: 'flex', gap: '15px', marginLeft: '20px' }}>
+      <FilterCard title="Felonies" headerChecked={feloniesFilters.feloniesTotal} headerOnChange={(e) => handleFeloniesFilterChange('feloniesTotal', e.value)}>
+        <div style={{ display: 'flex', gap: '15px' }}>
           <Checkbox
             label="Yes"
             checked={feloniesFilters.yes}
@@ -408,27 +314,11 @@ export default function VariablesSection({
             onChange={(e) => handleFeloniesFilterChange('no', e.value)}
           />
         </div>
-      </div>
+      </FilterCard>
 
       {/* DT */}
-      <div style={{
-        marginBottom: '15px',
-        padding: '10px',
-        backgroundColor: 'white',
-        borderRadius: '4px',
-        boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-        transition: 'transform 0.2s ease-in-out'
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', marginBottom: '8px' }}>
-          <Checkbox
-            checked={dtFilters.dtTotal}
-            onChange={(e) => handleDTFilterChange('dtTotal', e.value)}
-          />
-          <label style={{ fontWeight: 'bold', color: '#384C9E', fontSize: '14px', marginLeft: '8px' }}>
-            DT
-          </label>
-        </div>
-        <div style={{ display: 'flex', gap: '15px', marginLeft: '20px' }}>
+      <FilterCard title="DT" headerChecked={dtFilters.dtTotal} headerOnChange={(e) => handleDTFilterChange('dtTotal', e.value)}>
+        <div style={{ display: 'flex', gap: '15px' }}>
           <Checkbox
             label="Yes"
             checked={dtFilters.yes}
@@ -440,9 +330,20 @@ export default function VariablesSection({
             onChange={(e) => handleDTFilterChange('no', e.value)}
           />
         </div>
-      </div>
+      </FilterCard>
 
       {/* Foster Care */}
+      {/* Race */}
+      <FilterCard title="Race" headerChecked={raceTotal} headerOnChange={(e) => setRaceTotal(e.value)}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <Checkbox label="White" checked={raceFilters.white} onChange={(e) => handleRaceFilterChange('white', e.value)} />
+          <Checkbox label="Black or African American" checked={raceFilters.black} onChange={(e) => handleRaceFilterChange('black', e.value)} />
+          <Checkbox label="Hispanic or Latino" checked={raceFilters.hispanic} onChange={(e) => handleRaceFilterChange('hispanic', e.value)} />
+          <Checkbox label="Asian" checked={raceFilters.asian} onChange={(e) => handleRaceFilterChange('asian', e.value)} />
+          <Checkbox label="American Indian or Alaska Native" checked={raceFilters.native} onChange={(e) => handleRaceFilterChange('native', e.value)} />
+        </div>
+      </FilterCard>
+
       <FilterCard title="Foster Care" headerChecked={fcTotal} headerOnChange={(e) => setFCTotal(e.value)}>
         <div style={{ display: 'flex', gap: '15px' }}>
           <Checkbox label="Yes" checked={fcFilters.yes} onChange={(e) => handleFCFilterChange('yes', e.value)} />
@@ -450,22 +351,7 @@ export default function VariablesSection({
         </div>
       </FilterCard>
 
-      {/* Disability Count */}
-      <FilterCard title="Disability Count" headerChecked={disabilityCountTotal} headerOnChange={(e) => setDisabilityCountTotal(e.value)}>
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(100px, 1fr))',
-          gap: '10px',
-          alignItems: 'center',
-          marginLeft: '20px'
-        }}>
-          <Checkbox label="Zero" checked={disabilityCountFilters.zero} onChange={(e) => handleDisabilityCountChange('zero', e.value)} />
-          <Checkbox label="One" checked={disabilityCountFilters.one} onChange={(e) => handleDisabilityCountChange('one', e.value)} />
-          <Checkbox label="Two" checked={disabilityCountFilters.two} onChange={(e) => handleDisabilityCountChange('two', e.value)} />
-          <Checkbox label="Three" checked={disabilityCountFilters.three} onChange={(e) => handleDisabilityCountChange('three', e.value)} />
-          <Checkbox label="Four +" checked={disabilityCountFilters.fourPlus} onChange={(e) => handleDisabilityCountChange('fourPlus', e.value)} />
-        </div>
-      </FilterCard>
+
 
       {/* Age */}
       <FilterCard title="Age" headerChecked={ageFilters.ageTotal} headerOnChange={(e) => handleAgeFilterChange('ageTotal', e.value)}>
@@ -519,32 +405,7 @@ export default function VariablesSection({
         </div>
       </FilterCard>
 
-      {/* Income Source */}
-      <div style={{
-        marginBottom: '15px',
-        padding: '10px',
-        backgroundColor: 'white',
-        borderRadius: '4px',
-        boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-        transition: 'transform 0.2s ease-in-out'
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', marginBottom: '8px' }}>
-          <Checkbox
-            checked={incomeSourceTotal}
-            onChange={(e) => setIncomeSourceTotal(e.value)}
-          />
-          <label style={{ fontWeight: 'bold', color: '#384C9E', fontSize: '14px', marginLeft: '8px' }}>
-            Income Source
-          </label>
-        </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginLeft: '20px' }}>
-          <Checkbox label="SSI" checked={incomeSourceFilters.ssi} onChange={(e) => handleIncomeSourceFilterChange('ssi', e.value)} />
-          <Checkbox label="SSDI" checked={incomeSourceFilters.ssdi} onChange={(e) => handleIncomeSourceFilterChange('ssdi', e.value)} />
-          <Checkbox label="Multiple" checked={incomeSourceFilters.multiple} onChange={(e) => handleIncomeSourceFilterChange('multiple', e.value)} />
-          <Checkbox label="Other" checked={incomeSourceFilters.other} onChange={(e) => handleIncomeSourceFilterChange('other', e.value)} />
-          <Checkbox label="None" checked={incomeSourceFilters.none} onChange={(e) => handleIncomeSourceFilterChange('none', e.value)} />
-        </div>
-      </div>
+
     </div>
   );
 }

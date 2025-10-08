@@ -25,6 +25,18 @@ export default function DisabilitiesSection({ onMultiSelectionChange, resetSigna
   const [alcoholTotal, setAlcoholTotal] = useState(false);
   const [substanceTotal, setSubstanceTotal] = useState(false);
 
+  const [disabilityCountFilters, setDisabilityCountFilters] = useState({
+    zero: false,
+    one: false,
+    two: false,
+    three: false,
+    fourPlus: false
+  });
+  const [disabilityCountTotal, setDisabilityCountTotal] = useState(false);
+  const handleDisabilityCountChange = useCallback((type, checked) => {
+    setDisabilityCountFilters(prev => ({ ...prev, [type]: checked }));
+  }, []);
+
   const makeHandler = (setter) => (type, checked) => setter(prev => ({ ...prev, [type]: checked }));
   const handleVisual = useCallback(makeHandler(setVisualFilters), []);
   const handleHearing = useCallback(makeHandler(setHearingFilters), []);
@@ -100,6 +112,18 @@ export default function DisabilitiesSection({ onMultiSelectionChange, resetSigna
   }, [alcoholTotal, alcoholFilters, onMultiSelectionChange]);
 
   useEffect(() => {
+    const values = [];
+    if (disabilityCountFilters.zero) values.push('0');
+    if (disabilityCountFilters.one) values.push('1');
+    if (disabilityCountFilters.two) values.push('2');
+    if (disabilityCountFilters.three) values.push('3');
+    if (disabilityCountFilters.fourPlus) values.push('4+');
+    if (onMultiSelectionChange) {
+      onMultiSelectionChange('Disability Count', { combined: !!disabilityCountTotal, values });
+    }
+  }, [disabilityCountFilters, disabilityCountTotal, onMultiSelectionChange]);
+
+  useEffect(() => {
     if (resetSignal == null) return;
     setVisualFilters({ yes: false, no: false });
     setHearingFilters({ yes: false, no: false });
@@ -120,6 +144,9 @@ export default function DisabilitiesSection({ onMultiSelectionChange, resetSigna
     setPmobTotal(false);
     setAlcoholTotal(false);
     setSubstanceTotal(false);
+
+    setDisabilityCountFilters({ zero: false, one: false, two: false, three: false, fourPlus: false });
+    setDisabilityCountTotal(false);
   }, [resetSignal]);
 
   return (
@@ -184,6 +211,22 @@ export default function DisabilitiesSection({ onMultiSelectionChange, resetSigna
         <div style={{ display: 'flex', gap: '15px' }}>
           <Checkbox label="Yes" checked={substanceFilters.yes} onChange={(e) => handleSubstance('yes', e.value)} />
           <Checkbox label="No" checked={substanceFilters.no} onChange={(e) => handleSubstance('no', e.value)} />
+        </div>
+      </FilterCard>
+
+      <FilterCard title="Disability Count" headerChecked={disabilityCountTotal} headerOnChange={(e) => setDisabilityCountTotal(e.value)}>
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(100px, 1fr))',
+          gap: '10px',
+          alignItems: 'center',
+          marginLeft: '20px'
+        }}>
+          <Checkbox label="Zero" checked={disabilityCountFilters.zero} onChange={(e) => handleDisabilityCountChange('zero', e.value)} />
+          <Checkbox label="One" checked={disabilityCountFilters.one} onChange={(e) => handleDisabilityCountChange('one', e.value)} />
+          <Checkbox label="Two" checked={disabilityCountFilters.two} onChange={(e) => handleDisabilityCountChange('two', e.value)} />
+          <Checkbox label="Three" checked={disabilityCountFilters.three} onChange={(e) => handleDisabilityCountChange('three', e.value)} />
+          <Checkbox label="Four +" checked={disabilityCountFilters.fourPlus} onChange={(e) => handleDisabilityCountChange('fourPlus', e.value)} />
         </div>
       </FilterCard>
 

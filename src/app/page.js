@@ -5,10 +5,12 @@ import { PanelBar, PanelBarItem } from '@progress/kendo-react-layout';
 import { useState, useEffect, useCallback } from 'react';
 import { useRetention } from '@/contexts/RetentionContext';
 import DisabilitiesSection from '../components/DisabilitiesSection';
-import VariablesSection from '../components/VariablesSection';
 import OutputsSection from '../components/OutputsSection';
 import IncomeSection from '../components/IncomeSection';
 import AgencySection from '../components/AgencySection';
+import DemographicsSection from '../components/DemographicsSection';
+import ProgramScreeningSection from '../components/ProgramScreeningSection';
+
 import Link from 'next/link';
 import { Button } from '@progress/kendo-react-buttons';
 import { Fade } from '@progress/kendo-react-animation';
@@ -25,7 +27,6 @@ export default function Home() {
   const createFilterRow = useCallback((filterName, data) => {
     const newRow = {
       filter: filterName,
-      // сохраняем исходный объект ретеншна для Eligible/Retained
       _retention: data,
       ...Array.from({ length: 10 }, (_, i) => ({
         [`year${i}`]: data[`Year ${i}`]?.rate || 0
@@ -67,7 +68,6 @@ export default function Home() {
     loadData();
   }, [dispatch, dataLoaded]);
 
- 
   const updateMultiSelection = useCallback((label, payload) => {
     setMultiSpecs(prev => {
       const next = { ...prev };
@@ -90,7 +90,6 @@ export default function Home() {
     });
   }, []);
 
- 
   const handleMultiSubmit = useCallback(() => {
     if (!processedData || !rawData) return;
 
@@ -164,7 +163,7 @@ export default function Home() {
           }
         }
       `}</style>
-      {/* удалена фиксированная кнопка View Analytics */}
+
       <div style={{ 
         flex: 1,
         overflow: 'hidden'
@@ -173,7 +172,6 @@ export default function Home() {
           orientation="horizontal"
           style={{ height: '100%' }}
         >
-        
           <SplitterPane size="380px" min="320px">
             <div style={{ 
               height: '100%', 
@@ -183,7 +181,6 @@ export default function Home() {
               width: '100%',
               minWidth: '320px' 
             }}>
-       
               <div style={{
                 position: 'sticky',
                 top: 10,
@@ -203,7 +200,7 @@ export default function Home() {
                 gap: '10px',
                 boxSizing: 'border-box',
                 flexWrap: 'nowrap',
-                overflow: 'visible'  // ключевое: убираем обрезание при hover-трансформации
+                overflow: 'visible'
               }}>
                 <Button
                   onClick={handleMultiReset}
@@ -222,24 +219,34 @@ export default function Home() {
               </div>
 
               <PanelBar>
-                <PanelBarItem title="Variables" expanded={true}>
-                  <VariablesSection 
+                <PanelBarItem title="Demographics" expanded={true}>
+                  <DemographicsSection 
                     resetSignal={resetSignal}
                     onMultiSelectionChange={updateMultiSelection}
                   />
                 </PanelBarItem>
+
+                <PanelBarItem title="Program & Screening" expanded={true}>
+                  <ProgramScreeningSection 
+                    resetSignal={resetSignal}
+                    onMultiSelectionChange={updateMultiSelection}
+                  />
+                </PanelBarItem>
+
                 <PanelBarItem title="Disabilities">
                   <DisabilitiesSection 
                     resetSignal={resetSignal}
                     onMultiSelectionChange={updateMultiSelection}
                   />
                 </PanelBarItem>
+
                 <PanelBarItem title="Income">
                   <IncomeSection
                     resetSignal={resetSignal}
                     onMultiSelectionChange={updateMultiSelection}
                   />
                 </PanelBarItem>
+
                 <PanelBarItem title="Agency">
                   <AgencySection
                     resetSignal={resetSignal}

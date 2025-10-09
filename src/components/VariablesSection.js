@@ -52,16 +52,17 @@ export default function VariablesSection({
   });
   const [raceTotal, setRaceTotal] = useState(false);
 
-  // Deceased: один чекбокс Yes → маппится на Move-Out Reason
-  const [deceasedYes, setDeceasedYes] = useState(false);
+  const [deceasedFilters, setDeceasedFilters] = useState({ yes: false, no: false });
+  const [deceasedTotal, setDeceasedTotal] = useState(false);
 
   useEffect(() => {
     const values = [];
-    if (deceasedYes) values.push('Yes');
+    if (deceasedFilters.yes) values.push('Yes');
+    if (deceasedFilters.no) values.push('No');
     if (onMultiSelectionChange) {
-      onMultiSelectionChange('Deceased', { combined: false, values });
+      onMultiSelectionChange('Deceased', { combined: !!deceasedTotal, values });
     }
-  }, [deceasedYes, onMultiSelectionChange]);
+  }, [deceasedFilters, deceasedTotal, onMultiSelectionChange]);
 
   useEffect(() => {
     const values = [];
@@ -241,7 +242,8 @@ export default function VariablesSection({
     setFCTotal(false);
     setRaceFilters({ white: false, black: false, hispanic: false, asian: false, native: false });
     setRaceTotal(false);
-    setDeceasedYes(false);
+    setDeceasedFilters({ yes: false, no: false });
+    setDeceasedTotal(false);
     setAgeFilters({ ageTotal: false, youngAdult: false, youth: false, midAge: false, midAgePlus: false, mature: false, seniors: false });
     setAbScoreFilters({ abScoreTotal: false, none: false, oneSix: false, sevenNine: false, tenTwelve: false, thirteenPlus: false });
     setYchFilters({ ychTotal: false, oneTwo: false, threeFour: false, fiveSeven: false, eightFourteen: false, fifteenPlus: false });
@@ -256,12 +258,17 @@ export default function VariablesSection({
       scrollbarWidth: 'thin',
       scrollbarColor: '#FF5E00 #f1f1f1'
     }}>
-      <FilterCard title="Deceased">
+      <FilterCard title="Deceased" headerChecked={deceasedTotal} headerOnChange={(e) => setDeceasedTotal(e.value)}>
         <div style={{ display: 'flex', gap: '15px' }}>
           <Checkbox
             label="Yes"
-            checked={deceasedYes}
-            onChange={(e) => setDeceasedYes(e.value)}
+            checked={deceasedFilters.yes}
+            onChange={(e) => setDeceasedFilters(prev => ({ ...prev, yes: e.value }))}
+          />
+          <Checkbox
+            label="No"
+            checked={deceasedFilters.no}
+            onChange={(e) => setDeceasedFilters(prev => ({ ...prev, no: e.value }))}
           />
         </div>
       </FilterCard>

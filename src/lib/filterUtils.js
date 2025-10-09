@@ -661,9 +661,39 @@ export function calculateRetentionByMultiFilters(processedData, rawData, filterS
       const values = Array.isArray(spec.values) ? spec.values.map(normalize) : [];
       if (spec.combined) return true;
       if (values.length === 0) return true;
-      if (values.includes('yes')) {
-        return normalize(val).includes('deceased');
+      const norm = normalize(val);
+      const hasYes = values.includes('yes');
+      const hasNo = values.includes('no');
+      if (hasYes && hasNo) return true;
+      if (hasYes) return norm.includes('deceased');
+      if (hasNo) return norm === '' || !norm.includes('deceased');
+      return false;
+    }
+
+    // Новая ветка: сопоставление выбора из секции Agency с реальной колонкой данных "CM Agency"
+    if (columnName === 'agency' || columnName === 'cm agency') {
+      const cmIndex = headers.findIndex(h => h === 'cm agency');
+      if (cmIndex === -1) return false;
+
+      const rawCell = resident.rawData[cmIndex];
+      const cellValue = normalize(rawCell ? rawCell.toString().trim() : '');
+      const values = Array.isArray(spec.values) ? spec.values.map(normalize) : [];
+
+      if (spec.combined) return true;
+      if (values.length === 0) return cellValue !== '';
+
+      for (const v of values) {
+        if (v === 'none') {
+          if (cellValue === 'none') return true; // раньше считали и пустые, теперь только явное None
+          continue;
+        }
+        if (v === 'unknown') {
+          if (cellValue === 'unknown') return true;
+          continue;
+        }
+        if (cellValue === v) return true;
       }
+
       return false;
     }
 

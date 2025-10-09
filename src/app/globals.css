@@ -323,3 +323,34 @@ table tr:hover td {
   max-width: 180px; /* при необходимости подстрой: 170–200px */
   line-height: 1.2;
 }
+
+/* Постоянная стрелка и фиксированный отступ под неё для PanelBar */
+.k-panelbar .k-panelbar-item .k-link {
+  position: relative;
+  padding-right: 24px; /* резервируем место под стрелку справа */
+}
+
+.k-panelbar .k-panelbar-item .k-link::after {
+  content: '▸';                 /* стрелка вправо (свернуто) */
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);  /* вертикальное выравнивание */
+  font-size: 14px;
+  color: #666;
+  opacity: 1;
+}
+
+/* Поворот стрелки при раскрытии */
+.k-panelbar .k-panelbar-item.k-expanded .k-link::after {
+  content: '▾'; /* вниз (раскрыто) */
+}
+
+/* На случай, если Kendo-иконка появляется — скрываем её, чтобы не было двойной стрелки */
+.k-panelbar .k-panelbar-item .k-link .k-icon {
+  display: none !important;
+}
+.k-panelbar .k-panelbar-item .k-link .k-icon {
+  visibility: visible !important; /* не скрывать стрелку */
+  opacity: 1 !important;
+}

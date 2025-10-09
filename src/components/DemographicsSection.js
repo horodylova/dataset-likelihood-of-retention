@@ -122,6 +122,7 @@ export default function DemographicsSection({ onMultiSelectionChange, resetSigna
       scrollbarWidth: 'thin',
       scrollbarColor: '#FF5E00 #f1f1f1'
     }}>
+      {/* Deceased и Gender без смещения — оставляем */}
       <FilterCard title="Deceased" headerChecked={deceasedTotal} headerOnChange={(e) => setDeceasedTotal(e.value)}>
         <div style={{ display: 'flex', gap: '15px' }}>
           <Checkbox label="Yes" checked={deceasedFilters.yes} onChange={(e) => setDeceasedFilters(prev => ({ ...prev, yes: e.value }))} />
@@ -141,8 +142,7 @@ export default function DemographicsSection({ onMultiSelectionChange, resetSigna
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
           gap: '10px',
-          alignItems: 'center',
-          marginLeft: '20px'
+          alignItems: 'center'
         }}>
           <Checkbox className="agency-checkbox agency-checkbox--wrap" label="Black or African American" checked={raceFilters.black} onChange={(e) => handleRaceFilterChange('black', e.value)} />
           <Checkbox className="agency-checkbox agency-checkbox--wrap" label="Hispanic or Latino" checked={raceFilters.hispanic} onChange={(e) => handleRaceFilterChange('hispanic', e.value)} />
@@ -156,8 +156,7 @@ export default function DemographicsSection({ onMultiSelectionChange, resetSigna
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))',
           gap: '10px',
-          alignItems: 'center',
-          marginLeft: '20px'
+          alignItems: 'center'
         }}>
           <Checkbox label="Young Adult" checked={ageFilters.youngAdult} onChange={(e) => handleAgeFilterChange('youngAdult', e.value)} />
           <Checkbox label="Youth" checked={ageFilters.youth} onChange={(e) => handleAgeFilterChange('youth', e.value)} />

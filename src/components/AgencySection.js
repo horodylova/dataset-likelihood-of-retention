@@ -148,8 +148,7 @@ export default function AgencySection({ onMultiSelectionChange, resetSignal }) {
                     display: 'grid',
                     gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
                     gap: '10px',
-                    alignItems: 'center',
-                    marginLeft: '20px'
+                    alignItems: 'center'
                 }}>
                     {agencies.map(({ key, label }) => (
                         <Checkbox

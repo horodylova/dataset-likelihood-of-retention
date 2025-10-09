@@ -219,35 +219,35 @@ export default function Home() {
               </div>
 
               <PanelBar>
-                <PanelBarItem title="Demographics" expanded={true}>
+                <PanelBarItem title="Demographics" expanded={false}>
                   <DemographicsSection 
                     resetSignal={resetSignal}
                     onMultiSelectionChange={updateMultiSelection}
                   />
                 </PanelBarItem>
 
-                <PanelBarItem title="Program & Screening" expanded={true}>
+                <PanelBarItem title="Program & Screening" expanded={false}>
                   <ProgramScreeningSection 
                     resetSignal={resetSignal}
                     onMultiSelectionChange={updateMultiSelection}
                   />
                 </PanelBarItem>
 
-                <PanelBarItem title="Disabilities">
+                <PanelBarItem title="Disabilities" expanded={false}>
                   <DisabilitiesSection 
                     resetSignal={resetSignal}
                     onMultiSelectionChange={updateMultiSelection}
                   />
                 </PanelBarItem>
 
-                <PanelBarItem title="Income">
+                <PanelBarItem title="Income" expanded={false}>
                   <IncomeSection
                     resetSignal={resetSignal}
                     onMultiSelectionChange={updateMultiSelection}
                   />
                 </PanelBarItem>
 
-                <PanelBarItem title="Agency">
+                <PanelBarItem title="Agency" expanded={false}>
                   <AgencySection
                     resetSignal={resetSignal}
                     onMultiSelectionChange={updateMultiSelection}

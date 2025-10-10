@@ -158,12 +158,12 @@ export default function DemographicsSection({ onMultiSelectionChange, resetSigna
           gap: '10px',
           alignItems: 'center'
         }}>
-          <Checkbox label="Young Adult" checked={ageFilters.youngAdult} onChange={(e) => handleAgeFilterChange('youngAdult', e.value)} />
-          <Checkbox label="Youth" checked={ageFilters.youth} onChange={(e) => handleAgeFilterChange('youth', e.value)} />
-          <Checkbox label="Mid-Age" checked={ageFilters.midAge} onChange={(e) => handleAgeFilterChange('midAge', e.value)} />
-          <Checkbox label="Mid-Age +" checked={ageFilters.midAgePlus} onChange={(e) => handleAgeFilterChange('midAgePlus', e.value)} />
-          <Checkbox label="Mature" checked={ageFilters.mature} onChange={(e) => handleAgeFilterChange('mature', e.value)} />
-          <Checkbox label="Seniors" checked={ageFilters.seniors} onChange={(e) => handleAgeFilterChange('seniors', e.value)} />
+          <Checkbox label="18–24: Young Adults" checked={ageFilters.youngAdult} onChange={(e) => handleAgeFilterChange('youngAdult', e.value)} />
+          <Checkbox label="25–34: Youth / Adulthood" checked={ageFilters.youth} onChange={(e) => handleAgeFilterChange('youth', e.value)} />
+          <Checkbox label="35–44: Middle Age (Early)" checked={ageFilters.midAge} onChange={(e) => handleAgeFilterChange('midAge', e.value)} />
+          <Checkbox label="45–54: Middle Age (Late)" checked={ageFilters.midAgePlus} onChange={(e) => handleAgeFilterChange('midAgePlus', e.value)} />
+          <Checkbox label="55–64: Mature Adults" checked={ageFilters.mature} onChange={(e) => handleAgeFilterChange('mature', e.value)} />
+          <Checkbox label="65+: Seniors" checked={ageFilters.seniors} onChange={(e) => handleAgeFilterChange('seniors', e.value)} />
         </div>
       </FilterCard>
 

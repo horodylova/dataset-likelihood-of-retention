@@ -10,6 +10,7 @@ import IncomeSection from '../components/IncomeSection';
 import AgencySection from '../components/AgencySection';
 import DemographicsSection from '../components/DemographicsSection';
 import ProgramScreeningSection from '../components/ProgramScreeningSection';
+import NeighborhoodSection from '../components/NeighborhoodSection';
 
 import Link from 'next/link';
 import { Button } from '@progress/kendo-react-buttons';
@@ -249,6 +250,13 @@ export default function Home() {
 
                 <PanelBarItem title="Agency" expanded={false}>
                   <AgencySection
+                    resetSignal={resetSignal}
+                    onMultiSelectionChange={updateMultiSelection}
+                  />
+                </PanelBarItem>
+
+                <PanelBarItem title="Neighborhood" expanded={false}>
+                  <NeighborhoodSection
                     resetSignal={resetSignal}
                     onMultiSelectionChange={updateMultiSelection}
                   />

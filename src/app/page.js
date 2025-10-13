@@ -74,8 +74,9 @@ export default function Home() {
       const next = { ...prev };
       if (payload && typeof payload === 'object' && !Array.isArray(payload)) {
         const values = Array.isArray(payload.values) ? payload.values : [];
-        if (payload.combined || values.length > 0) {
-          next[label] = { combined: !!payload.combined, values: new Set(values) };
+        const combined = !!payload.combined && values.length === 0; // combined ТОЛЬКО если бакеты не выбраны
+        if (combined || values.length > 0) {
+          next[label] = { combined, values: new Set(values) };
         } else {
           delete next[label];
         }

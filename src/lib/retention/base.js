@@ -21,22 +21,18 @@ export function getUniqueFilterValues(processedData, columnIndex) {
 
 export function calculateRetentionForData(data, retentionObject) {
   data.forEach(resident => {
-    if (!resident.moveInDate) return;
-    const yearsLived = calculateYearsLived(resident.moveInDate, resident.moveOutDate);
-    for (let year = 0; year <= 9; year++) {
-      if (year === 0) {
-        if (yearsLived > 0) {
-          retentionObject['Year 0'].eligible++;
-          if (yearsLived >= 1) {
-            retentionObject['Year 0'].retained++;
-          }
-        }
-      } else {
-        if (yearsLived >= year) {
-          retentionObject[`Year ${year}`].eligible++;
-          if (yearsLived >= year + 1) {
-            retentionObject[`Year ${year}`].retained++;
-          }
+     const yearsLived = resident.moveInDate ? calculateYearsLived(resident.moveInDate, resident.moveOutDate) : 0;
+
+     retentionObject['Year 0'].eligible++;
+    if (yearsLived >= 1) {
+      retentionObject['Year 0'].retained++;
+    }
+
+     for (let year = 1; year <= 9; year++) {
+      if (yearsLived >= year) {
+        retentionObject[`Year ${year}`].eligible++;
+        if (yearsLived >= year + 1) {
+          retentionObject[`Year ${year}`].retained++;
         }
       }
     }

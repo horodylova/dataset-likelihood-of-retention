@@ -38,26 +38,22 @@ function OutputsSection({ loading, retentionData = [], chartData, refreshKey = 0
       }
       const percentRow = {
         filter: `${row.filter} — Percent`,
+        count: '', // процент Count не считаем (всегда 100%)
         ...percentYearFields
       };
 
+      // Числовая строка: Count + retained по годам
       const eligibleRow = {
         filter: `${row.filter} — Eligible`,
-        ...(ret ? makeYearFieldsFromRetention(ret, 'eligible') :
-          Array.from({ length: 10 }, (_, i) => ({ [`year${i}`]: 0 }))
-            .reduce((acc, curr) => ({ ...acc, ...curr }), {})
-        )
-      };
-
-      const retainedRow = {
-        filter: `${row.filter} — Retained`,
+        count: ret ? Number(ret['Year 0']?.eligible || 0) : 0,
         ...(ret ? makeYearFieldsFromRetention(ret, 'retained') :
           Array.from({ length: 10 }, (_, i) => ({ [`year${i}`]: 0 }))
             .reduce((acc, curr) => ({ ...acc, ...curr }), {})
         )
       };
 
-      return [percentRow, eligibleRow, retainedRow];
+      // Убираем дублирование retained-строки; возвращаем только две строки
+      return [percentRow, eligibleRow];
     });
   }, [retentionData]);
 
@@ -91,6 +87,14 @@ function OutputsSection({ loading, retentionData = [], chartData, refreshKey = 0
     return YearCell;
   };
 
+  // Плейсхолдер для Count: теперь выводим число очищенных записей (Year 0 eligible)
+  const CountCell = (props) => {
+    const { dataItem, className, style } = props;
+    const raw = dataItem?.count;
+    const v = Number(raw || 0);
+    return <td className={className} style={style}>{v > 0 ? v : ''}</td>;
+  };
+  CountCell.displayName = 'CountCell';
   const handleColumnClick = (column) => {
     setSelectedColumn(prev => (prev === column ? null : column));
   };
@@ -215,9 +219,13 @@ function OutputsSection({ loading, retentionData = [], chartData, refreshKey = 0
           border-left: 3px solid #384C9E !important;
           border-right: 3px solid #384C9E !important;
         }
-        .outputs-grid :global(.k-grid .k-table-tbody tr:nth-child(3n) .k-table-td) {
+        .outputs-grid :global(.k-grid .k-table-tbody tr:nth-child(2n) .k-table-td) {
           border-bottom-width: 3px !important;
           border-bottom-color: #000 !important;
+        }
+        /* Центровка колонки Count */
+        .outputs-grid :global(.count-column) {
+          text-align: center !important;
         }
       `}</style>
 
@@ -266,6 +274,8 @@ function OutputsSection({ loading, retentionData = [], chartData, refreshKey = 0
               scrollable={false}
             >
               <GridColumn field="filter" title="Filter" width="180px" />
+              {/* Новая колонка Count (PDF) */}
+              <GridColumn field="count" title="Count" width="85px" cell={CountCell} />
               <GridColumn field="year0" title="Year 0" width="85px" cell={makeYearCell('year0')} />
               <GridColumn field="year1" title="Year 1" width="85px" cell={makeYearCell('year1')} />
               <GridColumn field="year2" title="Year 2" width="85px" cell={makeYearCell('year2')} />
@@ -379,6 +389,16 @@ function OutputsSection({ loading, retentionData = [], chartData, refreshKey = 0
                 className={selectedColumn === 'filter' ? 'selected-column' : ''} 
                 onHeaderClick={() => handleColumnClick('filter')} 
               /> 
+              {/* Новая колонка Count (UI) */}
+              <GridColumn
+                field="count"
+                title="Count"
+                width="100px"
+                cell={CountCell}
+                headerClassName={selectedColumn === 'count' ? 'selected-column count-column' : 'count-column'}
+                className={selectedColumn === 'count' ? 'selected-column count-column' : 'count-column'}
+                onHeaderClick={() => handleColumnClick('count')}
+              />
               <GridColumn
                 field="year0"
                 title="Year 0"

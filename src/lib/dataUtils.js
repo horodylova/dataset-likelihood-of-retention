@@ -73,9 +73,9 @@ export function processRawData(rawData) {
     };
   });
   
-  const withValidMoveIn = processed.filter(item => item.moveInDate);
-  
-  return withValidMoveIn;
+  // Раньше: возвращали только с валидной move-in датой
+  // Теперь: возвращаем весь массив, чтобы Count отражал очищенные записи полностью
+  return processed;
 }
 
 export function calculateYearsLived(moveInDate, moveOutDate = null) {
@@ -98,7 +98,10 @@ export function calculateRetentionByYear(processedData) {
   }
   
   processedData.forEach(resident => {
-    const yearsLived = calculateYearsLived(resident.moveInDate, resident.moveOutDate);
+    // Безопасно обрабатываем отсутствие даты заселения
+    const yearsLived = resident.moveInDate
+      ? calculateYearsLived(resident.moveInDate, resident.moveOutDate)
+      : 0;
     
     for (let year = 1; year <= maxYears; year++) {
       if (yearsLived >= year) {

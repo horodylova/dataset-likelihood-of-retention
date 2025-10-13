@@ -13,7 +13,6 @@ export default function IncomeSection({ onMultiSelectionChange, resetSignal }) {
   });
   const [incomeSourceTotal, setIncomeSourceTotal] = useState(false);
 
-  // ДОБАВЛЕНО: состояние для Monthly Income
   const [monthlyIncomeFilters, setMonthlyIncomeFilters] = useState({
     zero: false,
     oneTo750: false,
@@ -23,13 +22,26 @@ export default function IncomeSection({ onMultiSelectionChange, resetSignal }) {
   });
   const [monthlyIncomeTotal, setMonthlyIncomeTotal] = useState(false);
 
+  // Monthly DI Average
+  const [monthlyDiAverageFilters, setMonthlyDiAverageFilters] = useState({
+    zero: false,
+    oneTo249: false,
+    twoFiftyTo499: false,
+    fiveHundredTo999: false,
+    thousandPlus: false
+  });
+  const [monthlyDiAverageTotal, setMonthlyDiAverageTotal] = useState(false);
+
   const handleIncomeSourceFilterChange = useCallback((type, checked) => {
     setIncomeSourceFilters(prev => ({ ...prev, [type]: checked }));
   }, []);
 
-  // ДОБАВЛЕНО: обработчик изменений Monthly Income
   const handleMonthlyIncomeChange = useCallback((type, checked) => {
     setMonthlyIncomeFilters(prev => ({ ...prev, [type]: checked }));
+  }, []);
+
+  const handleMonthlyDiAverageChange = useCallback((type, checked) => {
+    setMonthlyDiAverageFilters(prev => ({ ...prev, [type]: checked }));
   }, []);
 
   useEffect(() => {
@@ -57,6 +69,18 @@ export default function IncomeSection({ onMultiSelectionChange, resetSignal }) {
   }, [monthlyIncomeFilters, monthlyIncomeTotal, onMultiSelectionChange]);
 
   useEffect(() => {
+    const values = [];
+    if (monthlyDiAverageFilters.zero) values.push('$0');
+    if (monthlyDiAverageFilters.oneTo249) values.push('$1–249');
+    if (monthlyDiAverageFilters.twoFiftyTo499) values.push('$250–499');
+    if (monthlyDiAverageFilters.fiveHundredTo999) values.push('$500–999');
+    if (monthlyDiAverageFilters.thousandPlus) values.push('$1000+');
+    if (onMultiSelectionChange) {
+      onMultiSelectionChange('Monthly DI Average', { combined: !!monthlyDiAverageTotal, values });
+    }
+  }, [monthlyDiAverageFilters, monthlyDiAverageTotal, onMultiSelectionChange]);
+
+  useEffect(() => {
     if (resetSignal == null) return;
     setIncomeSourceFilters({ ssi: false, ssdi: false, multiple: false, other: false, none: false });
     setIncomeSourceTotal(false);
@@ -68,6 +92,14 @@ export default function IncomeSection({ onMultiSelectionChange, resetSignal }) {
       fifteenHundredPlus: false
     });
     setMonthlyIncomeTotal(false);
+    setMonthlyDiAverageFilters({
+      zero: false,
+      oneTo249: false,
+      twoFiftyTo499: false,
+      fiveHundredTo999: false, // исправлено: англ. буквы
+      thousandPlus: false
+    });
+    setMonthlyDiAverageTotal(false);
   }, [resetSignal]);
 
   return (
@@ -120,7 +152,7 @@ export default function IncomeSection({ onMultiSelectionChange, resetSignal }) {
             checked={monthlyIncomeTotal}
             onChange={(e) => setMonthlyIncomeTotal(e.value)}
           />
-          <label style={{ fontWeight: 'bold', color: '#384C9E', fontSize: '14px', marginLeft: '8px' }}>
+        <label style={{ fontWeight: 'bold', color: '#384C9E', fontSize: '14px', marginLeft: '8px' }}>
             Monthly Income
           </label>
         </div>
@@ -136,6 +168,39 @@ export default function IncomeSection({ onMultiSelectionChange, resetSignal }) {
           <Checkbox label="$751-1000" checked={monthlyIncomeFilters.sevenFiftyOneTo1000} onChange={(e) => handleMonthlyIncomeChange('sevenFiftyOneTo1000', e.value)} />
           <Checkbox label="$1001-1500" checked={monthlyIncomeFilters.oneThousandOneTo1500} onChange={(e) => handleMonthlyIncomeChange('oneThousandOneTo1500', e.value)} />
           <Checkbox label="$1501+" checked={monthlyIncomeFilters.fifteenHundredPlus} onChange={(e) => handleMonthlyIncomeChange('fifteenHundredPlus', e.value)} />
+        </div>
+      </div>
+
+      {/* Monthly DI Average */}
+      <div style={{
+        marginBottom: '15px',
+        padding: '10px',
+        backgroundColor: 'white',
+        borderRadius: '4px',
+        boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+        transition: 'transform 0.2s ease-in-out'
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', marginBottom: '8px' }}>
+          <Checkbox
+            checked={monthlyDiAverageTotal}
+            onChange={(e) => setMonthlyDiAverageTotal(e.value)}
+          />
+          <label style={{ fontWeight: 'bold', color: '#384C9E', fontSize: '14px', marginLeft: '8px' }}>
+            Monthly DI Average
+          </label>
+        </div>
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))',
+          gap: '10px',
+          alignItems: 'center',
+          marginLeft: '20px'
+        }}>
+          <Checkbox label="$0" checked={monthlyDiAverageFilters.zero} onChange={(e) => handleMonthlyDiAverageChange('zero', e.value)} />
+          <Checkbox label="$1–249" checked={monthlyDiAverageFilters.oneTo249} onChange={(e) => handleMonthlyDiAverageChange('oneTo249', e.value)} />
+          <Checkbox label="$250–499" checked={monthlyDiAverageFilters.twoFiftyTo499} onChange={(e) => handleMonthlyDiAverageChange('twoFiftyTo499', e.value)} />
+          <Checkbox label="$500–999" checked={monthlyDiAverageFilters.fiveHundredTo999} onChange={(e) => handleMonthlyDiAverageChange('fiveHundredTo999', e.value)} />
+          <Checkbox label="$1000+" checked={monthlyDiAverageFilters.thousandPlus} onChange={(e) => handleMonthlyDiAverageChange('thousandPlus', e.value)} />
         </div>
       </div>
     </div>

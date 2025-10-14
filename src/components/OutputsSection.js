@@ -49,7 +49,7 @@ function OutputsSection({ loading, retentionData = [], chartData, refreshKey = 0
 
       const baseCount = ret ? Number(ret['Year 0']?.eligible || 0) : 0;
 
-      // Показываем Count только на первой строке набора (Percent)
+       
       const percentRow = {
         filter: `${row.filter} — Percent`,
         count: baseCount,
@@ -58,7 +58,7 @@ function OutputsSection({ loading, retentionData = [], chartData, refreshKey = 0
 
       const eligibleRow = {
         filter: `${row.filter} — Eligible`,
-        count: '', // скрываем число для второй строки
+        count: '',  
         ...(ret
           ? makeEligibleIntervalFields(ret)
           : Array.from({ length: 10 }, (_, i) => ({ [`year${i}`]: 0 }))
@@ -68,7 +68,7 @@ function OutputsSection({ loading, retentionData = [], chartData, refreshKey = 0
 
       const retainedRow = {
         filter: `${row.filter} — Retained`,
-        count: '', // скрываем число для третьей строки
+        count: '',  
         ...(ret
           ? makeYearFieldsFromRetention(ret, 'retained')
           : Array.from({ length: 10 }, (_, i) => ({ [`year${i}`]: 0 }))
@@ -109,8 +109,7 @@ function OutputsSection({ loading, retentionData = [], chartData, refreshKey = 0
     YearCell.displayName = `YearCell_${field}`;
     return YearCell;
   };
-
-  // Плейсхолдер для Count: теперь выводим число очищенных записей (Year 0 eligible)
+ 
   const CountCell = (props) => {
     const { dataItem, className, style } = props;
     const raw = dataItem?.count;
@@ -297,7 +296,7 @@ function OutputsSection({ loading, retentionData = [], chartData, refreshKey = 0
               scrollable={false}
             >
               <GridColumn field="filter" title="Filter" width="180px" />
-              {/* Новая колонка Count (PDF) */}
+           
               <GridColumn field="count" title="Count" width="85px" cell={CountCell} />
               <GridColumn field="year0" title="Year 0" width="85px" cell={makeYearCell('year0')} />
               <GridColumn field="year1" title="Year 1" width="85px" cell={makeYearCell('year1')} />
@@ -412,7 +411,7 @@ function OutputsSection({ loading, retentionData = [], chartData, refreshKey = 0
                 className={selectedColumn === 'filter' ? 'selected-column' : ''} 
                 onHeaderClick={() => handleColumnClick('filter')} 
               /> 
-              {/* Новая колонка Count (UI) */}
+            
               <GridColumn
                 field="count"
                 title="Count"

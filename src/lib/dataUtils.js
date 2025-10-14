@@ -72,9 +72,7 @@ export function processRawData(rawData) {
       isCurrentResident: !moveOutDate
     };
   });
-  
-  // Раньше: возвращали только с валидной move-in датой
-  // Теперь: возвращаем весь массив, чтобы Count отражал очищенные записи полностью
+   
   return processed;
 }
 
@@ -98,7 +96,7 @@ export function calculateRetentionByYear(processedData) {
   }
   
   processedData.forEach(resident => {
-    // Безопасно обрабатываем отсутствие даты заселения
+     
     const yearsLived = resident.moveInDate
       ? calculateYearsLived(resident.moveInDate, resident.moveOutDate)
       : 0;
@@ -106,7 +104,7 @@ export function calculateRetentionByYear(processedData) {
     for (let year = 1; year <= maxYears; year++) {
       if (yearsLived >= year) {
         retentionByYear[`Year ${year}`].eligible++;
-        // вернуть порог "в следующий год" для retained
+        
         if (yearsLived >= year + 1) {
           retentionByYear[`Year ${year}`].retained++;
         }

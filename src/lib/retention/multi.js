@@ -54,7 +54,7 @@ export function calculateRetentionByMultiFilters(
       return values.includes(statusLabel);
     }
 
-    // Disability Count: count "Yes" across disability columns, bucket: 0,1,2,3,4+
+    
     if (columnName === "disability count") {
       const columns = [
         "visual",
@@ -83,8 +83,7 @@ export function calculateRetentionByMultiFilters(
       if (values.length === 0) return true;
       return values.includes(bucket);
     }
-
-    // Age: compute from Birth Year; buckets align with UI names
+ 
     if (columnName === "age") {
       const birthYearIndex = headers.findIndex((h) => h === "birth year");
       if (birthYearIndex === -1) return false;
@@ -114,7 +113,7 @@ export function calculateRetentionByMultiFilters(
       return values.includes(bucket);
     }
 
-    // AB Score
+ 
     if (columnName === "ab score") {
       const abIndex = headers.findIndex((h) => h === "ab score");
       if (abIndex === -1) return false;
@@ -143,8 +142,7 @@ export function calculateRetentionByMultiFilters(
       }
       return values.includes(bucket.toLowerCase());
     }
-
-    // YCH
+ 
     if (columnName === "ych") {
       const ychIndex = headers.findIndex((h) => h === "ych");
       if (ychIndex === -1) return false;
@@ -171,7 +169,7 @@ export function calculateRetentionByMultiFilters(
       return values.includes(bucket.toLowerCase());
     }
 
-    // Deceased
+   
     if (columnName === "deceased") {
       const moveOutReasonIndex = headers.findIndex(
         (h) => h === "move-out reason" || h === "move out reason"
@@ -193,7 +191,7 @@ export function calculateRetentionByMultiFilters(
       return false;
     }
 
-    // Agency
+  
     if (columnName === "agency" || columnName === "cm agency") {
       const cmIndex = headers.findIndex((h) => h === "cm agency");
       if (cmIndex === -1) return false;
@@ -219,8 +217,7 @@ export function calculateRetentionByMultiFilters(
       }
       return false;
     }
-
-    // Monthly Income — исправленный
+ 
     if (columnName === "monthly income") {
       const incomeIndex = headers.findIndex(
         (h) =>
@@ -270,8 +267,7 @@ export function calculateRetentionByMultiFilters(
         .replace(/–/g, "-");
       return values.includes(bucketNorm);
     }
-
-    // Monthly DI Average — рабочий блок
+ 
     if (columnName === "monthly di average") {
       const diIndex = headers.findIndex((h) => h === "monthly di average");
       if (diIndex === -1) return false;
@@ -358,7 +354,7 @@ export function calculateRetentionByMultiFilters(
       return values.includes(bucketNorm);
     }
 
-    // Total Average Monthly Income — mirror of DI block with income buckets
+    
     if (columnName === "total average monthly income") {
       const totalIndex = headers.findIndex(
         (h) => h === "total average monthly income"
@@ -446,8 +442,7 @@ export function calculateRetentionByMultiFilters(
         .replace(/–/g, "-");
       return values.includes(bucketNorm);
     }
-
-    // Generic Yes/No
+ 
     const columnIndex = headers.findIndex((h) => h === columnName);
     if (columnIndex === -1) return false;
 

@@ -121,20 +121,11 @@ function OutputsSection({ loading, retentionData = [], chartData, refreshKey = 0
     setSelectedColumn(prev => (prev === column ? null : column));
   };
 
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    const handleResize = () => {
-      if (typeof window !== 'undefined') {
-        setIsMobile(window.innerWidth <= 640);
-      }
-    };
-    handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
+  // Убрано: const [isMobile, setIsMobile] = useState(false);
+  // Убрано: useEffect с window.addEventListener('resize', ...)
 
   const categories = ['Year 0', 'Year 1', 'Year 2', 'Year 3', 'Year 4', 'Year 5', 'Year 6', 'Year 7', 'Year 8', 'Year 9'];
+  const uiCategoriesShort = ['Y0', 'Y 1', 'Y 2', 'Y 3', 'Y 4', 'Y 5', 'Y 6', 'Y 7', 'Y 8', 'Y 9'];
   const colors = [
     '#28a745', '#FF5E00', '#384C9E', '#dc3545', '#6f42c1',
     '#fd7e14', '#20c997', '#e83e8c', '#6610f2', '#007bff',
@@ -328,7 +319,7 @@ function OutputsSection({ loading, retentionData = [], chartData, refreshKey = 0
             <Chart style={{ height: '100%', width: '100%' }}>
               <ChartLegend position="top" orientation="horizontal" align="center" />
               <ChartCategoryAxis>
-                <ChartCategoryAxisItem categories={displayCategories} />
+                <ChartCategoryAxisItem categories={categories} />
               </ChartCategoryAxis>
               <ChartValueAxis>
                 <ChartValueAxisItem title={{ text: 'Retention Rate (%)' }} min={valueAxisMin} max={valueAxisMax} axisCrossingValue={valueAxisMin - 1} labels={{ content: (e) => (e.value < 0 ? '' : `${e.value}%`) }} />
@@ -536,7 +527,7 @@ function OutputsSection({ loading, retentionData = [], chartData, refreshKey = 0
                 >
                     <ChartLegend position="top" orientation="horizontal" align="center" />
                     <ChartCategoryAxis>
-                        <ChartCategoryAxisItem categories={displayCategories} />
+                        <ChartCategoryAxisItem categories={categories} />
                     </ChartCategoryAxis>
                     <ChartValueAxis>
                         <ChartValueAxisItem title={{ text: 'Retention Rate (%)' }} min={valueAxisMin} max={valueAxisMax} axisCrossingValue={valueAxisMin - 1} labels={{ content: (e) => (e.value < 0 ? '' : `${e.value}%`) }} />

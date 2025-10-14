@@ -2,6 +2,7 @@
 
 import { Checkbox } from '@progress/kendo-react-inputs';
 import { useState, useEffect, useCallback } from 'react';
+import FilterCard from '@/components/FilterCard';
 
 export default function IncomeSection({ onMultiSelectionChange, resetSignal }) {
   const [incomeSourceFilters, setIncomeSourceFilters] = useState({
@@ -32,6 +33,16 @@ export default function IncomeSection({ onMultiSelectionChange, resetSignal }) {
   });
   const [monthlyDiAverageTotal, setMonthlyDiAverageTotal] = useState(false);
 
+  // Total Average Monthly Income
+  const [totalAvgMonthlyIncomeFilters, setTotalAvgMonthlyIncomeFilters] = useState({
+    zero: false,
+    oneTo750: false,
+    sevenFiftyOneTo1000: false,
+    oneThousandOneTo1500: false,
+    fifteenHundredPlus: false
+  });
+  const [totalAvgMonthlyIncomeTotal, setTotalAvgMonthlyIncomeTotal] = useState(false);
+
   const handleIncomeSourceFilterChange = useCallback((type, checked) => {
     setIncomeSourceFilters(prev => ({ ...prev, [type]: checked }));
   }, []);
@@ -42,6 +53,10 @@ export default function IncomeSection({ onMultiSelectionChange, resetSignal }) {
 
   const handleMonthlyDiAverageChange = useCallback((type, checked) => {
     setMonthlyDiAverageFilters(prev => ({ ...prev, [type]: checked }));
+  }, []);
+
+  const handleTotalAvgMonthlyIncomeChange = useCallback((type, checked) => {
+    setTotalAvgMonthlyIncomeFilters(prev => ({ ...prev, [type]: checked }));
   }, []);
 
   useEffect(() => {
@@ -80,6 +95,22 @@ export default function IncomeSection({ onMultiSelectionChange, resetSignal }) {
     }
   }, [monthlyDiAverageFilters, monthlyDiAverageTotal, onMultiSelectionChange]);
 
+  // Total Average Monthly Income — эффект внутри компонента
+  useEffect(() => {
+    const values = [];
+    if (totalAvgMonthlyIncomeFilters.zero) values.push('$0');
+    if (totalAvgMonthlyIncomeFilters.oneTo750) values.push('$1-750');
+    if (totalAvgMonthlyIncomeFilters.sevenFiftyOneTo1000) values.push('$751-1000');
+    if (totalAvgMonthlyIncomeFilters.oneThousandOneTo1500) values.push('$1001-1500');
+    if (totalAvgMonthlyIncomeFilters.fifteenHundredPlus) values.push('$1501+');
+    if (onMultiSelectionChange) {
+      onMultiSelectionChange('Total Average Monthly Income', {
+        combined: !!totalAvgMonthlyIncomeTotal,
+        values
+      });
+    }
+  }, [totalAvgMonthlyIncomeFilters, totalAvgMonthlyIncomeTotal, onMultiSelectionChange]);
+
   useEffect(() => {
     if (resetSignal == null) return;
     setIncomeSourceFilters({ ssi: false, ssdi: false, multiple: false, other: false, none: false });
@@ -96,10 +127,18 @@ export default function IncomeSection({ onMultiSelectionChange, resetSignal }) {
       zero: false,
       oneTo249: false,
       twoFiftyTo499: false,
-      fiveHundredTo999: false, // исправлено: англ. буквы
+      fiveHundredTo999: false,
       thousandPlus: false
     });
     setMonthlyDiAverageTotal(false);
+    setTotalAvgMonthlyIncomeFilters({
+      zero: false,
+      oneTo750: false,
+      sevenFiftyOneTo1000: false,
+      oneThousandOneTo1500: false,
+      fifteenHundredPlus: false
+    });
+    setTotalAvgMonthlyIncomeTotal(false);
   }, [resetSignal]);
 
   return (
@@ -152,7 +191,7 @@ export default function IncomeSection({ onMultiSelectionChange, resetSignal }) {
             checked={monthlyIncomeTotal}
             onChange={(e) => setMonthlyIncomeTotal(e.value)}
           />
-        <label style={{ fontWeight: 'bold', color: '#384C9E', fontSize: '14px', marginLeft: '8px' }}>
+          <label style={{ fontWeight: 'bold', color: '#384C9E', fontSize: '14px', marginLeft: '8px' }}>
             Monthly Income
           </label>
         </div>
@@ -203,6 +242,40 @@ export default function IncomeSection({ onMultiSelectionChange, resetSignal }) {
           <Checkbox label="$1000+" checked={monthlyDiAverageFilters.thousandPlus} onChange={(e) => handleMonthlyDiAverageChange('thousandPlus', e.value)} />
         </div>
       </div>
+
+      {/* Total Average Monthly Income */}
+      <FilterCard
+        title={
+          <span
+            className="agency-checkbox agency-checkbox--wrap"
+            style={{
+              whiteSpace: 'normal',
+              overflowWrap: 'anywhere',
+              wordBreak: 'break-word',
+              display: 'inline-block',
+              maxWidth: '180px',
+              lineHeight: 1.2
+            }}
+          >
+            Total Average Monthly Income
+          </span>
+        }
+        headerChecked={totalAvgMonthlyIncomeTotal}
+        headerOnChange={(e) => setTotalAvgMonthlyIncomeTotal(e.value)}
+      >
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))',
+          gap: '10px',
+          alignItems: 'center'
+        }}>
+          <Checkbox label="$0" checked={totalAvgMonthlyIncomeFilters.zero} onChange={(e) => handleTotalAvgMonthlyIncomeChange('zero', e.value)} />
+          <Checkbox label="$1-750" checked={totalAvgMonthlyIncomeFilters.oneTo750} onChange={(e) => handleTotalAvgMonthlyIncomeChange('oneTo750', e.value)} />
+          <Checkbox label="$751-1000" checked={totalAvgMonthlyIncomeFilters.sevenFiftyOneTo1000} onChange={(e) => handleTotalAvgMonthlyIncomeChange('sevenFiftyOneTo1000', e.value)} />
+          <Checkbox label="$1001-1500" checked={totalAvgMonthlyIncomeFilters.oneThousandOneTo1500} onChange={(e) => handleTotalAvgMonthlyIncomeChange('oneThousandOneTo1500', e.value)} />
+          <Checkbox label="$1501+" checked={totalAvgMonthlyIncomeFilters.fifteenHundredPlus} onChange={(e) => handleTotalAvgMonthlyIncomeChange('fifteenHundredPlus', e.value)} />
+        </div>
+      </FilterCard>
     </div>
   );
 }

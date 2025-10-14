@@ -358,6 +358,95 @@ export function calculateRetentionByMultiFilters(
       return values.includes(bucketNorm);
     }
 
+    // Total Average Monthly Income — mirror of DI block with income buckets
+    if (columnName === "total average monthly income") {
+      const totalIndex = headers.findIndex(
+        (h) => h === "total average monthly income"
+      );
+      if (totalIndex === -1) return false;
+
+      const raw = resident.rawData[totalIndex];
+      const str = raw ? raw.toString().trim() : "";
+
+      const values = Array.isArray(spec.values)
+        ? spec.values.map((v) =>
+            normalize(v).replace(/–/g, "-").replace(/\s+/g, "")
+          )
+        : [];
+
+      if (spec.combined) return true;
+      if (values.length === 0) {
+        return false;
+      }
+
+      const rawLower = normalize(str).replace(/–/g, "-").replace(/\s+/g, "");
+      let cellBucket = "";
+      const rangeMatch = rawLower.match(/^\$?(\d+)-(\d+)$/);
+      const plusMatch = rawLower.match(/^\$?(\d+)\+$/);
+      const zeroMatch = rawLower.match(/^\$?0$/);
+
+      if (zeroMatch) {
+        cellBucket = "$0";
+      } else if (rangeMatch) {
+        const start = parseInt(rangeMatch[1], 10);
+        const end = parseInt(rangeMatch[2], 10);
+        if (!Number.isNaN(start) && !Number.isNaN(end)) {
+          cellBucket = `$${start}-${end}`;
+        }
+      } else if (plusMatch) {
+        const base = parseInt(plusMatch[1], 10);
+        if (!Number.isNaN(base)) {
+          cellBucket = `$${base}+`;
+        }
+      }
+
+      if (cellBucket) {
+        const cellBucketNorm = cellBucket
+          .toLowerCase()
+          .replace(/\s+/g, "")
+          .replace(/–/g, "-");
+        return values.includes(cellBucketNorm);
+      }
+
+      let cleaned = str.replace(/[^0-9.,]/g, "");
+      cleaned = cleaned.replace(/,/g, "");
+      if (!cleaned) {
+        const bucketNormZero = "$0"
+          .toLowerCase()
+          .replace(/\s+/g, "")
+          .replace(/–/g, "-");
+        return values.includes(bucketNormZero);
+      }
+
+      const parts = cleaned.split(".");
+      if (parts.length > 2) {
+        cleaned = parts[0] + "." + parts.slice(1).join("");
+      }
+
+      let amount = parseFloat(cleaned);
+      if (Number.isNaN(amount)) {
+        const bucketNormZero = "$0"
+          .toLowerCase()
+          .replace(/\s+/g, "")
+          .replace(/–/g, "-");
+        return values.includes(bucketNormZero);
+      }
+      if (amount < 0) amount = 0;
+
+      let bucket = "";
+      if (amount === 0) bucket = "$0";
+      else if (amount >= 1 && amount <= 750) bucket = "$1-750";
+      else if (amount >= 751 && amount <= 1000) bucket = "$751-1000";
+      else if (amount >= 1001 && amount <= 1500) bucket = "$1001-1500";
+      else if (amount >= 1501) bucket = "$1501+";
+
+      const bucketNorm = bucket
+        .toLowerCase()
+        .replace(/\s+/g, "")
+        .replace(/–/g, "-");
+      return values.includes(bucketNorm);
+    }
+
     // Generic Yes/No
     const columnIndex = headers.findIndex((h) => h === columnName);
     if (columnIndex === -1) return false;

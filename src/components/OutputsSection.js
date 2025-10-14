@@ -134,6 +134,16 @@ function OutputsSection({ loading, retentionData = [], chartData, refreshKey = 0
   const valueAxisMax = 110;
   const valueAxisMin = -10;
 
+  // --- Минимальная правка: короткие подписи на мобильных через labels.content ---
+  const formatCategoryLabel = (value) => {
+    if (typeof window !== 'undefined' && window.innerWidth <= 640) {
+      const m = /^Year\s*(\d+)/.exec(value);
+      return m ? `Y${m[1]}` : value;
+    }
+    return value;
+  };
+  // --- конец минимальной правки ---
+
   useEffect(() => {
     if (retentionData && retentionData.length > 0) {
       const newSelected = new Set();
@@ -527,7 +537,10 @@ function OutputsSection({ loading, retentionData = [], chartData, refreshKey = 0
                 >
                     <ChartLegend position="top" orientation="horizontal" align="center" />
                     <ChartCategoryAxis>
-                        <ChartCategoryAxisItem categories={categories} />
+                        <ChartCategoryAxisItem
+                          categories={categories}
+                          labels={{ content: (e) => formatCategoryLabel(e.value) }} // минимальная правка для мобильных
+                        />
                     </ChartCategoryAxis>
                     <ChartValueAxis>
                         <ChartValueAxisItem title={{ text: 'Retention Rate (%)' }} min={valueAxisMin} max={valueAxisMax} axisCrossingValue={valueAxisMin - 1} labels={{ content: (e) => (e.value < 0 ? '' : `${e.value}%`) }} />
@@ -557,3 +570,4 @@ function OutputsSection({ loading, retentionData = [], chartData, refreshKey = 0
 }
 
 export default React.memo(OutputsSection);
+

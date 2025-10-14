@@ -28,6 +28,16 @@ function OutputsSection({ loading, retentionData = [], chartData, refreshKey = 0
       return out;
     };
 
+    const makeEligibleIntervalFields = (ret) => {
+      const out = {};
+      for (let i = 0; i <= 9; i++) {
+        const curr = Number(ret?.[`Year ${i}`]?.eligible || 0);
+        const next = Number(ret?.[`Year ${i + 1}`]?.eligible || 0);
+        out[`year${i}`] = Math.max(0, curr - next);
+      }
+      return out;
+    };
+
     return retentionData.flatMap(row => {
       const ret = row?._retention || null;
 
@@ -36,24 +46,37 @@ function OutputsSection({ loading, retentionData = [], chartData, refreshKey = 0
         const val = Number(row[`year${i}`] || 0);
         percentYearFields[`year${i}`] = Number.isFinite(val) ? `${val.toFixed(2)}%` : '';
       }
+
+      const baseCount = ret ? Number(ret['Year 0']?.eligible || 0) : 0;
+
+      // Показываем Count только на первой строке набора (Percent)
       const percentRow = {
         filter: `${row.filter} — Percent`,
-        count: '', // процент Count не считаем (всегда 100%)
+        count: baseCount,
         ...percentYearFields
       };
 
-      // Числовая строка: Count + retained по годам
       const eligibleRow = {
         filter: `${row.filter} — Eligible`,
-        count: ret ? Number(ret['Year 0']?.eligible || 0) : 0,
-        ...(ret ? makeYearFieldsFromRetention(ret, 'retained') :
-          Array.from({ length: 10 }, (_, i) => ({ [`year${i}`]: 0 }))
-            .reduce((acc, curr) => ({ ...acc, ...curr }), {})
+        count: '', // скрываем число для второй строки
+        ...(ret
+          ? makeEligibleIntervalFields(ret)
+          : Array.from({ length: 10 }, (_, i) => ({ [`year${i}`]: 0 }))
+              .reduce((acc, curr) => ({ ...acc, ...curr }), {})
         )
       };
 
-      // Убираем дублирование retained-строки; возвращаем только две строки
-      return [percentRow, eligibleRow];
+      const retainedRow = {
+        filter: `${row.filter} — Retained`,
+        count: '', // скрываем число для третьей строки
+        ...(ret
+          ? makeYearFieldsFromRetention(ret, 'retained')
+          : Array.from({ length: 10 }, (_, i) => ({ [`year${i}`]: 0 }))
+              .reduce((acc, curr) => ({ ...acc, ...curr }), {})
+        )
+      };
+
+      return [percentRow, eligibleRow, retainedRow];
     });
   }, [retentionData]);
 
@@ -219,7 +242,7 @@ function OutputsSection({ loading, retentionData = [], chartData, refreshKey = 0
           border-left: 3px solid #384C9E !important;
           border-right: 3px solid #384C9E !important;
         }
-        .outputs-grid :global(.k-grid .k-table-tbody tr:nth-child(2n) .k-table-td) {
+        .outputs-grid :global(.k-grid .k-table-tbody tr:nth-child(3n) .k-table-td) {
           border-bottom-width: 3px !important;
           border-bottom-color: #000 !important;
         }

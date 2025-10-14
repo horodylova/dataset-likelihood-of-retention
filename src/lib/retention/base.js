@@ -31,6 +31,7 @@ export function calculateRetentionForData(data, retentionObject) {
      for (let year = 1; year <= 9; year++) {
       if (yearsLived >= year) {
         retentionObject[`Year ${year}`].eligible++;
+        // вернуть порог "в следующий год" для retained
         if (yearsLived >= year + 1) {
           retentionObject[`Year ${year}`].retained++;
         }

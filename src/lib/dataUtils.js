@@ -106,7 +106,7 @@ export function calculateRetentionByYear(processedData) {
     for (let year = 1; year <= maxYears; year++) {
       if (yearsLived >= year) {
         retentionByYear[`Year ${year}`].eligible++;
-        
+        // вернуть порог "в следующий год" для retained
         if (yearsLived >= year + 1) {
           retentionByYear[`Year ${year}`].retained++;
         }

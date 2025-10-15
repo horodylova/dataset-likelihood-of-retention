@@ -45,8 +45,14 @@ function OutputsSection({ loading, retentionData = [], chartData, refreshKey = 0
 
       const percentYearFields = {};
       for (let i = 0; i <= 9; i++) {
-        const val = Number(row[`year${i}`] || 0);
-        percentYearFields[`year${i}`] = Number.isFinite(val) ? `${val.toFixed(2)}%` : '';
+        const yearIndex = i + 1;
+        const retentionData = ret?.[`Year ${yearIndex}`];
+        if (retentionData && retentionData.eligible > 0) {
+          const rate = (retentionData.retained / retentionData.eligible) * 100;
+          percentYearFields[`year${i}`] = `${rate.toFixed(2)}%`;
+        } else {
+          percentYearFields[`year${i}`] = '';
+        }
       }
 
       const baseCount = ret ? Number(ret['Year 0']?.eligible || 0) : 0;

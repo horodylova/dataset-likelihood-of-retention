@@ -114,7 +114,7 @@ export function calculateRetentionByYear(processedData) {
   
   Object.keys(retentionByYear).forEach(year => {
     const data = retentionByYear[year];
-    data.rate = data.eligible > 0 ? Math.round((data.retained / data.eligible) * 100 * 100) / 100 : 0;
+    data.rate = data.eligible > 0 ? (data.retained / data.eligible) * 100 : 0;
   });
   
   return retentionByYear;
@@ -167,7 +167,7 @@ export function calculateRetentionByFilter(processedData, filterColumn, filterVa
   
   Object.keys(retentionByYear).forEach(year => {
     const data = retentionByYear[year];
-    data.rate = data.eligible > 0 ? Math.round((data.retained / data.eligible) * 100 * 100) / 100 : 0;
+    data.rate = data.eligible > 0 ? (data.retained / data.eligible) * 100 : 0;
   });
   
   return retentionByYear;

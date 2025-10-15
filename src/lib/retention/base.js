@@ -19,19 +19,47 @@ export function getUniqueFilterValues(processedData, columnIndex) {
   return Array.from(values);
 }
 
+export function calculateDurations(moveInDate, moveOutDate = null) {
+  if (!moveInDate) {
+    return {
+      tenureDays: 0,
+      daysSinceMoveIn: 0,
+      tenureYears: 0,
+      daysSinceMoveInYears: 0,
+    };
+  }
+
+  const today = new Date();
+  const endForTenure = moveOutDate || today;
+
+  const msPerDay = 1000 * 60 * 60 * 24;
+
+  const tenureDays = Math.floor((endForTenure.getTime() - moveInDate.getTime()) / msPerDay);
+  const daysSinceMoveIn = Math.floor((today.getTime() - moveInDate.getTime()) / msPerDay);
+
+  return {
+    tenureDays,
+    daysSinceMoveIn,
+    tenureYears: tenureDays / 365,
+    daysSinceMoveInYears: daysSinceMoveIn / 365,
+  };
+}
+
 export function calculateRetentionForData(data, retentionObject) {
   data.forEach(resident => {
-     const yearsLived = resident.moveInDate ? calculateYearsLived(resident.moveInDate, resident.moveOutDate) : 0;
+    if (!resident.moveInDate) return;
 
-     retentionObject['Year 0'].eligible++;
+    const yearsLived = calculateYearsLived(resident.moveInDate, resident.moveOutDate);
+
+    retentionObject['Year 0'].eligible++;
     if (yearsLived >= 1) {
       retentionObject['Year 0'].retained++;
     }
 
-     for (let year = 1; year <= 9; year++) {
+    for (let year = 1; year <= 9; year++) {
       if (yearsLived >= year) {
         retentionObject[`Year ${year}`].eligible++;
-        // вернуть порог "в следующий год" для retained
+        
         if (yearsLived >= year + 1) {
           retentionObject[`Year ${year}`].retained++;
         }
@@ -42,7 +70,7 @@ export function calculateRetentionForData(data, retentionObject) {
   Object.keys(retentionObject).forEach(year => {
     const yearData = retentionObject[year];
     yearData.rate = yearData.eligible > 0
-      ? Math.round((yearData.retained / yearData.eligible) * 100 * 100) / 100
+      ? (yearData.retained / yearData.eligible) * 100
       : 0;
   });
 }

@@ -19,21 +19,23 @@ function OutputsSection({ loading, retentionData = [], chartData, refreshKey = 0
 
   const expandedData = React.useMemo(() => {
     if (!Array.isArray(retentionData)) return [];
+    
     const makeYearFieldsFromRetention = (ret, field) => {
       const out = {};
       for (let i = 0; i <= 9; i++) {
-        const v = ret?.[`Year ${i}`]?.[field];
+        const yearIndex = i + 1;
+        const v = ret?.[`Year ${yearIndex}`]?.[field];
         out[`year${i}`] = Number(v || 0);
       }
       return out;
     };
 
-    const makeEligibleIntervalFields = (ret) => {
+    const makeEligibleAbsoluteFields = (ret) => {
       const out = {};
       for (let i = 0; i <= 9; i++) {
-        const curr = Number(ret?.[`Year ${i}`]?.eligible || 0);
-        const next = Number(ret?.[`Year ${i + 1}`]?.eligible || 0);
-        out[`year${i}`] = Math.max(0, curr - next);
+        const yearIndex = i + 1;
+        const eligible = Number(ret?.[`Year ${yearIndex}`]?.eligible || 0);
+        out[`year${i}`] = eligible;
       }
       return out;
     };
@@ -60,7 +62,7 @@ function OutputsSection({ loading, retentionData = [], chartData, refreshKey = 0
         filter: `${row.filter} — Eligible`,
         count: '',  
         ...(ret
-          ? makeEligibleIntervalFields(ret)
+          ? makeEligibleAbsoluteFields(ret)
           : Array.from({ length: 10 }, (_, i) => ({ [`year${i}`]: 0 }))
               .reduce((acc, curr) => ({ ...acc, ...curr }), {})
         )
@@ -124,8 +126,8 @@ function OutputsSection({ loading, retentionData = [], chartData, refreshKey = 0
   // Убрано: const [isMobile, setIsMobile] = useState(false);
   // Убрано: useEffect с window.addEventListener('resize', ...)
 
-  const categories = ['Year 0', 'Year 1', 'Year 2', 'Year 3', 'Year 4', 'Year 5', 'Year 6', 'Year 7', 'Year 8', 'Year 9'];
-  const uiCategoriesShort = ['Y0', 'Y 1', 'Y 2', 'Y 3', 'Y 4', 'Y 5', 'Y 6', 'Y 7', 'Y 8', 'Y 9'];
+  const categories = ['Year 1', 'Year 2', 'Year 3', 'Year 4', 'Year 5', 'Year 6', 'Year 7', 'Year 8', 'Year 9', 'Year 10'];
+  const uiCategoriesShort = ['Y 1', 'Y 2', 'Y 3', 'Y 4', 'Y 5', 'Y 6', 'Y 7', 'Y 8', 'Y 9', 'Y 10'];
   const colors = [
     '#28a745', '#FF5E00', '#384C9E', '#dc3545', '#6f42c1',
     '#fd7e14', '#20c997', '#e83e8c', '#6610f2', '#007bff',
@@ -312,16 +314,16 @@ function OutputsSection({ loading, retentionData = [], chartData, refreshKey = 0
               <GridColumn field="filter" title="Filter" width="180px" />
            
               <GridColumn field="count" title="Count" width="85px" cell={CountCell} />
-              <GridColumn field="year0" title="Year 0" width="85px" cell={makeYearCell('year0')} />
-              <GridColumn field="year1" title="Year 1" width="85px" cell={makeYearCell('year1')} />
-              <GridColumn field="year2" title="Year 2" width="85px" cell={makeYearCell('year2')} />
-              <GridColumn field="year3" title="Year 3" width="85px" cell={makeYearCell('year3')} />
-              <GridColumn field="year4" title="Year 4" width="85px" cell={makeYearCell('year4')} />
-              <GridColumn field="year5" title="Year 5" width="85px" cell={makeYearCell('year5')} />
-              <GridColumn field="year6" title="Year 6" width="85px" cell={makeYearCell('year6')} />
-              <GridColumn field="year7" title="Year 7" width="85px" cell={makeYearCell('year7')} />
-              <GridColumn field="year8" title="Year 8" width="85px" cell={makeYearCell('year8')} />
-              <GridColumn field="year9" title="Year 9" width="85px" cell={makeYearCell('year9')} />
+              <GridColumn field="year0" title="Year 1" width="85px" cell={makeYearCell('year0')} />
+              <GridColumn field="year1" title="Year 2" width="85px" cell={makeYearCell('year1')} />
+              <GridColumn field="year2" title="Year 3" width="85px" cell={makeYearCell('year2')} />
+              <GridColumn field="year3" title="Year 4" width="85px" cell={makeYearCell('year3')} />
+              <GridColumn field="year4" title="Year 5" width="85px" cell={makeYearCell('year4')} />
+              <GridColumn field="year5" title="Year 6" width="85px" cell={makeYearCell('year5')} />
+              <GridColumn field="year6" title="Year 7" width="85px" cell={makeYearCell('year6')} />
+              <GridColumn field="year7" title="Year 8" width="85px" cell={makeYearCell('year7')} />
+              <GridColumn field="year8" title="Year 9" width="85px" cell={makeYearCell('year8')} />
+              <GridColumn field="year9" title="Year 10" width="85px" cell={makeYearCell('year9')} />
             </Grid>
           </div>
 
@@ -437,7 +439,7 @@ function OutputsSection({ loading, retentionData = [], chartData, refreshKey = 0
               />
               <GridColumn
                 field="year0"
-                title="Year 0"
+                title="Year 1"
                 width="100px"
                 cell={makeYearCell('year0')}
                 headerClassName={selectedColumn === 'year0' ? 'selected-column' : ''}
@@ -446,7 +448,7 @@ function OutputsSection({ loading, retentionData = [], chartData, refreshKey = 0
               />
               <GridColumn
                 field="year1"
-                title="Year 1"
+                title="Year 2"
                 width="100px"
                 cell={makeYearCell('year1')}
                 headerClassName={selectedColumn === 'year1' ? 'selected-column' : ''}
@@ -455,7 +457,7 @@ function OutputsSection({ loading, retentionData = [], chartData, refreshKey = 0
               />
               <GridColumn
                 field="year2"
-                title="Year 2"
+                title="Year 3"
                 width="100px"
                 cell={makeYearCell('year2')}
                 headerClassName={selectedColumn === 'year2' ? 'selected-column' : ''}
@@ -464,7 +466,7 @@ function OutputsSection({ loading, retentionData = [], chartData, refreshKey = 0
               />
               <GridColumn
                 field="year3"
-                title="Year 3"
+                title="Year 4"
                 width="100px"
                 cell={makeYearCell('year3')}
                 headerClassName={selectedColumn === 'year3' ? 'selected-column' : ''}
@@ -473,7 +475,7 @@ function OutputsSection({ loading, retentionData = [], chartData, refreshKey = 0
               />
               <GridColumn
                 field="year4"
-                title="Year 4"
+                title="Year 5"
                 width="100px"
                 cell={makeYearCell('year4')}
                 headerClassName={selectedColumn === 'year4' ? 'selected-column' : ''}
@@ -482,7 +484,7 @@ function OutputsSection({ loading, retentionData = [], chartData, refreshKey = 0
               />
               <GridColumn
                 field="year5"
-                title="Year 5"
+                title="Year 6"
                 width="100px"
                 cell={makeYearCell('year5')}
                 headerClassName={selectedColumn === 'year5' ? 'selected-column' : ''}
@@ -491,7 +493,7 @@ function OutputsSection({ loading, retentionData = [], chartData, refreshKey = 0
               />
               <GridColumn
                 field="year6"
-                title="Year 6"
+                title="Year 7"
                 width="100px"
                 cell={makeYearCell('year6')}
                 headerClassName={selectedColumn === 'year6' ? 'selected-column' : ''}
@@ -500,7 +502,7 @@ function OutputsSection({ loading, retentionData = [], chartData, refreshKey = 0
               />
               <GridColumn
                 field="year7"
-                title="Year 7"
+                title="Year 8"
                 width="100px"
                 cell={makeYearCell('year7')}
                 headerClassName={selectedColumn === 'year7' ? 'selected-column' : ''}
@@ -509,7 +511,7 @@ function OutputsSection({ loading, retentionData = [], chartData, refreshKey = 0
               />
               <GridColumn
                 field="year8"
-                title="Year 8"
+                title="Year 9"
                 width="100px"
                 cell={makeYearCell('year8')}
                 headerClassName={selectedColumn === 'year8' ? 'selected-column' : ''}
@@ -518,7 +520,7 @@ function OutputsSection({ loading, retentionData = [], chartData, refreshKey = 0
               />
               <GridColumn
                 field="year9"
-                title="Year 9"
+                title="Year 10"
                 width="100px"
                 cell={makeYearCell('year9')}
                 headerClassName={selectedColumn === 'year9' ? 'selected-column' : ''}

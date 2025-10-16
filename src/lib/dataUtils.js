@@ -96,18 +96,21 @@ export function calculateRetentionByYear(processedData) {
   }
   
   processedData.forEach(resident => {
-     
-    const yearsLived = resident.moveInDate
+    const yearsLivedEligible = resident.moveInDate
+      ? calculateYearsLived(resident.moveInDate, null)
+      : 0;
+    
+    const yearsLivedRetained = resident.moveInDate
       ? calculateYearsLived(resident.moveInDate, resident.moveOutDate)
       : 0;
     
     for (let year = 1; year <= maxYears; year++) {
-      if (yearsLived >= year) {
+      if (yearsLivedEligible >= year) {
         retentionByYear[`Year ${year}`].eligible++;
-        
-        if (yearsLived >= year + 1) {
-          retentionByYear[`Year ${year}`].retained++;
-        }
+      }
+      
+      if (yearsLivedRetained >= year) {
+        retentionByYear[`Year ${year}`].retained++;
       }
     }
   });

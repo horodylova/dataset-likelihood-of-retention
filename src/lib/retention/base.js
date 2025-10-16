@@ -49,20 +49,21 @@ export function calculateRetentionForData(data, retentionObject) {
   data.forEach(resident => {
     if (!resident.moveInDate) return;
 
-    const yearsLived = calculateYearsLived(resident.moveInDate, resident.moveOutDate);
+    const yearsLivedEligible = calculateYearsLived(resident.moveInDate, null);
+    const yearsLivedRetained = calculateYearsLived(resident.moveInDate, resident.moveOutDate);
 
     retentionObject['Year 0'].eligible++;
-    if (yearsLived >= 1) {
+    if (yearsLivedRetained >= 1) {
       retentionObject['Year 0'].retained++;
     }
 
     for (let year = 1; year <= 9; year++) {
-      if (yearsLived >= year) {
+      if (yearsLivedEligible >= year) {
         retentionObject[`Year ${year}`].eligible++;
-        
-        if (yearsLived >= year + 1) {
-          retentionObject[`Year ${year}`].retained++;
-        }
+      }
+      
+      if (yearsLivedRetained >= year) {
+        retentionObject[`Year ${year}`].retained++;
       }
     }
   });

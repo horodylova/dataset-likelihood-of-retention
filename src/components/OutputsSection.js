@@ -359,7 +359,7 @@ function OutputsSection({ loading, retentionData = [], chartData, refreshKey = 0
             </div>
           ))}
 
-          <div style={{ width: '100%', height: '400px', pageBreakBefore: 'auto' }}>
+          <div style={{ width: '1200px', height: '400px', pageBreakBefore: 'auto', overflow: 'hidden' }}>
             <Chart style={{ height: '100%', width: '100%' }}>
               <ChartLegend position="top" orientation="horizontal" align="center" />
               <ChartCategoryAxis>

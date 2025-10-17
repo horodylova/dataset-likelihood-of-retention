@@ -88,6 +88,18 @@ function OutputsSection({ loading, retentionData = [], chartData, refreshKey = 0
     });
   }, [retentionData]);
 
+  // Разбиваем данные на страницы по 8 сетов (24 строки)
+  const pdfPages = React.useMemo(() => {
+    const pages = [];
+    const rowsPerPage = 24; // 8 сетов × 3 строки
+    
+    for (let i = 0; i < expandedData.length; i += rowsPerPage) {
+      pages.push(expandedData.slice(i, i + rowsPerPage));
+    }
+    
+    return pages;
+  }, [expandedData]);
+
 
   const makeYearCell = (field) => {
     const YearCell = (props) => {
@@ -308,30 +320,44 @@ function OutputsSection({ loading, retentionData = [], chartData, refreshKey = 0
                 border-bottom-width: 3px !important;
                 border-bottom-color: #000 !important;
               }
+              .pdf-page-wrapper {
+                page-break-after: always !important;
+              }
+              .pdf-page-wrapper:last-child {
+                page-break-after: auto !important;
+              }
             `}
           </style>
 
-          <div className="pdf-grid" style={{ width: 'fit-content', marginBottom: '30px' }}>
-            <Grid
-              data={expandedData}
-              style={{ width: 'auto' }}
-              scrollable={false}
-            >
-              <GridColumn field="filter" title="Filter" width="180px" />
-           
-              <GridColumn field="count" title="Count" width="85px" cell={CountCell} />
-              <GridColumn field="year0" title="Year 1" width="85px" cell={makeYearCell('year0')} />
-              <GridColumn field="year1" title="Year 2" width="85px" cell={makeYearCell('year1')} />
-              <GridColumn field="year2" title="Year 3" width="85px" cell={makeYearCell('year2')} />
-              <GridColumn field="year3" title="Year 4" width="85px" cell={makeYearCell('year3')} />
-              <GridColumn field="year4" title="Year 5" width="85px" cell={makeYearCell('year4')} />
-              <GridColumn field="year5" title="Year 6" width="85px" cell={makeYearCell('year5')} />
-              <GridColumn field="year6" title="Year 7" width="85px" cell={makeYearCell('year6')} />
-              <GridColumn field="year7" title="Year 8" width="85px" cell={makeYearCell('year7')} />
-              <GridColumn field="year8" title="Year 9" width="85px" cell={makeYearCell('year8')} />
-              <GridColumn field="year9" title="Year 10" width="85px" cell={makeYearCell('year9')} />
-            </Grid>
-          </div>
+          {pdfPages.map((pageData, pageIndex) => (
+            <div key={pageIndex} className="pdf-page-wrapper">
+              {pageIndex > 0 && (
+                <div style={{ fontSize: '16px', fontWeight: 600, marginBottom: '16px', color: '#000' }}>
+                  Output: {retentionData.length} rows (continued)
+                </div>
+              )}
+              <div className="pdf-grid" style={{ width: 'fit-content', marginBottom: pageIndex < pdfPages.length - 1 ? '0' : '30px' }}>
+                <Grid
+                  data={pageData}
+                  style={{ width: 'auto' }}
+                  scrollable={false}
+                >
+                  <GridColumn field="filter" title="Filter" width="180px" />
+                  <GridColumn field="count" title="Count" width="85px" cell={CountCell} />
+                  <GridColumn field="year0" title={categories[0]} width="85px" cell={makeYearCell('year0')} />
+                  <GridColumn field="year1" title={categories[1]} width="85px" cell={makeYearCell('year1')} />
+                  <GridColumn field="year2" title={categories[2]} width="85px" cell={makeYearCell('year2')} />
+                  <GridColumn field="year3" title={categories[3]} width="85px" cell={makeYearCell('year3')} />
+                  <GridColumn field="year4" title={categories[4]} width="85px" cell={makeYearCell('year4')} />
+                  <GridColumn field="year5" title={categories[5]} width="85px" cell={makeYearCell('year5')} />
+                  <GridColumn field="year6" title={categories[6]} width="85px" cell={makeYearCell('year6')} />
+                  <GridColumn field="year7" title={categories[7]} width="85px" cell={makeYearCell('year7')} />
+                  <GridColumn field="year8" title={categories[8]} width="85px" cell={makeYearCell('year8')} />
+                  <GridColumn field="year9" title={categories[9]} width="85px" cell={makeYearCell('year9')} />
+                </Grid>
+              </div>
+            </div>
+          ))}
 
           <div style={{ width: '100%', height: '400px', pageBreakBefore: 'auto' }}>
             <Chart style={{ height: '100%', width: '100%' }}>

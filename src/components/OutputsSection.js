@@ -416,6 +416,14 @@ function OutputsSection({ loading, retentionData = [], chartData, refreshKey = 0
             Clear Output
           </Button>
           <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <a href="/sheet-viewer">
+              <Button
+                className="k-button k-button-solid k-button-solid-secondary k-rounded-md"
+                style={{ padding: '6px 12px' }}
+              >
+                Open Sheet Viewer
+              </Button>
+            </a>
             <Button
               onClick={handleExportPDF}
               className="k-button k-button-solid k-button-solid-secondary k-rounded-md"

@@ -238,8 +238,8 @@ function OutputsSection({ loading, retentionData = [], chartData, refreshKey = 0
         .outputs-grid :global(.k-grid .k-table-thead .k-table-th) {
           background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
           color: white !important;
-          font-weight: 600 !important;
-          font-size: 13px !important;
+          font-weight: 900 !important;
+          font-size: 14px !important;
           border-color: rgba(255, 255, 255, 0.2) !important;
           padding: 12px 8px !important;
           transition: all 0.3s ease !important;
@@ -291,7 +291,7 @@ function OutputsSection({ loading, retentionData = [], chartData, refreshKey = 0
               .pdf-grid .k-grid .k-table-thead .k-table-th {
                 background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
                 color: white !important;
-                font-weight: 600 !important;
+                font-weight: bold !important;
                 font-size: 12px !important;
                 padding: 10px 8px !important;
                 border: 1px solid rgba(255, 255, 255, 0.3) !important;

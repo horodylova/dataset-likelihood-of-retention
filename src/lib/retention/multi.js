@@ -171,11 +171,11 @@ export function calculateRetentionByMultiFilters(
 
    
     if (columnName === "deceased") {
-      const moveOutReasonIndex = headers.findIndex(
-        (h) => h === "move-out reason" || h === "move out reason"
+      const deceasedIndex = headers.findIndex(
+        (h) => h === "deceased"
       );
-      if (moveOutReasonIndex === -1) return false;
-      const raw = resident.rawData[moveOutReasonIndex];
+      if (deceasedIndex === -1) return false;
+      const raw = resident.rawData[deceasedIndex];
       const val = raw ? raw.toString().trim() : "";
       const values = Array.isArray(spec.values)
         ? spec.values.map(normalize)
@@ -462,6 +462,9 @@ export function calculateRetentionByMultiFilters(
       if (columnName === "gender") {
         return cellValue === "male" || cellValue === "female";
       }
+      if (columnName === "deceased") {
+        return true;
+      }
       return true;
     }
 
@@ -479,6 +482,15 @@ export function calculateRetentionByMultiFilters(
       if (columnName === "felonies") {
         if (v === "yes" && cellValue === "yes") return true;
         if (v === "no" && cellValue === "no") return true;
+        continue;
+      }
+      if (columnName === "deceased") {
+        if (v === "yes") {
+          return cellValue.includes("deceased");
+        }
+        if (v === "no") {
+          return cellValue === "" || !cellValue.includes("deceased");
+        }
         continue;
       }
       if (v === "yes" && cellValue === "yes") return true;

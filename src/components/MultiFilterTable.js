@@ -22,6 +22,8 @@ export default function MultiFilterTable({ onSubmit, onReset }) {
     { column: 'Disability Count', name: 'Disability Count', options: ['0', '1', '2', '3', '4+'] },
     { column: 'Income', name: 'Income Source', options: ['SSI', 'SSDI', 'Multiple', 'Other', 'None'] },
     { column: 'Monthly Income', name: 'Monthly Income', options: ['$0', '$1-750', '$751-1000', '$1001-1500', '$1501+'] },
+    { column: 'Monthly DI Average', name: 'Monthly DI Average', options: ['$0', '$1-249', '$250-499', '$500-999', '$1000+'] },
+    { column: 'Total Average Monthly Income', name: 'Total Average Monthly Income', options: ['$0', '$1-750', '$751-1000', '$1001-1500', '$1501+'] },
     { 
       column: 'Age', 
       name: 'Age', 

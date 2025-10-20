@@ -25,7 +25,6 @@ export default function AgencySection({ onMultiSelectionChange, resetSignal }) {
         salvationArmy: false,
         maximizingHope: false,
         bluebonnetTrails: false,
-        blueBonnetTrails: false,
         capMetro: false,
         austinPublicHealth: false,
         safeAlliance: false,
@@ -101,7 +100,6 @@ export default function AgencySection({ onMultiSelectionChange, resetSignal }) {
         { key: 'easterseals', label: 'Easterseals' },              // 1
         { key: 'echo', label: 'ECHO' },                            // 1
         { key: 'communityMedicalServices', label: 'Community Medical Services' }, // 1
-        { key: 'blueBonnetTrails', label: 'Blue Bonnet Trails' },  // 1
         { key: 'bss', label: 'BSS+' },                             // 1 (обновлена метка)
         { key: 'austinStone', label: 'Austin Stone' },             // 1
         { key: 'austinRecovery', label: 'Austin Recovery' },       // 1

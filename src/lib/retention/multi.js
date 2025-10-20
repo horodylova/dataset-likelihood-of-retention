@@ -213,6 +213,10 @@ export function calculateRetentionByMultiFilters(
           if (cellValue === "unknown") return true;
           continue;
         }
+        if (v === "bluebonnet trails") {
+          if (cellValue === "bluebonnet trails" || cellValue === "blue bonnet trails") return true;
+          continue;
+        }
         if (cellValue === v) return true;
       }
       return false;

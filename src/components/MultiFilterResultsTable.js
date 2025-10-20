@@ -26,17 +26,23 @@ export default function MultiFilterResultsTable({ retentionData, selectedSpecs =
             <tr>
               <th style={thStyle}>Year</th>
               <th style={thStyle}>Eligible</th>
+              <th style={thStyle}>Retained</th>
               <th style={thStyle}>Rate %</th>
             </tr>
           </thead>
           <tbody>
-            {Object.entries(retentionData).map(([year, data]) => (
-              <tr key={year}>
-                <td style={tdStyle}>{year}</td>
-                <td style={tdStyle}>{data.eligible}</td>
-                <td style={tdStyle}>{Number(data.rate || 0).toFixed(1)}%</td>
-              </tr>
-            ))}
+            {Array.from({ length: 10 }, (_, i) => {
+              const yearKey = `Year ${i + 1}`;
+              const data = retentionData[yearKey] || {};
+              return (
+                <tr key={yearKey}>
+                  <td style={tdStyle}>{yearKey}</td>
+                  <td style={tdStyle}>{data.eligible || 0}</td>
+                  <td style={tdStyle}>{data.retained || 0}</td>
+                  <td style={tdStyle}>{Number(data.rate || 0).toFixed(1)}%</td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       ) : (

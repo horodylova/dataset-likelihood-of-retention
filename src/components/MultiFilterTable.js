@@ -3,8 +3,9 @@ import { Button } from '@progress/kendo-react-buttons';
 
 export default function MultiFilterTable({ onSubmit, onReset }) {
   const filters = [
-    { column: 'Status', name: 'Status', options: ['Current Residents', 'Former Residents'] },
     { column: 'Gender', name: 'Gender', options: ['Male', 'Female'] },
+    { column: 'Race', name: 'Race', options: ['Black or African American', 'Hispanic or Latino', 'Asian', 'American Indian or Alaska Native'] },
+    { column: 'Deceased', name: 'Deceased', options: ['Yes', 'No'] },
     { column: 'Veteran', name: 'Veteran', options: ['Yes', 'No'] },
     { column: 'FC', name: 'FC', options: ['Yes', 'No'] },
     { column: 'Visual', name: 'Visual', options: ['Yes', 'No'] },
@@ -20,6 +21,7 @@ export default function MultiFilterTable({ onSubmit, onReset }) {
     { column: 'DT', name: 'DT', options: ['YES'] },
     { column: 'Disability Count', name: 'Disability Count', options: ['0', '1', '2', '3', '4+'] },
     { column: 'Income', name: 'Income Source', options: ['SSI', 'SSDI', 'Multiple', 'Other', 'None'] },
+    { column: 'Monthly Income', name: 'Monthly Income', options: ['$0', '$1-750', '$751-1000', '$1001-1500', '$1501+'] },
     { 
       column: 'Age', 
       name: 'Age', 

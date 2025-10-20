@@ -296,6 +296,9 @@ function OutputsSection({ loading, retentionData = [], chartData, refreshKey = 0
         >
           <style>
             {`
+              .pdf-page-wrapper {
+                page-break-after: always !important;
+              }
               .pdf-grid .k-grid .k-table-thead .k-table-th {
                 background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
                 color: white !important;
@@ -323,7 +326,7 @@ function OutputsSection({ loading, retentionData = [], chartData, refreshKey = 0
           </style>
 
           {pdfPages.map((pageData, pageIndex) => (
-            <React.Fragment key={pageIndex}>
+            <div key={pageIndex}>
               <div style={{ fontSize: '16px', fontWeight: 600, marginBottom: '12px', color: '#000' }}>
                 Output: {retentionData.length} rows{pageIndex > 0 ? ' (continued)' : ''}
               </div>
@@ -347,8 +350,8 @@ function OutputsSection({ loading, retentionData = [], chartData, refreshKey = 0
                   <GridColumn field="year9" title={categories[9]} width="60px" cell={makeYearCell('year9')} />
                 </Grid>
               </div>
-              {pageIndex < pdfPages.length - 1 && <div className="pdf-page-break"></div>}
-            </React.Fragment>
+              {pageIndex < pdfPages.length - 1 && <div style={{ pageBreakAfter: 'always' }}></div>}
+            </div>
           ))}
 
           <div className="pdf-page-break"></div>

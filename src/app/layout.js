@@ -7,6 +7,11 @@ export const metadata = {
   description: "Comprehensive tenant retention analysis dashboard with multi-filter capabilities, interactive data visualizations, and real-time analytics for housing professionals.",
   keywords: "tenant retention, housing analytics, dashboard, data visualization, retention analysis, property management, housing data",
   authors: [{ name: "Svitlana Horodylova" }],
+  icons: {
+    icon: '/favicon.svg',
+    shortcut: '/favicon.svg',
+    apple: '/favicon.svg',
+  },
   openGraph: {
     title: "Tenant Retention Analysis Dashboard",
     description: "Comprehensive tenant retention analysis dashboard with multi-filter capabilities, interactive data visualizations, and real-time analytics for housing professionals.",

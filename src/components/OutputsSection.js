@@ -91,7 +91,7 @@ function OutputsSection({ loading, retentionData = [], chartData, refreshKey = 0
   // Разбиваем данные на страницы по 18 строк (6 сетов × 3 строки)
   const pdfPages = React.useMemo(() => {
     const pages = [];
-    const rowsPerPage = 18; // 6 сетов × 3 строки = 18 строк на страницу
+    const rowsPerPage = 24; // 6 сетов × 3 строки = 18 строк на страницу
     
     for (let i = 0; i < expandedData.length; i += rowsPerPage) {
       pages.push(expandedData.slice(i, i + rowsPerPage));
@@ -296,65 +296,55 @@ function OutputsSection({ loading, retentionData = [], chartData, refreshKey = 0
         >
           <style>
             {`
-              .pdf-page-wrapper {
-                page-break-after: always !important;
-              }
               .pdf-grid .k-grid .k-table-thead .k-table-th {
                 background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
                 color: white !important;
                 font-weight: bold !important;
-                font-size: 10px !important;
-                padding: 6px 4px !important;
-                border: 1px solid rgba(255, 255, 255, 0.3) !important;
+                font-size: 9px !important;
+                padding: 5px 3px !important;
+                border: 1px solid #ddd !important;
               }
               .pdf-grid .k-grid .k-table-tbody .k-table-td {
-                padding: 5px 4px !important;
-                font-size: 9px !important;
+                padding: 4px 3px !important;
+                font-size: 8px !important;
                 border: 1px solid #ddd !important;
               }
               .pdf-grid .k-grid {
                 border: 1px solid #ddd !important;
               }
-              .pdf-grid .k-grid .k-table-tbody tr:nth-child(3n) .k-table-td {
-                border-bottom-width: 3px !important;
-                border-bottom-color: #000 !important;
-              }
-              .pdf-page-break {
-                page-break-after: always !important;
-              }
             `}
           </style>
 
           {pdfPages.map((pageData, pageIndex) => (
-            <div key={pageIndex}>
-              <div style={{ fontSize: '16px', fontWeight: 600, marginBottom: '12px', color: '#000' }}>
+            <React.Fragment key={pageIndex}>
+              <div style={{ fontSize: '14px', fontWeight: 600, marginBottom: '10px', color: '#000' }}>
                 Output: {retentionData.length} rows{pageIndex > 0 ? ' (continued)' : ''}
               </div>
-              <div className="pdf-grid" style={{ width: 'fit-content', marginBottom: '20px' }}>
+              <div className="pdf-grid" style={{ width: 'fit-content', marginBottom: '15px' }}>
                 <Grid
                   data={pageData}
                   style={{ width: 'auto' }}
                   scrollable={false}
                 >
-                  <GridColumn field="filter" title="Filter" width="120px" />
-                  <GridColumn field="count" title="Count" width="55px" cell={CountCell} />
-                  <GridColumn field="year0" title={categories[0]} width="60px" cell={makeYearCell('year0')} />
-                  <GridColumn field="year1" title={categories[1]} width="60px" cell={makeYearCell('year1')} />
-                  <GridColumn field="year2" title={categories[2]} width="60px" cell={makeYearCell('year2')} />
-                  <GridColumn field="year3" title={categories[3]} width="60px" cell={makeYearCell('year3')} />
-                  <GridColumn field="year4" title={categories[4]} width="60px" cell={makeYearCell('year4')} />
-                  <GridColumn field="year5" title={categories[5]} width="60px" cell={makeYearCell('year5')} />
-                  <GridColumn field="year6" title={categories[6]} width="60px" cell={makeYearCell('year6')} />
-                  <GridColumn field="year7" title={categories[7]} width="60px" cell={makeYearCell('year7')} />
-                  <GridColumn field="year8" title={categories[8]} width="60px" cell={makeYearCell('year8')} />
-                  <GridColumn field="year9" title={categories[9]} width="60px" cell={makeYearCell('year9')} />
+                  <GridColumn field="filter" title="Filter" width="110px" />
+                  <GridColumn field="count" title="Count" width="50px" cell={CountCell} />
+                  <GridColumn field="year0" title={categories[0]} width="55px" cell={makeYearCell('year0')} />
+                  <GridColumn field="year1" title={categories[1]} width="55px" cell={makeYearCell('year1')} />
+                  <GridColumn field="year2" title={categories[2]} width="55px" cell={makeYearCell('year2')} />
+                  <GridColumn field="year3" title={categories[3]} width="55px" cell={makeYearCell('year3')} />
+                  <GridColumn field="year4" title={categories[4]} width="55px" cell={makeYearCell('year4')} />
+                  <GridColumn field="year5" title={categories[5]} width="55px" cell={makeYearCell('year5')} />
+                  <GridColumn field="year6" title={categories[6]} width="55px" cell={makeYearCell('year6')} />
+                  <GridColumn field="year7" title={categories[7]} width="55px" cell={makeYearCell('year7')} />
+                  <GridColumn field="year8" title={categories[8]} width="55px" cell={makeYearCell('year8')} />
+                  <GridColumn field="year9" title={categories[9]} width="55px" cell={makeYearCell('year9')} />
                 </Grid>
               </div>
-              {pageIndex < pdfPages.length - 1 && <div style={{ pageBreakAfter: 'always' }}></div>}
-            </div>
+              {pageIndex < pdfPages.length - 1 && <div style={{ pageBreakAfter: 'always', height: '0' }}></div>}
+            </React.Fragment>
           ))}
 
-          <div className="pdf-page-break"></div>
+          <div style={{ pageBreakBefore: 'always', height: '0' }}></div>
 
           <div style={{ width: '800px', height: '400px', overflow: 'hidden', margin: '0 auto' }}>
             <Chart style={{ height: '100%', width: '100%' }}>

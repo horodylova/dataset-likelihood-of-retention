@@ -122,7 +122,7 @@ export default function DemographicsSection({ onMultiSelectionChange, resetSigna
       scrollbarWidth: 'thin',
       scrollbarColor: '#FF5E00 #f1f1f1'
     }}>
-      {/* Deceased и Gender без смещения — оставляем */}
+      
       <FilterCard title="Deceased" headerChecked={deceasedTotal} headerOnChange={(e) => setDeceasedTotal(e.value)}>
         <div style={{ display: 'flex', gap: '15px' }}>
           <Checkbox label="Yes" checked={deceasedFilters.yes} onChange={(e) => setDeceasedFilters(prev => ({ ...prev, yes: e.value }))} />

@@ -88,10 +88,10 @@ function OutputsSection({ loading, retentionData = [], chartData, refreshKey = 0
     });
   }, [retentionData]);
 
-  // Разбиваем данные на страницы по 18 строк (6 сетов × 3 строки)
+ 
   const pdfPages = React.useMemo(() => {
     const pages = [];
-    const rowsPerPage = 24; // 6 сетов × 3 строки = 18 строк на страницу
+    const rowsPerPage = 24;  
     
     for (let i = 0; i < expandedData.length; i += rowsPerPage) {
       pages.push(expandedData.slice(i, i + rowsPerPage));
@@ -141,8 +141,6 @@ function OutputsSection({ loading, retentionData = [], chartData, refreshKey = 0
     setSelectedColumn(prev => (prev === column ? null : column));
   };
 
-  // Убрано: const [isMobile, setIsMobile] = useState(false);
-  // Убрано: useEffect с window.addEventListener('resize', ...)
 
   const categories = ['Year 1', 'Year 2', 'Year 3', 'Year 4', 'Year 5', 'Year 6', 'Year 7', 'Year 8', 'Year 9', 'Year 10'];
   const uiCategoriesShort = ['Y 1', 'Y 2', 'Y 3', 'Y 4', 'Y 5', 'Y 6', 'Y 7', 'Y 8', 'Y 9', 'Y 10'];
@@ -153,8 +151,7 @@ function OutputsSection({ loading, retentionData = [], chartData, refreshKey = 0
   ];
   const valueAxisMax = 110;
   const valueAxisMin = -10;
-
-  // --- Минимальная правка: короткие подписи на мобильных через labels.content ---
+ 
   const formatCategoryLabel = (value) => {
     if (typeof window !== 'undefined' && window.innerWidth <= 640) {
       const m = /^Year\s*(\d+)/.exec(value);
@@ -162,7 +159,7 @@ function OutputsSection({ loading, retentionData = [], chartData, refreshKey = 0
     }
     return value;
   };
-  // --- конец минимальной правки ---
+ 
 
   useEffect(() => {
     if (retentionData && retentionData.length > 0) {

@@ -104,8 +104,7 @@ export default function AgencySection({ onMultiSelectionChange, resetSignal }) {
         { key: 'austinStone', label: 'Austin Stone' },             // 1
         { key: 'austinRecovery', label: 'Austin Recovery' },       // 1
         { key: 'aNewEntry', label: 'A New Entry' },                // 1
-
-        // Служебный пункт (если нужен), оставим в конце
+ 
         { key: 'cmAgency', label: 'CM Agency' },
     ];
 

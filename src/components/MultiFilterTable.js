@@ -149,8 +149,7 @@ export default function MultiFilterTable({ onSubmit, onReset }) {
       const chosen = Array.from(selected[f.name] || []);
       if (chosen.length > 0) {
         let values = chosen;
-
-        // Для Age превращаем "18-24: Young Adult" -> "Young Adult" и т.п.
+ 
         if (f.column === 'Age') {
           values = chosen.map(opt => {
             const parts = opt.split(':');

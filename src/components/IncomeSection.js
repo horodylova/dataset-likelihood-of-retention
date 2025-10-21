@@ -23,7 +23,7 @@ export default function IncomeSection({ onMultiSelectionChange, resetSignal }) {
   });
   const [monthlyIncomeTotal, setMonthlyIncomeTotal] = useState(false);
 
-  // Monthly DI Average
+   
   const [monthlyDiAverageFilters, setMonthlyDiAverageFilters] = useState({
     zero: false,
     oneTo249: false,
@@ -32,8 +32,7 @@ export default function IncomeSection({ onMultiSelectionChange, resetSignal }) {
     thousandPlus: false
   });
   const [monthlyDiAverageTotal, setMonthlyDiAverageTotal] = useState(false);
-
-  // Total Average Monthly Income
+ 
   const [totalAvgMonthlyIncomeFilters, setTotalAvgMonthlyIncomeFilters] = useState({
     zero: false,
     oneTo750: false,
@@ -176,8 +175,7 @@ export default function IncomeSection({ onMultiSelectionChange, resetSignal }) {
           <Checkbox label="None" checked={incomeSourceFilters.none} onChange={(e) => handleIncomeSourceFilterChange('none', e.value)} />
         </div>
       </div>
-
-      {/* Monthly Income */}
+ 
       <div style={{
         marginBottom: '15px',
         padding: '10px',
@@ -209,8 +207,7 @@ export default function IncomeSection({ onMultiSelectionChange, resetSignal }) {
           <Checkbox label="$1501+" checked={monthlyIncomeFilters.fifteenHundredPlus} onChange={(e) => handleMonthlyIncomeChange('fifteenHundredPlus', e.value)} />
         </div>
       </div>
-
-      {/* Monthly DI Average */}
+ 
       <div style={{
         marginBottom: '15px',
         padding: '10px',
@@ -242,8 +239,7 @@ export default function IncomeSection({ onMultiSelectionChange, resetSignal }) {
           <Checkbox label="$1000+" checked={monthlyDiAverageFilters.thousandPlus} onChange={(e) => handleMonthlyDiAverageChange('thousandPlus', e.value)} />
         </div>
       </div>
-
-      {/* Total Average Monthly Income */}
+ 
       <FilterCard
         title={
           <span

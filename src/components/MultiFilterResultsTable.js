@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function MultiFilterResultsTable({ retentionData, selectedSpecs = [] }) {
+export default function MultiFilterResultsTable({ retentionData, selectedSpecs = [], count = 0 }) {
   const containerStyle = {
     width: '55%',
     minWidth: '420px',
@@ -31,6 +31,11 @@ export default function MultiFilterResultsTable({ retentionData, selectedSpecs =
             </tr>
           </thead>
           <tbody>
+            <tr style={{ backgroundColor: '#f8f9fa', border: '1px solid #dee2e6' }}>
+              <td style={{ ...tdStyle, textAlign: 'center', fontWeight: 'bold', fontSize: '14px' }} colSpan="4">
+                Count: {retentionData['Year 0']?.eligible || 0}
+              </td>
+            </tr>
             {Array.from({ length: 10 }, (_, i) => {
               const yearKey = `Year ${i + 1}`;
               const data = retentionData[yearKey] || {};

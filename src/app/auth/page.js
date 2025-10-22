@@ -6,7 +6,6 @@ import { Input } from '@progress/kendo-react-inputs';
 import { Button } from '@progress/kendo-react-buttons';
 import { Card, CardBody } from '@progress/kendo-react-layout';
 import { Loader } from '@progress/kendo-react-indicators';
-import { Notification } from '@progress/kendo-react-notification';
 import ModernLoader from '../../components/ModernLoader';
 
 export default function AuthPage() {
@@ -76,11 +75,11 @@ export default function AuthPage() {
 
             <form onSubmit={handleSubmit} className="auth-form">
               <div className="form-group">
-                <label htmlFor="password">Password</label>
+              
                 <Input
                   id="password"
                   type="password"
-                  placeholder="Enter your password"
+                  placeholder="Password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
@@ -106,10 +105,7 @@ export default function AuthPage() {
                 className="submit-button"
               >
                 {isLoading ? (
-                  <>
-                    <Loader size="small" />
-                    <span>Authenticating...</span>
-                  </>
+                  <Loader size="small" />
                 ) : (
                   'Sign In'
                 )}
@@ -125,7 +121,7 @@ export default function AuthPage() {
           display: flex;
           align-items: center;
           justify-content: center;
-          background: #f8f9fa;
+          background: #ffffff;
           padding: 20px;
           font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
         }
@@ -157,7 +153,7 @@ export default function AuthPage() {
 
         .auth-header p {
           font-size: 16px;
-          color: #6c757d;
+          color: #333333;
           line-height: 1.5;
         }
 
@@ -217,25 +213,34 @@ export default function AuthPage() {
         }
 
         :global(.submit-button) {
-          height: 48px;
-          border-radius: 8px;
-          font-size: 16px;
-          font-weight: 500;
+          height: 42px;
+          width: 140px;
+          border-radius: 12px;
+          font-size: 15px;
+          font-weight: 600;
           background: var(--kendo-color-primary);
-          border-color: var(--kendo-color-primary);
-          color: var(--kendo-color-on-primary);
-          transition: all 0.2s ease;
+          border: 2px solid var(--kendo-color-primary);
+          color: white;
+          transition: all 0.3s ease;
           display: flex;
           align-items: center;
           justify-content: center;
           gap: 8px;
+          margin: 0 auto;
+          box-shadow: 0 4px 15px rgba(255, 94, 0, 0.2);
+          cursor: pointer;
         }
 
         :global(.submit-button:hover:not(:disabled)) {
           background: var(--kendo-color-primary-darker);
           border-color: var(--kendo-color-primary-darker);
-          transform: translateY(-1px);
-          box-shadow: 0 2px 8px rgba(255, 94, 0, 0.3);
+          transform: translateY(-2px) scale(1.05);
+          box-shadow: 0 8px 25px rgba(255, 94, 0, 0.4);
+        }
+
+        :global(.submit-button:active:not(:disabled)) {
+          transform: translateY(0) scale(0.95);
+          box-shadow: 0 2px 10px rgba(255, 94, 0, 0.3);
         }
 
         :global(.submit-button:disabled) {

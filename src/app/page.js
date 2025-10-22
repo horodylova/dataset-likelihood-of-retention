@@ -11,10 +11,10 @@ import AgencySection from '../components/AgencySection';
 import DemographicsSection from '../components/DemographicsSection';
 import ProgramScreeningSection from '../components/ProgramScreeningSection';
 import NeighborhoodSection from '../components/NeighborhoodSection';
+import AuthGuard from '../components/AuthGuard';
 
-import Link from 'next/link';
 import { Button } from '@progress/kendo-react-buttons';
-import { Fade } from '@progress/kendo-react-animation';
+
 import { calculateRetentionByMultiFilters } from '@/lib/filterUtils';
 
 export default function Home() {
@@ -74,7 +74,7 @@ export default function Home() {
       const next = { ...prev };
       if (payload && typeof payload === 'object' && !Array.isArray(payload)) {
         const values = Array.isArray(payload.values) ? payload.values : [];
-        const combined = !!payload.combined && values.length === 0; // combined ТОЛЬКО если бакеты не выбраны
+        const combined = !!payload.combined && values.length === 0;
         if (combined || values.length > 0) {
           next[label] = { combined, values: new Set(values) };
         } else {
@@ -126,156 +126,158 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="container" style={{
-      minHeight: '100vh',
-      display: 'flex',
-      flexDirection: 'column',
-      overflow: 'visible',
-      boxSizing: 'border-box'
-    }}>
-      <style jsx>{`
-        @media (max-width: 768px) {
-          :global(.k-splitter) {
-            flex-direction: column !important;
-          }
-          :global(.k-splitter-bar) {
-            display: none !important;
-          }
-          :global(.k-splitter-pane) {
-            width: 100% !important;
-            height: auto !important;
-            margin-bottom: 12px !important;
-          }
-          :global(.k-splitter-pane:last-child) {
-            margin-bottom: 0 !important;
-          }
-          :global(.container) {
-            height: auto !important;
-            min-height: 100vh !important;
-          }
-          :global(.outputs-grid) {
-            height: 420px !important;
-            overflow: auto !important;
-          }
-          :global(.k-chart) {
-            height: 280px !important;
-          }
-          :global(.k-panelbar) {
-            width: 100% !important;
-          }
-        }
-      `}</style>
-
-      <div style={{ 
-        flex: 1,
-        overflow: 'hidden'
+    <AuthGuard>
+      <div className="container" style={{
+        minHeight: '100vh',
+        display: 'flex',
+        flexDirection: 'column',
+        overflow: 'visible',
+        boxSizing: 'border-box'
       }}>
-        <Splitter 
-          orientation="horizontal"
-          style={{ height: '100%' }}
-        >
-          <SplitterPane size="380px" min="320px">
-            <div style={{ 
-              height: '100%', 
-              overflow: 'auto', 
-              padding: '10px', 
-              position: 'relative',
-              width: '100%',
-              minWidth: '320px' 
-            }}>
-              <div style={{
-                position: 'sticky',
-                top: 10,
-                left: 0,
-                right: 0,
+        <style jsx>{`
+          @media (max-width: 768px) {
+            :global(.k-splitter) {
+              flex-direction: column !important;
+            }
+            :global(.k-splitter-bar) {
+              display: none !important;
+            }
+            :global(.k-splitter-pane) {
+              width: 100% !important;
+              height: auto !important;
+              margin-bottom: 12px !important;
+            }
+            :global(.k-splitter-pane:last-child) {
+              margin-bottom: 0 !important;
+            }
+            :global(.container) {
+              height: auto !important;
+              min-height: 100vh !important;
+            }
+            :global(.outputs-grid) {
+              height: 420px !important;
+              overflow: auto !important;
+            }
+            :global(.k-chart) {
+              height: 280px !important;
+            }
+            :global(.k-panelbar) {
+              width: 100% !important;
+            }
+          }
+        `}</style>
+
+        <div style={{ 
+          flex: 1,
+          overflow: 'hidden'
+        }}>
+          <Splitter 
+            orientation="horizontal"
+            style={{ height: '100%' }}
+          >
+            <SplitterPane size="380px" min="320px">
+              <div style={{ 
+                height: '100%', 
+                overflow: 'auto', 
+                padding: '10px', 
+                position: 'relative',
                 width: '100%',
-                zIndex: 2,
-                marginBottom: '12px',
-                padding: '12px',
-                backgroundColor: 'white',
-                borderRadius: '8px',
-                boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
-                border: '1px solid #e9ecef',
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                gap: '10px',
-                boxSizing: 'border-box',
-                flexWrap: 'nowrap',
-                overflow: 'visible'
+                minWidth: '320px' 
               }}>
-                <Button
-                  onClick={handleMultiReset}
-                  className="k-button k-button-solid k-button-solid-primary k-rounded-md"
-                  style={{ flex: '0 0 auto' }}
-                >
-                  Reset
-                </Button>
-                <Button
-                  onClick={handleMultiSubmit}
-                  className="k-button k-button-solid k-button-solid-success k-rounded-md"
-                  style={{ flex: '0 0 auto' }}
-                >
-                  Submit
-                </Button>
+                <div style={{
+                  position: 'sticky',
+                  top: 10,
+                  left: 0,
+                  right: 0,
+                  width: '100%',
+                  zIndex: 2,
+                  marginBottom: '12px',
+                  padding: '12px',
+                  backgroundColor: 'white',
+                  borderRadius: '8px',
+                  boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
+                  border: '1px solid #e9ecef',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  gap: '10px',
+                  boxSizing: 'border-box',
+                  flexWrap: 'nowrap',
+                  overflow: 'visible'
+                }}>
+                  <Button
+                    onClick={handleMultiReset}
+                    className="k-button k-button-solid k-button-solid-primary k-rounded-md"
+                    style={{ flex: '0 0 auto' }}
+                  >
+                    Reset
+                  </Button>
+                  <Button
+                    onClick={handleMultiSubmit}
+                    className="k-button k-button-solid k-button-solid-success k-rounded-md"
+                    style={{ flex: '0 0 auto' }}
+                  >
+                    Submit
+                  </Button>
+                </div>
+
+                <PanelBar>
+                  <PanelBarItem title="Demographics" expanded={false}>
+                    <DemographicsSection 
+                      resetSignal={resetSignal}
+                      onMultiSelectionChange={updateMultiSelection}
+                    />
+                  </PanelBarItem>
+
+                  <PanelBarItem title="Program & Screening" expanded={false}>
+                    <ProgramScreeningSection 
+                      resetSignal={resetSignal}
+                      onMultiSelectionChange={updateMultiSelection}
+                    />
+                  </PanelBarItem>
+
+                  <PanelBarItem title="Disabilities" expanded={false}>
+                    <DisabilitiesSection 
+                      resetSignal={resetSignal}
+                      onMultiSelectionChange={updateMultiSelection}
+                    />
+                  </PanelBarItem>
+
+                  <PanelBarItem title="Income" expanded={false}>
+                    <IncomeSection
+                      resetSignal={resetSignal}
+                      onMultiSelectionChange={updateMultiSelection}
+                    />
+                  </PanelBarItem>
+
+                  <PanelBarItem title="Agency" expanded={false}>
+                    <AgencySection
+                      resetSignal={resetSignal}
+                      onMultiSelectionChange={updateMultiSelection}
+                    />
+                  </PanelBarItem>
+
+                  <PanelBarItem title="Neighborhood" expanded={false}>
+                    <NeighborhoodSection
+                      resetSignal={resetSignal}
+                      onMultiSelectionChange={updateMultiSelection}
+                    />
+                  </PanelBarItem>
+                </PanelBar>
               </div>
+            </SplitterPane>
 
-              <PanelBar>
-                <PanelBarItem title="Demographics" expanded={false}>
-                  <DemographicsSection 
-                    resetSignal={resetSignal}
-                    onMultiSelectionChange={updateMultiSelection}
-                  />
-                </PanelBarItem>
-
-                <PanelBarItem title="Program & Screening" expanded={false}>
-                  <ProgramScreeningSection 
-                    resetSignal={resetSignal}
-                    onMultiSelectionChange={updateMultiSelection}
-                  />
-                </PanelBarItem>
-
-                <PanelBarItem title="Disabilities" expanded={false}>
-                  <DisabilitiesSection 
-                    resetSignal={resetSignal}
-                    onMultiSelectionChange={updateMultiSelection}
-                  />
-                </PanelBarItem>
-
-                <PanelBarItem title="Income" expanded={false}>
-                  <IncomeSection
-                    resetSignal={resetSignal}
-                    onMultiSelectionChange={updateMultiSelection}
-                  />
-                </PanelBarItem>
-
-                <PanelBarItem title="Agency" expanded={false}>
-                  <AgencySection
-                    resetSignal={resetSignal}
-                    onMultiSelectionChange={updateMultiSelection}
-                  />
-                </PanelBarItem>
-
-                <PanelBarItem title="Neighborhood" expanded={false}>
-                  <NeighborhoodSection
-                    resetSignal={resetSignal}
-                    onMultiSelectionChange={updateMultiSelection}
-                  />
-                </PanelBarItem>
-              </PanelBar>
-            </div>
-          </SplitterPane>
-
-          <SplitterPane>
-            <OutputsSection 
-              loading={loading}
-              retentionData={outputData}
-              onClearOutputs={handleClearOutputs}
-            />
-          </SplitterPane>
-        </Splitter>
+            <SplitterPane>
+              <OutputsSection 
+                loading={loading}
+                retentionData={outputData}
+                onClearOutputs={handleClearOutputs}
+              />
+            </SplitterPane>
+          </Splitter>
+        </div>
       </div>
-    </div>
+    </AuthGuard>
   );
 }
 

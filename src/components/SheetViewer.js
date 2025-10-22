@@ -8,6 +8,7 @@ import { calculateRetentionByMultiFilters } from '@/lib/filterUtils';
 import { Button } from '@progress/kendo-react-buttons';
 import RawDataTable from './RawDataTable';
 import Link from 'next/link';
+import ModernLoader from './ModernLoader';
 
 export default function SheetViewer({ externalControls = false, registerToggle }) {
   const [error, setError] = useState(null);
@@ -89,17 +90,11 @@ export default function SheetViewer({ externalControls = false, registerToggle }
         </div>
       )}
       {loading && (
-        <div style={{ 
-          color: '#155724', 
-          marginBottom: '20px',
-          padding: '12px 16px',
-          backgroundColor: '#d4edda',
-          border: '1px solid #c3e6cb',
-          borderRadius: '4px',
-          fontSize: '14px'
-        }}>
-          Loading data from Google Sheets...
-        </div>
+        <ModernLoader 
+          visible={true} 
+          text="Loading data from Google Sheets..." 
+          fullScreen={true}
+        />
       )}
       {dataLoaded && (
         <>

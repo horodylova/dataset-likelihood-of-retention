@@ -1,11 +1,13 @@
 'use client'
 
 import SheetViewer from '../../components/SheetViewer';
+import AuthGuard from '../../components/AuthGuard';
 import Link from 'next/link';
 
 export default function Analytics() {
   return (
-    <div className="container analytics-page">
+    <AuthGuard>
+      <div className="container analytics-page">
       <style jsx>{`
         @media (max-width: 768px) {
           :global(.analytics-page) {
@@ -21,5 +23,6 @@ export default function Analytics() {
         <SheetViewer />
       </div>
     </div>
+    </AuthGuard>
   );
 }

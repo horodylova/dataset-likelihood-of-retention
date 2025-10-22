@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Input } from '@progress/kendo-react-inputs';
 import { Button } from '@progress/kendo-react-buttons';
 import { Card, CardBody } from '@progress/kendo-react-layout';
-import { Loader } from '@progress/kendo-react-indicators';
+
 import ModernLoader from '../../components/ModernLoader';
 
 export default function AuthPage() {
@@ -54,66 +54,63 @@ export default function AuthPage() {
     } else {
       setError('Incorrect password. Please try again.');
       setPassword('');
+      setIsLoading(false);
     }
-    
-    setIsLoading(false);
   };
 
   if (isChecking) {
-    return <ModernLoader fullScreen={true} text="Checking authentication..." />;
+    return <ModernLoader fullScreen visible={true} text="Checking authentication..." />;
   }
 
   return (
-    <div className="auth-container">
-      <Card className="auth-card">
-        <CardBody>
-          <div className="auth-content">
-            <div className="auth-header">
-              <h1>Welcome</h1>
-              <p>Please enter your password to access the system</p>
+    <>
+      {isLoading && <ModernLoader fullScreen visible text="Checking authentication..." />}
+      <div className="auth-container">
+        <Card className="auth-card">
+          <CardBody>
+            <div className="auth-content">
+              <div className="auth-header">
+                <h1>Welcome</h1>
+                <p>Please enter your password to access the system</p>
+              </div>
+
+              <form onSubmit={handleSubmit} className="auth-form">
+                <div className="form-group">
+                
+                  <Input
+                    id="password"
+                    type="password"
+                    placeholder="Password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    disabled={isLoading}
+                    className="password-input"
+                  />
+                </div>
+
+                <div className="error-container">
+                  {error && (
+                    <div className="error-message">
+                      <span className="error-icon">⚠️</span>
+                      {error}
+                    </div>
+                  )}
+                </div>
+
+                <Button
+                  type="submit"
+                  themeColor="primary"
+                  disabled={isLoading || !password.trim()}
+                  className="submit-button"
+                >
+                  Sign In
+                </Button>
+              </form>
             </div>
-
-            <form onSubmit={handleSubmit} className="auth-form">
-              <div className="form-group">
-              
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="Password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  disabled={isLoading}
-                  className="password-input"
-                />
-              </div>
-
-              <div className="error-container">
-                {error && (
-                  <div className="error-message">
-                    <span className="error-icon">⚠️</span>
-                    {error}
-                  </div>
-                )}
-              </div>
-
-              <Button
-                type="submit"
-                themeColor="primary"
-                size="large"
-                disabled={isLoading || !password.trim()}
-                className="submit-button"
-              >
-                {isLoading ? (
-                  <Loader size="small" />
-                ) : (
-                  'Sign In'
-                )}
-              </Button>
-            </form>
-          </div>
-        </CardBody>
-      </Card>
+          </CardBody>
+        </Card>
+      </div>
 
       <style jsx>{`
         .auth-container {
@@ -262,6 +259,6 @@ export default function AuthPage() {
           }
         }
       `}</style>
-    </div>
+    </>
   );
 }
